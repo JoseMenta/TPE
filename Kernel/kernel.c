@@ -3,7 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
-
+#include <idtLoader.h>
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -100,5 +100,7 @@ int main()
 	ncNewline();
 
 	ncPrint("[Finished]");
+	ncClear();
+	ncPrint("Hello World!!!");
 	return 0;
 }
