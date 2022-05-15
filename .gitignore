@@ -4,3 +4,6 @@
 *.img
 *.qcow2
 *.vmdk
+compile.sh
+*.bash_history
+*.gdb_history
