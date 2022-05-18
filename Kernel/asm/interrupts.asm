@@ -57,7 +57,7 @@ SECTION .text
 	pop rbx
 	pop rax
 %endmacro
-
+;macro para todas las irq, segun el parametro que paso es como entra en el case de irq
 ; Es una macro que recibe por argumento el codigo de la interrupcion lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro irqHandlerMaster 1
 	pushState
@@ -116,6 +116,7 @@ picSlaveMask:
     pop     rbp
     retn
 
+; poner buenos nombres mas descriptivos
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:

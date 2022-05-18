@@ -25,7 +25,11 @@ static void setup_IDT_entry (int index, uint64_t offset);
 // En esta funcion se deben cargar las interrupciones y las excepciones que se desean utilizar
 // Para ello, se debe asociar el codigo de interrupcion/excepcion con la rutina de atencion que se desea ejecutar si se lanza
 void load_idt() {
-
+  //colocar todas las entradas a la IDT que queremos
+  //excepciones o interupciones, segun la tabla de la catedra
+  //_irq00Handler tira como parametro el 0 a un managerirq
+  //quizas cambiarle los nombres por cosas mas 
+  //decriptivas tipo "irqKey",
   setup_IDT_entry (0x20, (uint64_t)&_irq00Handler);         // La interrupcion para el timer tick es la 0x20
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // La excepcion para la division por 0 es la 0x00
 
