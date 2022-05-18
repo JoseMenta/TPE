@@ -11,12 +11,12 @@ extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
-static const uint64_t PageSize = 0x1000;
+static const uint64_t PageSize = 0x1000;						// El tamaño de una pagina (en este caso, se definio que sea de 4KB)
 
-static void * const sampleCodeModuleAddress = (void*)0x400000;
+static void * const sampleCodeModuleAddress = (void*)0x400000;	// Userland comienza en la direccion 0x400000
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
-typedef int (*EntryPoint)();
+typedef int (*EntryPoint)();									// Entrypoint es un alias para punteros a funcion que devuelven un entero, sin parametros
 
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
@@ -24,7 +24,7 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 	memset(bssAddress, 0, bssSize);
 }
 
-void * getStackBase()
+void * getStackBase()											// Devuelve el valor del registro RSP (direccion de memoria donde apunta el registro)
 {
 	return (void*)(
 		(uint64_t)&endOfKernel
@@ -80,7 +80,7 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-int main()
+int main()													// Es la primera funcion que se ejecutará una vez se halla cargado el SO en el sistema
 {	
 	ncPrint("[Kernel Main]");
 	ncNewline();

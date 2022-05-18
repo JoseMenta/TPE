@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stdint.h>							// Define diferentes tipos de enteros, segun la cantidad de bits que ocupan (es de libreria estandar de C)
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>

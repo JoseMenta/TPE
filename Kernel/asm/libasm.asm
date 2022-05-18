@@ -2,7 +2,7 @@ GLOBAL cpuVendor
 
 section .text
 	
-cpuVendor:
+cpuVendor:							; Devuelve un string del nombre del fabricante del procesador (por ejemplo, si es Intel devuelve el string "Genuine Intel")
 	push rbp
 	mov rbp, rsp
 

@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+// Dada una direccion de memoria d, un entero z y una longitud n, setea el valor z desde [d] hasta [d+n-1] 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;
@@ -11,6 +12,7 @@ void * memset(void * destination, int32_t c, uint64_t length)
 	return destination;
 }
 
+// Dada una direccion de memoria d, otra direccion s y una longitud n, copia el valor de [s] hasta [s+n-1] en [d] hasta [d+n-1]
 void * memcpy(void * destination, const void * source, uint64_t length)
 {
 	/*
@@ -27,7 +29,7 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	*/
 	uint64_t i;
 
-	if ((uint64_t)destination % sizeof(uint32_t) == 0 &&
+	if ((uint64_t)destination % sizeof(uint32_t) == 0 &&			// Como dice mas arriba, si los tres parametros están a alineados a doble palabra (son multiplos de 32), resulta más rapido el copiado
 		(uint64_t)source % sizeof(uint32_t) == 0 &&
 		length % sizeof(uint32_t) == 0)
 	{

@@ -18,23 +18,26 @@ typedef struct {
 
 
 
-DESCR_INT * idt = (DESCR_INT *) 0;	// IDT de 255 entradas
+DESCR_INT * idt = (DESCR_INT *) 0;	// IDT de 255 entradas: Indica la direccion de memoria donde comienza la tabla de interrupciones (en este caso, en la direccion 0x00)
 
 static void setup_IDT_entry (int index, uint64_t offset);
 
+// En esta funcion se deben cargar las interrupciones y las excepciones que se desean utilizar
+// Para ello, se debe asociar el codigo de interrupcion/excepcion con la rutina de atencion que se desea ejecutar si se lanza
 void load_idt() {
 
-  setup_IDT_entry (0x20, (uint64_t)&_irq00Handler);
-  setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);
+  setup_IDT_entry (0x20, (uint64_t)&_irq00Handler);         // La interrupcion para el timer tick es la 0x20
+  setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // La excepcion para la division por 0 es la 0x00
 
 
-	//Solo interrupcion timer tick habilitadas
+	//Solo interrupcion timer tick habilitadas: Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0
 	picMasterMask(0xFE); 
 	picSlaveMask(0xFF);
         
-	_sti();
+	_sti();                                                   // Habilita las interrupciones enmascarables
 }
 
+// En esta funcion se carga la interrupcion/excepcion (IRQ code / ID code) asociado con su respectiva rutina de atencion (puntero a funcion)
 static void setup_IDT_entry (int index, uint64_t offset) {
   idt[index].selector = 0x08;
   idt[index].offset_l = offset & 0xFFFF;
