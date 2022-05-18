@@ -31,12 +31,15 @@ void load_idt() {
   //quizas cambiarle los nombres por cosas mas 
   //decriptivas tipo "irqKey",
   setup_IDT_entry (0x20, (uint64_t)&_irq00Handler);         // La interrupcion para el timer tick es la 0x20
+  setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);         // La interrupcion para el teclado es la 0x21
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // La excepcion para la division por 0 es la 0x00
+
+  // setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);       // Manejo de syscalls 0x80
 
 
 	//Solo interrupcion timer tick habilitadas: Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0
-	picMasterMask(0xFE); 
-	picSlaveMask(0xFF);
+	picMasterMask(0x00);  //todo CAMBIAR!!! esta asi solo para que ande toodo
+	picSlaveMask(0x00);
         
 	_sti();                                                   // Habilita las interrupciones enmascarables
 }

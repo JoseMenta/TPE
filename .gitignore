@@ -3,7 +3,10 @@
 *.bin
 *.img
 *.qcow2
+.gdbinit
 *.vmdk
 compile.sh
 *.bash_history
 *.gdb_history
+.idea/*
+.vscode/*

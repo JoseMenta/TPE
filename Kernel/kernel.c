@@ -7,12 +7,55 @@
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
-extern uint8_t bss;
+extern uint8_t bss; 
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;						// El tamaño de una pagina (en este caso, se definio que sea de 4KB)
+int curr_process = 0;
+//0 es la terminal, que escribe en ALL, 
+//Terminal llama a primos en toda la pantalla
+// -> primos.process=1
+//  primos.side = LEFT
+//Si llama a |
+//Desde terminal, con una syscall exec agrego a los 2 procesos
+//
 
+//Teclado 
+// Int hardware -> guarde las teclas en un buffer
+// Terminal lo que hace es llamar a sys_read, y eso solo lee el buffer
+// La terminal recibe \n -> 
+// Si no reconoce lo que escribieron -> Imprime error y vuelve a leer
+// Si esta | => llama a exec con 2 programas y le dice donde va cada uno 
+// SI no esta el | => llama a exec con 1 programa side  = ALL
+
+// Exec(2)
+// Solo hacer el arreglo para cuando hago |
+// sys_write:
+// 1- recibe un argumento de donde va
+// 2- mira el arreglo con procesos (el arreglo solo se hace con |
+// 1: Tengo que pasarle al programa donde esta
+// primos(A) -> sys_write(A) -> sys_write ve que hace
+// fib(B) -> sys_write(B)
+// Si paso parametro -> primos(A) puede escribir en el lado B
+// Es medio una falla de seguridad, 
+// fib | primos
+// Si no
+// primos(A) -> primos ve si llama a sys_write_left o sys_write_right
+// 2: Mira el arreglo
+// El problema es cuando no hay procesos en el arreglo (cuando no haces |) -> 
+
+// sys_write(L) en primos
+// Primos tiene una excepcion 
+// Donde escribe la excepcion?
+// Como sabe la excepcion que esta en L?
+
+//struct process{
+//	int pid;
+//	struct registers;
+//	char side; //LEFT,RIGHT,ALL para
+//	int status; //RUNNING,PAUSED,...
+//};
 static void * const sampleCodeModuleAddress = (void*)0x400000;	// Userland comienza en la direccion 0x400000
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
@@ -81,7 +124,8 @@ void * initializeKernelBinary()
 }
 
 int main()													// Es la primera funcion que se ejecutará una vez se halla cargado el SO en el sistema
-{	
+{
+    load_idt();
 	ncPrint("[Kernel Main]");
 	ncNewline();
 	ncPrint("  Sample code module at 0x");
@@ -100,7 +144,9 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncNewline();
 
 	ncPrint("[Finished]");
-	ncClear();
-	ncPrint("Hello World!!!");
+    ncClear();
+    ncPrint("Hello World!!!");
+    while (1);
+    ncPrint("HOLA");
 	return 0;
 }
