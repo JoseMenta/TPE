@@ -18,6 +18,7 @@ void _irq04Handler(void);
 void _irq05Handler(void);
 
 void _exception0Handler(void);              // Es una funcion que ejecuta la excepcion de id 0 (division por cero)
+void _exception6Handler(void);              // Es una funcion que ejecuta la excepcion de id 6 (operador invalido)
 
 void _cli(void);                            // Ejecuta la instruccion cli, la cual inhabilita las interrupciones
 

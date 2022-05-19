@@ -14,6 +14,8 @@ GLOBAL _irq04Handler
 GLOBAL _irq05Handler
 
 GLOBAL _exception0Handler					; Es una funcion que ejecuta la excepcion de id 0 (division por cero)
+GLOBAL _exception6Handler					; Es una funcion que ejecuta la excepcion de id 6 (invalid opcode)
+GLOBAL getRegisters							; Funcion para obtener el valor de los registros
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
@@ -116,8 +118,12 @@ picSlaveMask:
     pop     rbp
     retn
 
-; poner buenos nombres mas descriptivos
 
+;--------------------------------------------------------------------------------------
+; Interrupciones
+;--------------------------------------------------------------------------------------
+
+; poner buenos nombres mas descriptivos
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	irqHandlerMaster 0
@@ -142,10 +148,62 @@ _irq04Handler:
 _irq05Handler:
 	irqHandlerMaster 5
 
+;--------------------------------------------------------------------------------------
+; Excepciones
+;--------------------------------------------------------------------------------------
 
 ;Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
+
+;Invalid opcode Exception
+_exception6Handler:
+	exceptionHandler 6
+
+;-------------------------------------------------------------------------------------
+; getRegisters: obtener los valores de los registros
+;-------------------------------------------------------------------------------------
+; parametros: - 
+;-------------------------------------------------------------------------------------
+; retorno:
+; 	vector con el valor de los registros
+;	ordenados segun:
+;	"R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "
+;-------------------------------------------------------------------------------------
+
+getRegisters:
+	push rbp
+	mov rbp, rsp
+
+	mov [reg], r8
+	mov [reg+8], r9
+	mov [reg+16], r10
+	mov [reg+24], r11
+	mov [reg+32], r12
+	mov [reg+40], r13
+	mov [reg+48], r14
+	mov [reg+56], r15
+	mov [reg+64], rax
+	mov [reg+72], rbx
+	mov [reg+80], rcx
+	mov [reg+88], rdx
+	mov [reg+96], rsi
+	mov [reg+104], rdi
+	;claramente como esta no es, definir una manera
+	;opcion 1: fijarse en que lugar del stack estan los rbp, rsp y rip y restarle eso al rsp actual.
+	;opcion 2: No hacer nada de esto e imprimir los registros en el momento de la interupcion (antes del int 0h)
+	;desventaja de 2 es que es medio chanta porque la interupcion no haria nada
+	;opcion 3: ir pasando como parametro el rbp, rsp y rip entre las funciones e imprimirlo al final.
+	;mov [reg+112], rbp
+	;mov [reg+120], rsp
+	;mov [reg+128], rip
+
+	mov rax, reg
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
 
 haltcpu:
 	cli
@@ -155,4 +213,5 @@ haltcpu:
 
 
 SECTION .bss
+	reg resq 18		; guarda 8*18 lugares de memoria
 	aux resq 1
