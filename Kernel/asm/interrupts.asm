@@ -167,7 +167,7 @@ _exception6Handler:
 ;-------------------------------------------------------------------------------------
 ; retorno:
 ; 	vector con el valor de los registros
-;	ordenados segun:
+;	ordenados segun el orden de los registros:
 ;	"R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "
 ;-------------------------------------------------------------------------------------
 

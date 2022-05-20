@@ -34,7 +34,7 @@ void load_idt() {
   setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);         // La interrupcion para el teclado es la 0x21
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // La excepcion para la division por 0 es la 0x00
   setup_IDT_entry (0x06, (uint64_t)&_exception6Handler);    // La excepcion para operador invalido es la 0x06
-  // setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);       // Manejo de syscalls 0x80
+  // setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);    // Manejo de syscalls 0x80
 
 
 	//Solo interrupcion timer tick habilitadas: Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0
