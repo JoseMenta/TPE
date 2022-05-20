@@ -1,4 +1,4 @@
-#include "keyboard.h"
+#include "../include/keyboard.h"
 #include <naiveConsole.h>
 
 //Constantes para los scan_code
@@ -6,7 +6,7 @@
 #define SHIFT1 42
 #define SHIFT2 54
 #define RELEASED 128
-#define UPPER_OFFSET 0x20
+#define UPPER_OFFSET ('a'-'A')//0x20
 #define KEYBOARD_REFERENCE_LENGTH 54
 #define IS_ALPHA(x) ((x) >= 'a' && (x) <= 'z') ? 1 : 0
 #define IS_REPRESENTABLE(x) ((x) <= KEYBOARD_REFERENCE_LENGTH && keyboard_reference[(x)]!='\0')
@@ -14,10 +14,10 @@
 
 //El buffer guarda el ASCII del valor presionado en el teclado
 char buffer[BUFF_LENGTH];
-static int key_case = -1;
-static int key_case_default = -1;
-uint8_t write = 0;
-uint8_t read = 0;
+static int key_case = -1;               // Estado actual del formato de la letra (mayuscula: 1, o minuscula: -1)
+static int key_case_default = -1;       // Estado default del formato de la letra
+uint8_t write = 0;                      // Puntero de escritura
+uint8_t read = 0;                       // Puntero de lectura
 
 //teclado Mac
 static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
@@ -75,19 +75,3 @@ void keyboard_handler(){
     }
 
 }
-//------------------------------------------------------------------------------------
-// sys_read: Lee 1 caracter de entrada estandar
-//------------------------------------------------------------------------------------
-// Argumentos:
-//  buff: el buffer donde se escribe el caracter leido
-//------------------------------------------------------------------------------------
-// Retorno:
-//  Devuelve la cantidad de caracteres leidos de la pantalla (1 si leyo, 0 si no)
-//------------------------------------------------------------------------------------
-int sys_read(char * buff){
-    if (read==write) return 0;                  //No hay para leer
-    *buff = buffer[read];
-    read = (read==BUFF_LENGTH-1) ? 0 : read+1;
-    return 1;
-}
-//muy buenas tardes

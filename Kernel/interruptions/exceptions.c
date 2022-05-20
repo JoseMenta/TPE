@@ -13,7 +13,7 @@ exception exceptions[2] = {zero_division, invalid_opcode};              // Arreg
 uint64_t* getRegisters(void);
 void printRegisters();
 
-static const char* Names[18] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
+static const char * Names[18] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
 
 void exceptionDispatcher(int exception) {
 	exceptions[exception]();
@@ -26,7 +26,7 @@ void zero_division() {
 	printRegisters();
 }
 /*
-programa a llamar desde el Userland cuando quiero la exepcion
+programa a llamar desde el Userland cuando quiero la excepcion
 void zero_division() {
 	zero_division_exc();
 }

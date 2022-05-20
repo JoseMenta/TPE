@@ -3,6 +3,7 @@
 #include <defs.h>
 #include <interrupts.h>
 
+//#pragma == una instruccion para el compilador
 #pragma pack(push)		/* Push de la alineación actual */
 #pragma pack (1) 		/* Alinear las siguiente estructuras a 1 byte */
 
@@ -19,7 +20,7 @@ typedef struct {
 
 
 DESCR_INT * idt = (DESCR_INT *) 0;	// IDT de 255 entradas: Indica la direccion de memoria donde comienza la tabla de interrupciones (en este caso, en la direccion 0x00)
-
+//La IDT esta al principio del mapa de memoria virtual
 static void setup_IDT_entry (int index, uint64_t offset);
 
 // En esta funcion se deben cargar las interrupciones y las excepciones que se desean utilizar
@@ -34,7 +35,7 @@ void load_idt() {
   setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);         // La interrupcion para el teclado es la 0x21
   setup_IDT_entry (0x00, (uint64_t)&_exception0Handler);    // La excepcion para la division por 0 es la 0x00
   setup_IDT_entry (0x06, (uint64_t)&_exception6Handler);    // La excepcion para operador invalido es la 0x06
-  // setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);    // Manejo de syscalls 0x80
+  setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);       // Manejo de syscalls 0x80
 
 
 	//Solo interrupcion timer tick habilitadas: Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0

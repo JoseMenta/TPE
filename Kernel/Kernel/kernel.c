@@ -4,6 +4,9 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <idtLoader.h>
+#include <video_driver.h>
+#include <scheduler.h>
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -58,6 +61,9 @@ int curr_process = 0;
 //};
 static void * const sampleCodeModuleAddress = (void*)0x400000;	// Userland comienza en la direccion 0x400000
 static void * const sampleDataModuleAddress = (void*)0x500000;
+
+extern void TesterWrite();
+extern void TesterRead();
 
 typedef int (*EntryPoint)();									// Entrypoint es un alias para punteros a funcion que devuelven un entero, sin parametros
 
@@ -144,9 +150,35 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncNewline();
 
 	ncPrint("[Finished]");
-    ncClear();
-    ncPrint("Hello World!!!");
-    while (1);
-    ncPrint("HOLA");
+    clear(LEFT);
+    clear(RIGHT);
+    clear(ALL);
+    print("Hola", WHITE, ALL);
+    new_line();
+    print("Hola en rojo", RED, ALL);
+    new_line();
+    print("Hola en azul", BLUE, ALL);
+    new_line();
+    print("Hola por izq", WHITE, LEFT);
+    print("Hola por der", WHITE, RIGHT);
+    ncNewline();
+    print("Hola por izq rojo", RED, LEFT);
+    print("Hola por der azul", BLUE, RIGHT);
+    new_line();
+    print_char('a', WHITE, ALL);
+    new_line();
+    print_char('b', RED, ALL);
+    new_line();
+    print_char('c', BLUE, ALL);
+    new_line();
+    print_char('l', WHITE, LEFT);
+    print_char('r', WHITE, RIGHT);
+    new_line();
+    print_char('L', RED, LEFT);
+    print_char('R', BLUE, RIGHT);
+    clear();
+    print("CAMBIO A INTERUPCIONES CON int 80h:", WHITE, ALL);
+    TesterWrite();
+    TesterRead();
 	return 0;
 }

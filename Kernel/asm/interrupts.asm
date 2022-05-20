@@ -13,12 +13,19 @@ GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
 
+GLOBAL _syscallHandler                      ; Ejecuta las interrupciones de software
+
 GLOBAL _exception0Handler					; Es una funcion que ejecuta la excepcion de id 0 (division por cero)
 GLOBAL _exception6Handler					; Es una funcion que ejecuta la excepcion de id 6 (invalid opcode)
 GLOBAL getRegisters							; Funcion para obtener el valor de los registros
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
+
+EXTERN write_handler
+EXTERN read_handler
+EXTERN exec_handler
+EXTERN exit_handler
 
 SECTION .text
 
@@ -161,13 +168,101 @@ _exception6Handler:
 	exceptionHandler 6
 
 ;-------------------------------------------------------------------------------------
+; _syscallHandler: Handler para las interrupciones (int 80h)
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rax: el Id de la inter
+;   rbx --> rxx : parametros variables en funcion de la interupcion.
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: Depende de la syscall, o -2 si no es un parametro valido
+;------------------------------------------------------------------------------------
+_syscallHandler:
+    pushState                                   ; Resguardamos los registros
+    cmp rax, 0
+    jz sys_read                                 ; Syscall para read (id = 0)
+    cmp rax, 1
+    jz sys_write                                ; Syscall para write (id = 1)
+    cmp rax, 2
+    jz sys_exec                                 ; Syscall para exec (id = 2)
+    cmp rax, 3
+    jz sys_exit                                 ; Syscall para exit (id = 4)
+    mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
+    jmp .fin
+
+; ------------------------------------------
+; Read: Lee el siguiente caracter ingresado por pantalla
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: el string donde copiar el caracter (tamaño minimo: 2)
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: cantidad de caracteres leidos
+;-------------------------------------------------------------------------------------
+sys_read:
+    mov rdi, rbx
+    call read_handler
+    jmp .fin
+
+;-------------------------------------------------------------------------------------
+; Write: Escribe por pantalla
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: string a imprimir
+;   rcx: formato de impresion (un color definido previamente)
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: cantidad de caracteres escritos
+;------------------------------------------------------------------------------------
+sys_write:
+    mov rdi, rbx
+    mov rsi, rcx
+    call write_handler
+    jmp .fin
+
+;-------------------------------------------------------------------------------------
+; Exec: Guarda un proceso
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: puntero a la primera instruccion del programa
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: 0 si logro correr el programa; -1 si no
+;------------------------------------------------------------------------------------
+sys_exec:
+    mov rdi, rbx
+    call exec_handler
+    jmp .fin
+
+;-------------------------------------------------------------------------------------
+; Exit: Termina la ejecucion
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: codigo de error
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: numero de proceso
+;------------------------------------------------------------------------------------
+sys_exit:
+    mov rdi, rbx
+    call exit_handler
+    jmp .fin
+
+.fin:
+    mov aux, rax                                ; Resguardamos el valor de retorno
+    popState                                    ; Recuperamos los registros
+    mov rax, aux                                ; Recuperamos el valor de retorno en rax
+    iret
+
+
+;-------------------------------------------------------------------------------------
 ; getRegisters: obtener los valores de los registros
 ;-------------------------------------------------------------------------------------
 ; parametros: - 
-;-------------------------------------------------------------------------------------
+;-----------------------------------;----------------------------------------------------------------------------------------------------------------------------------
 ; retorno:
 ; 	vector con el valor de los registros
-;	ordenados segun el orden de los registros:
+;	ordenados segun:
 ;	"R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "
 ;-------------------------------------------------------------------------------------
 
@@ -194,6 +289,7 @@ getRegisters:
 	;opcion 2: No hacer nada de esto e imprimir los registros en el momento de la interupcion (antes del int 0h)
 	;desventaja de 2 es que es medio chanta porque la interupcion no haria nada
 	;opcion 3: ir pasando como parametro el rbp, rsp y rip entre las funciones e imprimirlo al final.
+	;opcion 4: usar TSS pero no es la utilidad para esto, es mas general
 	;mov [reg+112], rbp
 	;mov [reg+120], rsp
 	;mov [reg+128], rip
@@ -214,4 +310,4 @@ haltcpu:
 
 SECTION .bss
 	reg resq 18		; guarda 8*18 lugares de memoria
-	aux resq 1
+	aux resq 1      ; variable auxiliar

@@ -1,6 +1,6 @@
 #include <time.h>
 #include <stdint.h>
-#include "keyboard.h"
+#include "../include/keyboard.h"
 #include <naiveConsole.h>
 static void int_20();
 static void int_21();
