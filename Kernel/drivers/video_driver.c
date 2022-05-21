@@ -140,31 +140,73 @@ uint8_t right_next(uint8_t index){
 uint8_t all_next(uint8_t index){
     return index+NEXT;//voy al la siguiente posicion de la pantalla
 }
-//Todo: implementar
+//Todo: testear bien (lo hice tarde ya)
+//Hay mucho codigo repetido, ver si se puede modularizar con punteros a funcion y parametros
+//Lo dejo asi por ahora como para que sea mas claro para nosotros
 void scroll_up(positionType position){
     if(position == LEFT){
-
-    }else if (position == RIGHT){
-
-    }else{
-
-    }
-    for(uint8_t* i = video_start; i<curr_video; i++){
-        *i = *(i+2*WIDTH);
-        //copio la linea actual a la de arriba
-    }
-    if(curr_video>=video_start+(WIDTH*2)){
-        //si no estoy en la primera linea, tengo que llenarlo con
-        //espacios y moverme hacia arriba
-        for(uint8_t* i = curr_video-(2*WIDTH);i<=curr_video;i+=2){
-            *i = ' ';
+        for(uint8_t l = L_START; l<=L_END; l = left_next(l)){
+            //copio toda la linea de abajo en la de arriba
+            *(video_start + l ) = *(video_start + l + WIDTH);
         }
-        //intenta sacar esto jajaja
-        curr_video-=(2*WIDTH);
+        if(left_offset>=WIDTH){
+            //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
+            for(uint8_t l = left_offset - MID_WIDTH;l<=right_offset; l = left_next(l)){ //me ubico en el principio de la pantalla derecha
+                *(video_start + l ) = ' '; //lleno con espacios
+                *(video_start + l + 1) = 0; //de color negro el fondo
+            }
+            left_offset -= MID_WIDTH; //voy al principio de la "nueva" linea
+        }else{
+            left_offset = L_START;
+        }
+    }else if (position == RIGHT){
+        for(uint8_t r = R_START; r<=R_END; r = right_next(r)){
+            //copio toda la linea de abajo en la de arriba
+            *(video_start + r ) = *(video_start + r + WIDTH);
+        }
+        if(right_offset>=WIDTH){
+            //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
+            for(uint8_t r = right_offset - MID_WIDTH;r<=right_offset; r = right_next(r)){ //me ubico en el principio de la pantalla derecha
+                *(video_start + r ) = ' '; //lleno con espacios
+                *(video_start + r + 1) = 0; //de color negro el fondo
+            }
+            right_offset -= MID_WIDTH; //voy al principio de la "nueva" linea
+        }else{
+            right_offset = R_START;
+        }
     }else{
-        curr_video = video_start;
-        //si estoy en la primera linea, borro todo y vuelvo al principio
+        //position == all
+        for(uint8_t i = ALL_START; i<=ALL_END; i = all_next(i)){
+            //copio toda la linea de abajo
+            *(video_start + i ) = *(video_start + i + WIDTH);
+        }
+        if(all_offset>=WIDTH){
+            //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
+            for(uint8_t i = all_offset - WIDTH;i<=all_offset; i = all_next(i)){
+                *(video_start + i ) = ' '; //lleno con espacios
+                *(video_start + i + 1) = 0; //de color negro el fondo
+            }
+            all_offset -= WIDTH; //voy al principio de la "nueva" linea
+        }else{
+            all_offset = ALL_START;
+        }
     }
+//    for(uint8_t* i = video_start; i<curr_video; i++){
+//        *i = *(i+2*WIDTH);
+//        //copio la linea actual a la de arriba
+//    }
+//    if(curr_video>=video_start+(WIDTH*2)){
+//        //si no estoy en la primera linea, tengo que llenarlo con
+//        //espacios y moverme hacia arriba
+//        for(uint8_t* i = curr_video-(2*WIDTH);i<=curr_video;i+=2){
+//            *i = ' ';
+//        }
+//        //intenta sacar esto jajaja
+//        curr_video-=(2*WIDTH);
+//    }else{
+//        curr_video = video_start;
+//        //si estoy en la primera linea, borro todo y vuelvo al principio
+//    }
 }
 //-----------------------------------------------------------------------
 // clear: limpia la pantalla, pone ' ' en todos los lugares disponibles
