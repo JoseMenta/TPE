@@ -4,25 +4,25 @@
 #define WIDTH  2*80
 #define HEIGHT 25
 #define MID_WIDTH 2*39 //El ancho de media pantalla
-#define RIGHT_LAST_COLUMN = 2*79
-#define LEFT_LAST_COLUMN = MID_WIDTH
+#define RIGHT_LAST_COLUMN  2*79
+#define LEFT_LAST_COLUMN  MID_WIDTH
 //Se hacen 2 lineas en el medio
-#define L_START = 0
-#define R_START = (WIDTH-MID_WIDTH)
-#define ALL_START = L_START
+#define L_START  0
+#define R_START  (WIDTH-MID_WIDTH)
+#define ALL_START  L_START
 #define L_END (WIDTH * HEIGHT - (2*(WIDTH - MID_WIDTH))) //fin de la pantalla izquierda (extremo inferior derecho)
 #define R_END (WIDTH * HEIGHT -NEXT) //fin de la pantalla derecha
-#define ALL_END = R_END
-uint8_t left_next(uint8_t index);
-uint8_t right_next(uint8_t index);
-uint8_t all_next(uint8_t index);
-static uint8_t* const video_start = (uint8_t *) 0xB8000;
+#define ALL_END  R_END
+uint32_t left_next(uint32_t index);
+uint32_t right_next(uint32_t index);
+uint32_t all_next(uint32_t index);
+static uint8_t * const video_start = (uint8_t *) 0xB8000;
 //static uint8_t* curr_video = (uint8_t *) 0xB8000;
 //Usamos un offset para manerjarnos en la pantalla
 //Es decir, la direccion donde se tiene que escribir va a ser video_start + left_offset|right_offset|all_offset
-static uint8_t left_offset= L_START;
-static uint8_t right_offset = R_START;
-static uint8_t all_offset = ALL_START;
+static uint32_t left_offset= L_START;
+static uint32_t right_offset = R_START;
+static uint32_t all_offset = ALL_START;
 //-----------------------------------------------------------------------
 // video_print_char: imprime un caracter en pantalla
 //-----------------------------------------------------------------------
@@ -33,8 +33,8 @@ static uint8_t all_offset = ALL_START;
 //-----------------------------------------------------------------------
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
 //-----------------------------------------------------------------------
-void printChar(char c, int letterFormat, positionType position){
-    uint8_t* curr = video_start; //La primera direccion de video
+void print_char(char c, int letterFormat, positionType position){
+    uint8_t * curr = video_start; //La primera direccion de video
     //A esto se le suma el offset correspondiente
     if(position==LEFT){
         curr += left_offset;
@@ -64,8 +64,8 @@ void printChar(char c, int letterFormat, positionType position){
         new_line(position);
     }else {
         //Imprime el caracter en la posicion indicada
-        *curr_video = c;//imprimo el ASCII
-        *(curr_video + 1) = letterFormat; //indico el color que va a tener
+        *curr = c;//imprimo el ASCII
+        *(curr + 1) = letterFormat; //indico el color que va a tener
     }
 }
 //-----------------------------------------------------------------------
@@ -80,7 +80,7 @@ void printChar(char c, int letterFormat, positionType position){
 //-----------------------------------------------------------------------
 void print(char * str, int letterFormat, positionType position){
     for(;*str!='\0';str++){
-        printChar(*str,letterFormat,position);
+        print_char(*str,letterFormat,position);
     }
 }
 //-----------------------------------------------------------------------
@@ -123,35 +123,36 @@ void new_line(positionType position){
 //-----------------------------------------------------------------------
 // Funciones auxiliares para obtener la siguiente posicion donde tiene que ir el offset dependiendo del caso
 //-----------------------------------------------------------------------
-uint8_t left_next(uint8_t index){
+//TODO: arreglar
+uint32_t left_next(uint32_t index){
     if(index%WIDTH==LEFT_LAST_COLUMN){//Llegue al final de la pantalla
         index += (WIDTH - MID_WIDTH);//voy al final de la pantalla total (en la misma fila)
     }
-    index+=NEXT; //voy al principio de la siguiente fila
+    index+=NEXT; //voy al principio de la siguiente fila o a la siguiente posicion
     return index;
 }
-uint8_t right_next(uint8_t index){
+uint32_t right_next(uint32_t index){
     if(index%WIDTH==RIGHT_LAST_COLUMN){
         index+= (WIDTH - MID_WIDTH); //voy al final de la segunda linea (en la fila de abajo)
     }
     index+=NEXT;
     return index;
 }
-uint8_t all_next(uint8_t index){
+uint32_t all_next(uint32_t index){
     return index+NEXT;//voy al la siguiente posicion de la pantalla
 }
-//Todo: testear bien (lo hice tarde ya)
+//Todo: arrelgar
 //Hay mucho codigo repetido, ver si se puede modularizar con punteros a funcion y parametros
 //Lo dejo asi por ahora como para que sea mas claro para nosotros
 void scroll_up(positionType position){
     if(position == LEFT){
-        for(uint8_t l = L_START; l<=L_END; l = left_next(l)){
+        for(uint32_t l = L_START; l<=L_END; l = left_next(l)){
             //copio toda la linea de abajo en la de arriba
             *(video_start + l ) = *(video_start + l + WIDTH);
         }
         if(left_offset>=WIDTH){
             //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
-            for(uint8_t l = left_offset - MID_WIDTH;l<=right_offset; l = left_next(l)){ //me ubico en el principio de la pantalla derecha
+            for(uint32_t l = left_offset - MID_WIDTH;l<=right_offset; l = left_next(l)){ //me ubico en el principio de la pantalla derecha
                 *(video_start + l ) = ' '; //lleno con espacios
                 *(video_start + l + 1) = 0; //de color negro el fondo
             }
@@ -160,13 +161,13 @@ void scroll_up(positionType position){
             left_offset = L_START;
         }
     }else if (position == RIGHT){
-        for(uint8_t r = R_START; r<=R_END; r = right_next(r)){
+        for(uint32_t r = R_START; r<=R_END; r = right_next(r)){
             //copio toda la linea de abajo en la de arriba
             *(video_start + r ) = *(video_start + r + WIDTH);
         }
         if(right_offset>=WIDTH){
             //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
-            for(uint8_t r = right_offset - MID_WIDTH;r<=right_offset; r = right_next(r)){ //me ubico en el principio de la pantalla derecha
+            for(uint32_t r = right_offset - MID_WIDTH;r<=right_offset; r = right_next(r)){ //me ubico en el principio de la pantalla derecha
                 *(video_start + r ) = ' '; //lleno con espacios
                 *(video_start + r + 1) = 0; //de color negro el fondo
             }
@@ -176,13 +177,13 @@ void scroll_up(positionType position){
         }
     }else{
         //position == all
-        for(uint8_t i = ALL_START; i<=ALL_END; i = all_next(i)){
+        for(uint32_t i = ALL_START; i<=ALL_END; i = all_next(i)){
             //copio toda la linea de abajo
             *(video_start + i ) = *(video_start + i + WIDTH);
         }
         if(all_offset>=WIDTH){
             //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
-            for(uint8_t i = all_offset - WIDTH;i<=all_offset; i = all_next(i)){
+            for(uint32_t i = all_offset - WIDTH;i<=all_offset; i = all_next(i)){
                 *(video_start + i ) = ' '; //lleno con espacios
                 *(video_start + i + 1) = 0; //de color negro el fondo
             }
@@ -214,21 +215,22 @@ void scroll_up(positionType position){
 // Argumentos:
 // -position: La posicion de la pantalla que se desea limpiar
 //-----------------------------------------------------------------------
+//TODO: arreglar
 void clear(positionType position){
     if(position == LEFT){
-        for(uint8_t l = L_START; l<=L_END; l = left_next(l)){
+        for(uint32_t l = L_START; l<=L_END; l = left_next(l)){
             *(video_start+l) = ' ';
             *(video_start + l + 1) = 0;
         }
         left_offset = L_START;
     }else if(position == RIGHT){
-        for(uint8_t r = R_START; r<=R_END; r = right_next(r)){
+        for(uint32_t r = R_START; r<=R_END; r = right_next(r)){
             *(video_start+r) = ' ';
             *(video_start + r + 1) = 0;
         }
         right_offset = R_START;
     }else{
-        for(uint8_t i = ALL_START; i<=ALL_END; i = all_next(i)){
+        for(uint32_t i = ALL_START; i<=ALL_END; i = all_next(i)){
             *(video_start + i) = ' ';
             *(video_start + i + 1) = 0;
         }

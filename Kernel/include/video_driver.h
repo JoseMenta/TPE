@@ -23,12 +23,13 @@
 
 
 void print(char * str, int letterFormat, positionType position);
-void new_line(int position);
+void new_line(positionType position);
 void println(char * str, int letterFormat, positionType position);
+void scroll_up(positionType position);
 void print_char(char c, int letterFormat, positionType position);
 void print_dec_format(uint64_t value, positionType position);
 void print_hex_format(uint64_t value, positionType position);
 void print_bin_format(uint64_t value, positionType position);
-void clear(int position);
+void clear(positionType position);
 
 #endif

@@ -188,7 +188,7 @@ _syscallHandler:
     cmp rax, 3
     jz sys_exit                                 ; Syscall para exit (id = 4)
     mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
-    jmp .fin
+    jmp fin
 
 ; ------------------------------------------
 ; Read: Lee el siguiente caracter ingresado por pantalla
@@ -202,7 +202,7 @@ _syscallHandler:
 sys_read:
     mov rdi, rbx
     call read_handler
-    jmp .fin
+    jmp fin
 
 ;-------------------------------------------------------------------------------------
 ; Write: Escribe por pantalla
@@ -218,7 +218,7 @@ sys_write:
     mov rdi, rbx
     mov rsi, rcx
     call write_handler
-    jmp .fin
+    jmp fin
 
 ;-------------------------------------------------------------------------------------
 ; Exec: Guarda un proceso
@@ -232,7 +232,7 @@ sys_write:
 sys_exec:
     mov rdi, rbx
     call exec_handler
-    jmp .fin
+    jmp fin
 
 ;-------------------------------------------------------------------------------------
 ; Exit: Termina la ejecucion
@@ -246,13 +246,15 @@ sys_exec:
 sys_exit:
     mov rdi, rbx
     call exit_handler
-    jmp .fin
+    jmp fin
 
-.fin:
-    mov aux, rax                                ; Resguardamos el valor de retorno
-    popState                                    ; Recuperamos los registros
-    mov rax, aux                                ; Recuperamos el valor de retorno en rax
+fin:
+    mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
+    popState                                        ; Recuperamos los registros
+    mov rax, aux                                    ; Recuperamos el valor de retorno en rax
     iret
+
+
 
 
 ;-------------------------------------------------------------------------------------

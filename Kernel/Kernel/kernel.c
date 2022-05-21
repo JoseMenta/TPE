@@ -151,39 +151,50 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 
 	ncPrint("[Finished]");
     ncClear();
-
+    ncPrint("Funciona?");
     //Testeos del driver que hicimos
-    clear(LEFT);
-    clear(RIGHT);
-    clear(ALL);
-    print("Hola", WHITE, ALL);
-    new_line(ALL);
-    print("Hola en rojo", RED, ALL);
-    new_line();
-    print("Hola en azul", BLUE, ALL);
-    new_line(ALL);
-    print("Hola por izq", WHITE, LEFT);
-    print("Hola por der", WHITE, RIGHT);
-    Newline(LEFT);
-    new_line(RIGHT)
-    print("Hola por izq rojo", RED, LEFT);
-    print("Hola por der azul", BLUE, RIGHT);
-    new_line(ALL);
-    print_char('a', WHITE, ALL);
-    new_line(ALL);
-    print_char('b', RED, ALL);
-    new_line();
-    print_char('c', BLUE, ALL);
-    new_line(ALL);
-    print_char('l', WHITE, LEFT);
-    print_char('r', WHITE, RIGHT);
-    new_line(LEFT);
-    new_line(RIGHT);
-    print_char('L', RED, LEFT);
-    print_char('R', BLUE, RIGHT);
-    clear(ALL);
-    print("CAMBIO A INTERUPCIONES CON int 80h:", WHITE, ALL);
-    TesterWrite();
-    TesterRead();
+    //clear(LEFT);
+    print("Hola",WHITE,RIGHT);
+    clear(LEFT);//borra toda la pantalla!!!
+    print("Buenas",WHITE,LEFT);
+    print("Hola",WHITE,RIGHT);
+//    new_line(RIGHT);
+//    print("Abajo de Hola a la derecha",WHITE,RIGHT);
+//    new_line(LEFT);
+//    print("Abajo de Buenas a la izquierda",WHITE,LEFT);
+// Para probar si fuinciona bien el next_left
+//  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,LEFT);
+  //  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,RIGHT);
+        //    clear(RIGHT);
+//    //clear(ALL);
+//    print("Hola", WHITE, ALL);
+//    new_line(ALL);
+//    print("Hola en rojo", RED, ALL);
+//    new_line(ALL);
+//    print("Hola en azul", BLUE, ALL);
+//    new_line(ALL);
+//    print("Hola por izq", WHITE, LEFT);
+//    print("Hola por der", WHITE, RIGHT);
+//    new_line(LEFT);
+//    new_line(RIGHT);
+//    print("Hola por izq rojo", RED, LEFT);
+//    print("Hola por der azul", BLUE, RIGHT);
+//    new_line(ALL);
+//    print_char('a', WHITE, ALL);
+//    new_line(ALL);
+//    print_char('b', RED, ALL);
+//    new_line(ALL);
+//    print_char('c', BLUE, ALL);
+//    new_line(ALL);
+//    print_char('l', WHITE, LEFT);
+//    print_char('r', WHITE, RIGHT);
+//    new_line(LEFT);
+//    new_line(RIGHT);
+//    print_char('L', RED, LEFT);
+//    print_char('R', BLUE, RIGHT);
+//    clear(ALL);
+//    print("CAMBIO A INTERUPCIONES CON int 80h:", WHITE, ALL);
+//    TesterWrite();
+//    TesterRead();
 	return 0;
 }

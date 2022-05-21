@@ -10,7 +10,7 @@
 #define KEYBOARD_REFERENCE_LENGTH 54
 #define IS_ALPHA(x) ((x) >= 'a' && (x) <= 'z') ? 1 : 0
 #define IS_REPRESENTABLE(x) ((x) <= KEYBOARD_REFERENCE_LENGTH && keyboard_reference[(x)]!='\0')
-#define BUFF_LENGTH 100
+
 
 //El buffer guarda el ASCII del valor presionado en el teclado
 char buffer[BUFF_LENGTH];

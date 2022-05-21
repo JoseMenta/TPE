@@ -10,3 +10,4 @@ compile.sh
 *.gdb_history
 .idea/*
 .vscode/*
+*.elf
