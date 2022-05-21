@@ -150,33 +150,38 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncNewline();
 
 	ncPrint("[Finished]");
+    ncClear();
+
+    //Testeos del driver que hicimos
     clear(LEFT);
     clear(RIGHT);
     clear(ALL);
     print("Hola", WHITE, ALL);
-    new_line();
+    new_line(ALL);
     print("Hola en rojo", RED, ALL);
     new_line();
     print("Hola en azul", BLUE, ALL);
-    new_line();
+    new_line(ALL);
     print("Hola por izq", WHITE, LEFT);
     print("Hola por der", WHITE, RIGHT);
-    ncNewline();
+    Newline(LEFT);
+    new_line(RIGHT)
     print("Hola por izq rojo", RED, LEFT);
     print("Hola por der azul", BLUE, RIGHT);
-    new_line();
+    new_line(ALL);
     print_char('a', WHITE, ALL);
-    new_line();
+    new_line(ALL);
     print_char('b', RED, ALL);
     new_line();
     print_char('c', BLUE, ALL);
-    new_line();
+    new_line(ALL);
     print_char('l', WHITE, LEFT);
     print_char('r', WHITE, RIGHT);
-    new_line();
+    new_line(LEFT);
+    new_line(RIGHT);
     print_char('L', RED, LEFT);
     print_char('R', BLUE, RIGHT);
-    clear();
+    clear(ALL);
     print("CAMBIO A INTERUPCIONES CON int 80h:", WHITE, ALL);
     TesterWrite();
     TesterRead();
