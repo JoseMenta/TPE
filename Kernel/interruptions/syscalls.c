@@ -1,5 +1,4 @@
 #include <syscalls.h>
-#include <video_driver.h>
 
 int read_handler(char* str){
     extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard
@@ -14,7 +13,7 @@ int read_handler(char* str){
     return 1;                       // Devolvemos la cantidad de caracteres leidos
 }
 
-int write_handler(char* str, int format){
+int write_handler(char* str, formatType format){
     positionType position = LEFT;
     print(str, format, position);        // Imprime por pantalla
 }

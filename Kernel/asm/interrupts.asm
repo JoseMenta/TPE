@@ -251,7 +251,7 @@ sys_exit:
 fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     popState                                        ; Recuperamos los registros
-    mov rax, aux                                    ; Recuperamos el valor de retorno en rax
+    mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
     iret
 
 

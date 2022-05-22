@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <scheduler.h>
 
+/*
 #define BLACK       0x00
 #define BLUE        0x01
 #define GREEN       0x02
@@ -20,6 +21,9 @@
 #define PINK        0x0d
 #define YELLOW      0x0e
 #define WHITE       0x0f
+*/
+
+typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DARK_GREY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED, PINK, YELLOW, WHITE} formatType;
 
 
 void print(char * str, int letterFormat, positionType position);

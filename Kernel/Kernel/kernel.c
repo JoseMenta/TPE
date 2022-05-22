@@ -154,14 +154,20 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
     ncPrint("Funciona?");
     //Testeos del driver que hicimos
     //clear(LEFT);
-    print("Hola",WHITE,RIGHT);
-    clear(LEFT);//borra toda la pantalla!!!
-    print("Buenas",WHITE,LEFT);
-    print("Hola",WHITE,RIGHT);
-//    new_line(RIGHT);
-//    print("Abajo de Hola a la derecha",WHITE,RIGHT);
-//    new_line(LEFT);
-//    print("Abajo de Buenas a la izquierda",WHITE,LEFT);
+//    print("Hola",WHITE,RIGHT);
+    clear(ALL);//borra toda la pantalla!!!
+//println("PARA TODOS dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf", YELLOW, ALL);
+    print("Hola dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf",RED,LEFT);
+    print("Hola dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf",WHITE,RIGHT);
+//	print("dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf", BLUE, ALL);
+//	new_line(ALL);
+//	print("dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf", BLUE, ALL);
+    new_line(ALL);
+	new_line(RIGHT);
+    print("Abajo de Hola a la derecha",WHITE,RIGHT);
+	new_line(ALL);
+    new_line(LEFT);
+    print("Abajo de Buenas a la izquierda",WHITE,LEFT);
 // Para probar si fuinciona bien el next_left
 //  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,LEFT);
   //  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,RIGHT);

@@ -1,58 +1,62 @@
 #include <video_driver.h>
 #include <stdint.h>
+
 #define NEXT 2
-#define WIDTH  2*80
+#define WIDTH  (2*80)
 #define HEIGHT 25
-#define MID_WIDTH 2*39 //El ancho de media pantalla
-#define RIGHT_LAST_COLUMN  2*79
+#define MID_WIDTH (2*39)                                      //El ancho de media pantalla
+#define RIGHT_LAST_COLUMN  (2*79)
 #define LEFT_LAST_COLUMN  MID_WIDTH
-//Se hacen 2 lineas en el medio
+                                                            // Se hacen 2 lineas en el medio para el split
 #define L_START  0
-#define R_START  (WIDTH-MID_WIDTH)
+#define R_START  (WIDTH-MID_WIDTH-2)
 #define ALL_START  L_START
-#define L_END (WIDTH * HEIGHT - (2*(WIDTH - MID_WIDTH))) //fin de la pantalla izquierda (extremo inferior derecho)
-#define R_END (WIDTH * HEIGHT -NEXT) //fin de la pantalla derecha
+#define L_END (WIDTH * HEIGHT - (2*(WIDTH - MID_WIDTH)))    // Fin de la pantalla izquierda (extremo inferior derecho)
+#define R_END (WIDTH * HEIGHT - NEXT)                       // Fin de la pantalla derecha
 #define ALL_END  R_END
+
 uint32_t left_next(uint32_t index);
 uint32_t right_next(uint32_t index);
 uint32_t all_next(uint32_t index);
 static uint8_t * const video_start = (uint8_t *) 0xB8000;
+
 //static uint8_t* curr_video = (uint8_t *) 0xB8000;
-//Usamos un offset para manerjarnos en la pantalla
+
+//Usamos un offset para manejarnos en la pantalla
 //Es decir, la direccion donde se tiene que escribir va a ser video_start + left_offset|right_offset|all_offset
-static uint32_t left_offset= L_START;
+static uint32_t left_offset = L_START;
 static uint32_t right_offset = R_START;
 static uint32_t all_offset = ALL_START;
+
 //-----------------------------------------------------------------------
-// video_print_char: imprime un caracter en pantalla
+// print_char: imprime un caracter en pantalla
 //-----------------------------------------------------------------------
 // Argumentos:
-// -character: el caracter que se quiere imprimir
-// -color: el color de la letra, una constante de color definida en .h
-// -background: el color de fondo, una constante de color definida en .h
+// -c: el caracter que se quiere imprimir
+// -leterFormat: el color de la letra, una constante de color definida en .h
+// -position: Indica en que posicion se debe imprimir el caracter
 //-----------------------------------------------------------------------
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
 //-----------------------------------------------------------------------
 void print_char(char c, int letterFormat, positionType position){
-    uint8_t * curr = video_start; //La primera direccion de video
-    //A esto se le suma el offset correspondiente
+    uint8_t * curr = video_start; // La primera direccion de video
+    // A esto se le suma el offset correspondiente
     if(position==LEFT){
         curr += left_offset;
         if(left_offset == L_END){
-            //tengo que hacer scroll up
+            // Tengo que hacer scroll up
             scroll_up(position);
         }
         left_offset = left_next(left_offset);
-
-    }else if (position==RIGHT){
+    } else if (position==RIGHT){
         curr += right_offset;
-        if(right_offset == R_END){ //llegue al final de la pantalla
+        if(right_offset == R_END){ // Llegue al final de la pantalla
             //tengo que hacer scroll up
             scroll_up(position);
         }
         right_offset = right_next(right_offset);
     }else{
-        //position == ALL
+        // position == ALL
         curr += all_offset;
         if(all_offset == ALL_END){
             //Tengo que hacer scroll up
@@ -60,14 +64,16 @@ void print_char(char c, int letterFormat, positionType position){
         }
         all_offset = all_next(all_offset);
     }
+    // Luego, dependiendo de si el caracter es \n o no, realizamos un salto de linea o imprimimos el caracter, respectivamente
     if(c == '\n'){
         new_line(position);
-    }else {
+    }else{
         //Imprime el caracter en la posicion indicada
-        *curr = c;//imprimo el ASCII
-        *(curr + 1) = letterFormat; //indico el color que va a tener
+        *curr = c;                      // Imprimo el ASCII
+        *(curr + 1) = letterFormat;     // Indico el color que va a tener
     }
 }
+
 //-----------------------------------------------------------------------
 // print: imprime un string en pantalla
 //-----------------------------------------------------------------------
@@ -83,6 +89,7 @@ void print(char * str, int letterFormat, positionType position){
         print_char(*str,letterFormat,position);
     }
 }
+
 //-----------------------------------------------------------------------
 // println: imprime un string en pantalla y salta a la proxima linea
 //-----------------------------------------------------------------------
@@ -97,6 +104,7 @@ void println(char * str, int letterFormat, positionType position){
     print(str,letterFormat,position);
     new_line(position);
 }
+
 //-----------------------------------------------------------------------
 // new_line: ubica al cursor en la proxima linea
 //-----------------------------------------------------------------------
@@ -105,37 +113,38 @@ void println(char * str, int letterFormat, positionType position){
 //-----------------------------------------------------------------------
 void new_line(positionType position){
     if(position == LEFT){
-        left_offset += (MID_WIDTH - left_offset%MID_WIDTH);//va al final de la pantalla izquierda
-        left_offset += (WIDTH - MID_WIDTH);//voy al final de la pantalla
-        left_offset += NEXT; //va a la primera posicion de la siguiente fila
+        left_offset += (WIDTH - left_offset%WIDTH);     // Va al final de la pantalla izquierda
+        //left_offset += (WIDTH - MID_WIDTH);                     // Voy al final de la pantalla
+        //left_offset += NEXT;                                    // Va a la primera posicion de la siguiente fila
     }else if(position == RIGHT){
-        right_offset += (MID_WIDTH- right_offset%MID_WIDTH);//va al final de la fila en la pantalla derecha
-        right_offset += (WIDTH - MID_WIDTH); //va a la posicion de la segunda linea (en la siguiente fila)
-        right_offset += NEXT; //va a la primera posicion de la siguiente fila de la pantalla derecha
+        right_offset += (WIDTH - right_offset%WIDTH);    // Va al final de la fila en la pantalla derecha
+        right_offset += MID_WIDTH;                    // Va a la posicion de la segunda linea (en la siguiente fila)
+        right_offset += NEXT;                                   // Va a la primera posicion de la siguiente fila de la pantalla derecha
     }else{
         //position == ALL
-        all_offset += (WIDTH - all_offset % WIDTH); //voy al final de la pantalla
-        all_offset += NEXT; //va a la primera posicion de la fila siguiente
-
+        all_offset += (WIDTH - all_offset % WIDTH);             // Voy al final de la pantalla
+        //all_offset += NEXT;                                     // Va a la primera posicion de la fila siguiente
     }
-
 }
+
 //-----------------------------------------------------------------------
 // Funciones auxiliares para obtener la siguiente posicion donde tiene que ir el offset dependiendo del caso
 //-----------------------------------------------------------------------
 //TODO: arreglar
 uint32_t left_next(uint32_t index){
-    if(index%WIDTH==LEFT_LAST_COLUMN){//Llegue al final de la pantalla
-        index += (WIDTH - MID_WIDTH);//voy al final de la pantalla total (en la misma fila)
+    if( index%WIDTH == LEFT_LAST_COLUMN){                     // Llegue al final de la pantalla
+        index += (WIDTH - MID_WIDTH);                           // Voy al final de la pantalla total (en la misma fila)
+    } else {
+        index+=NEXT;                                            // Voy a la siguiente posicion
     }
-    index+=NEXT; //voy al principio de la siguiente fila o a la siguiente posicion
     return index;
 }
 uint32_t right_next(uint32_t index){
-    if(index%WIDTH==RIGHT_LAST_COLUMN){
-        index+= (WIDTH - MID_WIDTH); //voy al final de la segunda linea (en la fila de abajo)
-    }
-    index+=NEXT;
+    if( index%WIDTH == RIGHT_LAST_COLUMN){
+        index += (WIDTH - MID_WIDTH);                           // Voy al final de la segunda linea (en la fila de abajo)
+    } else {
+        index+=NEXT;                                            // Voy a la siguiente posicion
+    }       
     return index;
 }
 uint32_t all_next(uint32_t index){
@@ -234,6 +243,8 @@ void clear(positionType position){
             *(video_start + i) = ' ';
             *(video_start + i + 1) = 0;
         }
+        left_offset = L_START;
+        right_offset = R_START;
         all_offset = ALL_START;
     }
 }
