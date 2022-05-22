@@ -194,14 +194,16 @@ void all_next(coordinatesType * position){
     }
 }
 
-//Todo: modularizar
-//Hay mucho codigo repetido, ver si se puede modularizar con punteros a funcion y parametros
-//Lo dejo asi por ahora como para que sea mas claro para nosotros
+//-----------------------------------------------------------------------
+// scroll_up: Mueve los caracteres una linea arriba (la primera se pierde)
+//-----------------------------------------------------------------------
+// Argumentos:
+// -position: la posicion de la pantalla donde se desea imprimir
+//-----------------------------------------------------------------------
 void scroll_up(positionType position){
     if(position == LEFT){
-        //TODO: hacer que l.row < left.row && l.col <= left.col
         //Voy hasta L_ROW_END-2 porque en el ciclo hago un +1 para copiar la fila de abajo
-        for(coordinatesType l = {L_ROW_START, L_COL_START}; l.row < L_ROW_END && l.col <= L_COL_END; left_next(&l)){
+        for(coordinatesType l = {L_ROW_START, L_COL_START}; l.row != left.row || l.col != left.col; left_next(&l)){
             //copio toda la linea de abajo en la de arriba
             *(video_start + l.row*WIDTH + l.col ) = *(video_start +(l.row+1)*WIDTH + l.col );
         }
@@ -223,7 +225,7 @@ void scroll_up(positionType position){
         }
     }
     else if (position == RIGHT){
-        for(coordinatesType r = {R_ROW_START,R_COL_START}; r.row < R_ROW_END && r.col <= R_COL_END ; right_next(&r)){
+        for(coordinatesType r = {R_ROW_START,R_COL_START}; r.row != right.row || r.col != right.col ; right_next(&r)){
             //copio toda la linea de abajo en la de arriba
             *(video_start + r.row*WIDTH + r.col ) = *(video_start +(r.row+1)*WIDTH + r.col);
         }
@@ -244,16 +246,16 @@ void scroll_up(positionType position){
     }
     else {
         //position == all
-        for(coordinatesType i = {A_ROW_START,A_ROW_START}; i.row < A_ROW_END && i.col <= A_COL_END ; all_next(&i)){
+        for(coordinatesType a = {A_ROW_START,A_ROW_START}; a.row != all.row || a.col != all.col ; all_next(&a)){
             //copio toda la linea de abajo
-            *(video_start + i.row*WIDTH + i.col ) = *(video_start +(i.row+1)*WIDTH + i.col);
+            *(video_start + a.row*WIDTH + a.col ) = *(video_start +(a.row+1)*WIDTH + a.col);
         }
         if(all.row>=1){
             //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
             if(all.row==A_ROW_END)
-            for(coordinatesType i = {A_ROW_END,A_COL_START}; i.row <= A_ROW_END && i.col <= A_COL_END; all_next(&i)){
-                *(video_start + i.row * WIDTH + i.col) = ' '; //lleno con espacios
-                *(video_start + i.row * WIDTH + i.col + 1) = 0; //de color negro el fondo
+            for(coordinatesType a = {A_ROW_END,A_COL_START}; a.row <= A_ROW_END && a.col <= A_COL_END; all_next(&a)){
+                *(video_start + a.row * WIDTH + a.col) = ' '; //lleno con espacios
+                *(video_start + a.row * WIDTH + a.col + 1) = 0; //de color negro el fondo
             }
             all.row = right.row - 1; //voy al principio de la linea anterior
 
@@ -275,7 +277,7 @@ void scroll_up(positionType position){
 void print_lines(){
     uint32_t col1 = 80;
     uint32_t col2 = 78;
-    for(uint32_t i = 0; i<=A_ROW_END; i++){
+    for(uint32_t i = 0; i <= A_ROW_END; i++){
         *(video_start + WIDTH * i + col1) = '|';
         *(video_start + WIDTH * i + col1 + 1) = WHITE;
         *(video_start + WIDTH * i + col2) = '|';
@@ -287,7 +289,7 @@ void print_lines(){
 // clear: limpia la pantalla, pone ' ' en todos los lugares disponibles
 //-----------------------------------------------------------------------
 // Argumentos:
-// -position: La posicion de la pantalla que se desea limpiar
+// - position: La posicion de la pantalla que se desea limpiar
 //-----------------------------------------------------------------------
 void clear(positionType position){
     // Si quiero borrar la parte izquierda, se debe borrar todos los caracteres impresos en el lado izquierdo
@@ -322,5 +324,62 @@ void clear(positionType position){
     }
 }
 
-
+//-----------------------------------------------------------------------
+// delete_last_char: borra el ultimo caracter ingresado
+//-----------------------------------------------------------------------
+// Argumentos:
+//  position: La posicion de la pantalla donde se desea borrar el ultimo caracter
+//-----------------------------------------------------------------------
+void delete_last_char(positionType position){
+    uint8_t * to_delete;
+    if(position == LEFT){
+        if(!(left.row == L_ROW_START && left.col == L_COL_START)){
+            if(left.col == L_COL_START){
+                left.row--;
+                left.col = L_COL_END;
+                while(*(video_start + 160 * left.row + left.col) == ' ' && left.col > L_COL_START){
+                    left.col -= NEXT_COL;
+                }
+            }
+            else {
+                left.col -= NEXT_COL;
+            }
+            *(video_start + 160 * left.row + left.col) = ' ';
+            *(video_start + 160 * left.row + left.col + 1) = 0;
+        }
+    }
+    else if (position == RIGHT){
+        if(!(right.row == R_ROW_START && right.col == R_COL_START)){
+            if(right.col == R_COL_START){
+                right.row--;
+                right.col = R_COL_END;
+                while(*(video_start + 160 * right.row + right.col) == ' ' && right.col > R_COL_START){
+                    right.col -= NEXT_COL;
+                }
+            }
+            else {
+                right.col -= NEXT_COL;
+            }
+            *(video_start + 160 * right.row + right.col) = ' ';
+            *(video_start + 160 * right.row + right.col + 1) = 0;
+        }
+    }
+    else {
+        // position == ALL
+        if(!(all.row == A_ROW_START && all.col == A_COL_START)){
+            if(all.col == A_COL_START){
+                all.row--;
+                all.col = A_COL_END;
+                while(*(video_start + 160 * all.row + all.col) == ' ' && all.col > A_COL_START){
+                    all.col -= NEXT_COL;
+                }
+            }
+            else {
+                all.col -= NEXT_COL;
+            }
+            *(video_start + 160 * all.row + all.col) = ' ';
+            *(video_start + 160 * all.row + all.col + 1) = 0;
+        }
+    }
+}
 

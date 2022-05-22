@@ -36,5 +36,7 @@ void print_hex_format(uint64_t value, positionType position);
 void print_bin_format(uint64_t value, positionType position);
 void clear(positionType position);
 void print_lines();
+void delete_last_char(positionType position);
+
 
 #endif
