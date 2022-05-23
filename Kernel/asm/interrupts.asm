@@ -29,6 +29,32 @@ EXTERN exit_handler
 
 SECTION .text
 
+; Es una macro que recibe 0 argumentos y guarda en un arreglo todos los registros al momento de lanzarse una excepcion
+%macro saveRegs 0
+    pushfq                              ; Pushea los flags
+    pop qword [reg + 136]               ; Los guarda en la estructura auxiliar
+    mov [reg], r8
+	mov [reg+8], r9
+	mov [reg+16], r10
+	mov [reg+24], r11
+	mov [reg+32], r12
+	mov [reg+40], r13
+	mov [reg+48], r14
+	mov [reg+56], r15
+	mov [reg+64], rax
+	mov [reg+72], rbx
+	mov [reg+80], rcx
+	mov [reg+88], rdx
+	mov [reg+96], rsi
+	mov [reg+104], rdi
+	mov [reg+112], rbp
+    mov [reg+120], rsp
+    push rax
+    mov qword rax, [rsp+8]                      ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
+    mov qword [reg+128], rax                    ; Guardo en el arreglo, el valor de RIP
+    pop rax
+%endmacro
+
 ; Es una macro que recibe 0 argumentos y pushea al stack todos los registros para resguardarlos
 %macro pushState 0							
 	push rax
@@ -66,7 +92,8 @@ SECTION .text
 	pop rbx
 	pop rax
 %endmacro
-;macro para todas las irq, segun el parametro que paso es como entra en el case de irq
+
+; Macro para todas las irq, segun el parametro que paso es como entra en el case de irq
 ; Es una macro que recibe por argumento el codigo de la interrupcion lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro irqHandlerMaster 1
 	pushState
@@ -85,12 +112,11 @@ SECTION .text
 
 ; Es una macro que recibe por argumento el codigo de la excepción lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro exceptionHandler 1
-	pushState
-
-	mov rdi, %1 ; pasaje de parametro
-	call exceptionDispatcher
-
-	popState
+    saveRegs
+    pushState                   ; Guarda en un arreglo el valor de los registros al lanzar una excepcion
+	mov rdi, %1                         ; Pasaje de parametro
+	call exceptionDispatcher            ; Llamamos al dispatcher de excepciones
+    popState
 	iretq
 %endmacro
 
@@ -260,48 +286,48 @@ fin:
 ;-------------------------------------------------------------------------------------
 ; getRegisters: obtener los valores de los registros
 ;-------------------------------------------------------------------------------------
-; parametros: - 
+; parametros:
+;   null
 ;-----------------------------------;----------------------------------------------------------------------------------------------------------------------------------
 ; retorno:
-; 	vector con el valor de los registros
-;	ordenados segun:
+; 	vector con el valor de los registros ordenados segun:
 ;	"R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "
 ;-------------------------------------------------------------------------------------
+
 
 getRegisters:
 	push rbp
 	mov rbp, rsp
 
-	mov [reg], r8
-	mov [reg+8], r9
-	mov [reg+16], r10
-	mov [reg+24], r11
-	mov [reg+32], r12
-	mov [reg+40], r13
-	mov [reg+48], r14
-	mov [reg+56], r15
-	mov [reg+64], rax
-	mov [reg+72], rbx
-	mov [reg+80], rcx
-	mov [reg+88], rdx
-	mov [reg+96], rsi
-	mov [reg+104], rdi
+;	mov [reg], r8
+;	mov [reg+8], r9
+;	mov [reg+16], r10
+;	mov [reg+24], r11
+;	mov [reg+32], r12
+;	mov [reg+40], r13
+;	mov [reg+48], r14
+;;	mov [reg+56], r15
+;	mov [reg+64], rax
+;	mov [reg+72], rbx
+;	mov [reg+80], rcx
+;	mov [reg+88], rdx
+;	mov [reg+96], rsi
+;	mov [reg+104], rdi
 	;claramente como esta no es, definir una manera
 	;opcion 1: fijarse en que lugar del stack estan los rbp, rsp y rip y restarle eso al rsp actual.
 	;opcion 2: No hacer nada de esto e imprimir los registros en el momento de la interupcion (antes del int 0h)
 	;desventaja de 2 es que es medio chanta porque la interupcion no haria nada
 	;opcion 3: ir pasando como parametro el rbp, rsp y rip entre las funciones e imprimirlo al final.
 	;opcion 4: usar TSS pero no es la utilidad para esto, es mas general
-	;mov [reg+112], rbp
-	;mov [reg+120], rsp
-	;mov [reg+128], rip
+;	mov [reg+112], rbp
+;	mov [reg+120], rsp
+;	mov [reg+128], rip
 
-	mov rax, reg
+	mov rax, reg                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
 
 	mov rsp, rbp
 	pop rbp
 	ret
-
 
 haltcpu:
 	cli
@@ -311,5 +337,6 @@ haltcpu:
 
 
 SECTION .bss
-	reg resq 18		; guarda 8*18 lugares de memoria
-	aux resq 1      ; variable auxiliar
+	reg resb 144		        ; Guarda 8*18 lugares de memoria (para los 18 registros)
+	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
+	aux resq 1          ; Variable auxiliar

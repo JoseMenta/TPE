@@ -1,5 +1,6 @@
 GLOBAL TesterWrite
 GLOBAL TesterRead
+GLOBAL zero_division_exc
 
 TesterWrite:
     mov rbx, string
@@ -17,6 +18,16 @@ TesterRead:
     mov rax, 1
     int 80h
     ret
+
+zero_division_exc:
+	push rbp
+	mov rbp, rsp
+
+	int 0h
+
+	mov rsp, rbp
+	pop rbp
+	ret
 
 section .data
     string db "Verificado", 0

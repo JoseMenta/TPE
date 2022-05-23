@@ -1,5 +1,3 @@
-
-//#define ZERO_EXCEPTION_ID 0
 #include <naiveConsole.h>
 #include <stdint.h>
 

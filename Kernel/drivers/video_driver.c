@@ -313,7 +313,7 @@ void clear(positionType position){
     // Si quiero borrar la pantalla, se debe borrar todos los caracteres impresos en la pantalla
     else{
         // position == ALL
-        for(coordinatesType a = {A_ROW_START, A_COL_START}; a.row != all.row || a.col != a.col; all_next(&a)){
+        for(coordinatesType a = {A_ROW_START, A_COL_START}; a.row != all.row || a.col != all.col; all_next(&a)){
             uint8_t * aux = video_start + WIDTH * a.row + a.col;
             *(aux) = ' ';       // "Borrar" = Vacio
             *(aux + 1) = 0;     // Formato default
