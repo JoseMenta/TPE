@@ -24,31 +24,25 @@
 #define A_ROW_END (HEIGHT - 1)
 #define A_COL_END (WIDTH - NEXT_COL)
 
-#define SCREEN_ENDED(pos,row_end,col_end) (pos.row == row_end && pos.col == col_end)
-#define OFFSET(pos) (WIDTH*((pos).row) + (pos).col)
+#define SCREEN_ENDED(pos) ((pos).row_current == (pos).row_end && (pos).col_current == (pos).col_end)
+#define OFFSET(pos) (WIDTH*((pos).row_current) + (pos).col_current)
 
+//TODO: sacar magic numbers
 typedef struct{
-    uint32_t row;
-    uint32_t col;
+    uint32_t row_start;             // La fila inicial
+    uint32_t col_start;             // La columna inicial
+    uint32_t row_current;           // La fila actual
+    uint32_t col_current;           // La columna actual
+    uint32_t row_end;               // La fila final
+    uint32_t col_end;               // La columna final
 } coordinatesType;
 
-//left_next: es la posicion siguiente al ultimo caracter copiado en la pantalla izquierda
-void left_next(coordinatesType * position);
-//right_next: es la posicion siguenete al ultimo caracter copiado en la pantalla derecha
-void right_next(coordinatesType * position);
-//all_next: es la posicion siguiente al ultimo caracter copaido en toda la pantalla
-void all_next(coordinatesType * position);
-
+void next(coordinatesType * position);
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position);
 
-//Variables para la pantalla izquierda (puntero para fila y para columna)
-coordinatesType left = {L_ROW_START,L_COL_START};
-
-//Variables para la pantalla derecha
-coordinatesType right = {R_ROW_START, R_COL_START};
-
-//Variables para toda la pantalla
-coordinatesType all = {A_ROW_START, A_COL_START};
+coordinatesType coordinates[3] = {  {A_ROW_START, A_COL_START, A_ROW_START, A_COL_START, A_ROW_END, A_COL_END}, 
+                                    {L_ROW_START, L_COL_START, L_ROW_START, L_COL_START, L_ROW_END, L_COL_END},
+                                    {R_ROW_START, R_COL_START, R_ROW_START, R_COL_START, R_ROW_END, R_COL_END} };
 
 // Con estas variables podemos calcular la posicion donde se debe imprimir un caracter con la formula:
 //                              video_start + WIDTH * row + column
@@ -62,7 +56,7 @@ static uint8_t * const video_start = (uint8_t *) 0xB8000;
 //-----------------------------------------------------------------------
 // Argumentos:
 // -c: el caracter que se quiere imprimir
-// -leterFormat: el color de la letra, una constante de color definida en .h
+// -letterFormat: el color de la letra, una constante de color definida en .h
 // -position: Indica en que posicion se debe imprimir el caracter
 //-----------------------------------------------------------------------
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
@@ -70,35 +64,15 @@ static uint8_t * const video_start = (uint8_t *) 0xB8000;
 void print_char(char c, formatType letterFormat, positionType position){
     uint8_t * curr = video_start;                   // La primera direccion de video
     // A esto se le suma el offset correspondiente
-    if(position==LEFT){
-        curr += OFFSET(left);
-        print_aux(curr,c,letterFormat,position);
-        if(SCREEN_ENDED(left,L_ROW_END,L_COL_END)){
-            // Tengo que hacer scroll up
-            scroll_up(position);
-        }
-        left_next(&left);
-
-    } else if (position==RIGHT){
-        curr += OFFSET(right);
-        print_aux(curr,c,letterFormat, position);
-        if(SCREEN_ENDED(right,R_ROW_END, R_COL_END)){ // Llegue al final de la pantalla
-            //tengo que hacer scroll up
-            scroll_up(position);
-        }
-        right_next(&right);
-
-    }else{
-        // position == ALL
-        curr += OFFSET(all);
-        print_aux(curr,c,letterFormat,position);
-        if(SCREEN_ENDED(all, A_ROW_END, A_COL_END)){
-            //Tengo que hacer scroll up
-            scroll_up(position);
-        }
-        all_next(&all);
+    curr += OFFSET(coordinates[position]);
+    // Luego, imprimimos el caracter (si es \n hara un salto de linea)
+    print_aux(curr, c, letterFormat, position);
+    if(SCREEN_ENDED(coordinates[position])){
+        // Si llego al final de la pantalla, tengo que hacer scroll up
+        scroll_up(position);
     }
-    // Luego, dependiendo de si el caracter es \n o no, realizamos un salto de linea o imprimimos el caracter, respectivamente
+    // Obtenemos la proxima posicion sobre la cual imprimir en la porcion correspondiente
+    next(&coordinates[position]);
 }
 
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position){
@@ -149,48 +123,25 @@ void println(char * str, formatType letterFormat, positionType position){
 // -position: La posicion de la pantalla donde se desea ir a la proxima linea
 //-----------------------------------------------------------------------
 void new_line(positionType position){
-    if(position == LEFT){
-        left.row += 1;                  // Posicionamos la fila izquierda en la proxima fila
-        left.col = L_COL_START;         // Posicionamos la columna al principio
-    }
-    else if(position == RIGHT){
-        right.row += 1;                 // Posicionamos la fila derecha en la proxima fila
-        right.col = R_COL_START;        // Posicionamos la columna al principio (mitad + 1)
-    }
-    else{
-        //position == ALL
-        all.row += 1;                   // Posicionamos la fila derecha en la proxima fila
-        all.col = A_COL_START;          // Posicionamos la columna al principio
-    }
+    // Posicionamos la fila de la porcion correspondiente en la proxima
+    coordinates[position].row_current += 1;                            
+    // Posicionamos la columna de la porcion correspondiente al principio     
+    coordinates[position].col_current = coordinates[position].col_start;
 }
 
 //-----------------------------------------------------------------------
-// Funciones auxiliares para obtener la siguiente posicion donde tiene que ir el offset dependiendo del caso
+// Funcion auxiliar para obtener la siguiente posicion donde tiene que ir el offset según la porcion indicado por parametro
 //-----------------------------------------------------------------------
-void left_next(coordinatesType * position){
-    if(position->col == L_COL_END){                 // Si se llego al final de una fila, paso a la proxima fila y al principio de ella
-        position->col = L_COL_START;
-        position->row++;
-    } else {                                        // Si no llegue al final, paso a la siguiente columna en la fila
-        position->col += NEXT_COL;
-    }
-}
 
-void right_next(coordinatesType * position){
-    if(position->col == R_COL_END){
-        position->col = R_COL_START;
-        position->row++;
-    } else {
-        position->col += NEXT_COL;
-    }
-}
-
-void all_next(coordinatesType * position){
-    if(position->col == A_COL_END){
-        position->col = A_COL_START;
-        position->row++;
-    } else {
-        position->col += NEXT_COL;
+void next(coordinatesType * position){
+    // Si se llego al final de una fila, paso a la proxima fila y al principio de ella
+    if(position->col_current == position->col_end){
+        position->col_current = position->col_start;
+        position->row_current++;
+    } 
+    // Si no llegue al final, paso a la siguiente columna en la fila
+    else {
+        position->col_current += NEXT_COL;
     }
 }
 
@@ -198,70 +149,31 @@ void all_next(coordinatesType * position){
 // scroll_up: Mueve los caracteres una linea arriba (la primera se pierde)
 //-----------------------------------------------------------------------
 // Argumentos:
-// -position: la posicion de la pantalla donde se desea imprimir
+// - position: la posicion de la pantalla donde se desea imprimir
 //-----------------------------------------------------------------------
 void scroll_up(positionType position){
-    if(position == LEFT){
-        //Voy hasta L_ROW_END-2 porque en el ciclo hago un +1 para copiar la fila de abajo
-        for(coordinatesType l = {L_ROW_START, L_COL_START}; l.row != left.row || l.col != left.col; left_next(&l)){
-            //copio toda la linea de abajo en la de arriba
-            *(video_start + l.row*WIDTH + l.col ) = *(video_start +(l.row+1)*WIDTH + l.col );
-        }
-        if(left.row >=1){
-            //Solo hay 1 caso donde tengo que llenar otra vez con 0's y es si el cursor esta en la ultima linea
-            //Entonces por las dudas lleno a la ultima linea con 0's
-            if(left.row == L_ROW_END) {
-                for (coordinatesType l = {L_ROW_END , L_COL_START}; l.row <= L_ROW_END && l.col <= L_COL_END; left_next(&l)) {
-                    //copio toda la linea de abajo en la de arriba
-                    *(video_start + l.row * WIDTH + l.col) = ' '; //lleno con espacios
-                    *(video_start + l.row * WIDTH + l.col + 1) = 0; //de color negro el fondo
-                }
-            }
-            left.row = left.row - 1; //voy al principio de la linea anterior
-        }else{
-            //ya estoy en la primera fila
-            //me tengo que mover a la primera columna
-            left.col = L_COL_START;
-        }
+    // Copiamos los caracteres de la fila n en n-1, n > 1
+    for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
+        c.row_current != coordinates[position].row_current || c.col_current != coordinates[position].col_current;
+        next(&c)){
+            *(video_start + c.row_current * WIDTH + c.col_current) = *(video_start + (c.row_current+1) * WIDTH + c.col_current);
     }
-    else if (position == RIGHT){
-        for(coordinatesType r = {R_ROW_START,R_COL_START}; r.row != right.row || r.col != right.col ; right_next(&r)){
-            //copio toda la linea de abajo en la de arriba
-            *(video_start + r.row*WIDTH + r.col ) = *(video_start +(r.row+1)*WIDTH + r.col);
-        }
-        if(right.row >=1){
-            //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
-            if(right.row==R_ROW_END) {
-                for (coordinatesType r = {R_ROW_END, R_COL_START};
-                     r.row <= R_ROW_END && r.col <= R_COL_END; right_next(
-                        &r)) { //me ubico en el principio de la pantalla derecha
-                    *(video_start + r.row * WIDTH + r.col) = ' '; //lleno con espacios
-                    *(video_start + r.row * WIDTH + r.col + 1) = 0; //de color negro el fondo
-                }
+    // Nos paramos en la fila anterior pues todo se subio una fila arriba
+    if(coordinates[position].row_current >= 1){
+        // Si habia llegado a la ultima fila, debo borrar los caracteres en esa fila
+        if(coordinates[position].row_current == coordinates[position].row_end){
+            for(coordinatesType c = {coordinates[position].row_end, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
+                c.row_current <= coordinates[position].row_end && c.col_current <= coordinates[position].col_end;
+                next(&c)){
+                    *(video_start + c.row_current * WIDTH + c.col_current) = ' ';
+                    *(video_start + c.row_current * WIDTH + c.col_current + 1) = 0;
             }
-            right.row = right.row - 1; //voy al principio de la linea anterior
-        }else{
-            right.col = R_COL_START;
         }
+        coordinates[position].row_current--;
     }
+    // En cambio, si estoy en la primera fila, se borro todo, por lo que se debe empezar desde el principio
     else {
-        //position == all
-        for(coordinatesType a = {A_ROW_START,A_ROW_START}; a.row != all.row || a.col != all.col ; all_next(&a)){
-            //copio toda la linea de abajo
-            *(video_start + a.row*WIDTH + a.col ) = *(video_start +(a.row+1)*WIDTH + a.col);
-        }
-        if(all.row>=1){
-            //si ya estoy en la segunda fila o mas abajo, tengo que llenar donde estoy con 0's
-            if(all.row==A_ROW_END)
-            for(coordinatesType a = {A_ROW_END,A_COL_START}; a.row <= A_ROW_END && a.col <= A_COL_END; all_next(&a)){
-                *(video_start + a.row * WIDTH + a.col) = ' '; //lleno con espacios
-                *(video_start + a.row * WIDTH + a.col + 1) = 0; //de color negro el fondo
-            }
-            all.row = right.row - 1; //voy al principio de la linea anterior
-
-        }else{
-            all.col = L_COL_START;
-        }
+        coordinates[position].col_current = coordinates[position].col_start;
     }
 }
 
@@ -275,7 +187,7 @@ void scroll_up(positionType position){
 //  null
 // ----------------------------------------------------------------------------
 void print_lines(){
-    uint32_t col1 = 80;
+    uint32_t col1 = 80;                         // La posicion 78 y 80 son la mitad de la pantalla en el arreglo del driver
     uint32_t col2 = 78;
     for(uint32_t i = 0; i <= A_ROW_END; i++){
         *(video_start + WIDTH * i + col1) = '|';
@@ -292,36 +204,33 @@ void print_lines(){
 // - position: La posicion de la pantalla que se desea limpiar
 //-----------------------------------------------------------------------
 void clear(positionType position){
-    // Si quiero borrar la parte izquierda, se debe borrar todos los caracteres impresos en el lado izquierdo
-    if(position == LEFT){
-        for(coordinatesType l = {L_ROW_START, L_COL_START}; l.row != left.row || l.col != left.col; left_next(&l)){
-            uint8_t * aux = video_start + WIDTH * l.row + l.col;
+    // Si borramos toda la pantalla debemos tambien reiniciar todos las porciones
+    if(position == ALL){
+        for(coordinatesType c = {A_ROW_START, A_COL_START, A_ROW_START, A_COL_START, A_ROW_END, A_COL_END};
+            c.row_current != A_ROW_END || c.col_current != A_COL_END;
+            next(&c)){
+                uint8_t * aux = video_start + OFFSET(c);
+                *(aux) = ' ';       // "Borrar" = Vacio
+                *(aux + 1) = 0;     // Formato default
+        }
+        // Actualizamos los punteros de las distintas porciones
+        coordinates[LEFT].row_current = coordinates[LEFT].row_start;
+        coordinates[LEFT].col_current = coordinates[LEFT].col_start;
+        coordinates[RIGHT].row_current = coordinates[RIGHT].row_start;
+        coordinates[RIGHT].col_current = coordinates[RIGHT].col_start;
+        return;
+    }
+    // Borramos todos los caracteres impresos en la porcion (LEFT o RIGHT) pasada por parametros
+    for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
+        c.row_current != coordinates[position].row_current || c.col_current != coordinates[position].col_current;
+        next(&c)){
+            uint8_t * aux = video_start + OFFSET(c);
             *(aux) = ' ';       // "Borrar" = Vacio
             *(aux + 1) = 0;     // Formato default
-        }
-        left = (coordinatesType){L_ROW_START, L_COL_START}; // Reinicio la estructura de escritura para el lado izquierdo
     }
-    // Si quiero borrar la parte derecha, se debe borrar todos los caracteres impresos en el lado derecho
-    else if(position == RIGHT){
-        for(coordinatesType r = {R_ROW_START, R_COL_START}; r.row != right.row || r.col != right.col; right_next(&r)){
-            uint8_t * aux = video_start + WIDTH * r.row + r.col;
-            *(aux) = ' ';       // "Borrar" = Vacio
-            *(aux + 1) = 0;     // Formato default
-        }
-        right = (coordinatesType){R_ROW_START, R_COL_START}; // Reinicio la estructura de escritura para el lado derecho
-    }
-    // Si quiero borrar la pantalla, se debe borrar todos los caracteres impresos en la pantalla
-    else{
-        // position == ALL
-        for(coordinatesType a = {A_ROW_START, A_COL_START}; a.row != all.row || a.col != all.col; all_next(&a)){
-            uint8_t * aux = video_start + WIDTH * a.row + a.col;
-            *(aux) = ' ';       // "Borrar" = Vacio
-            *(aux + 1) = 0;     // Formato default
-        }
-        left = (coordinatesType){L_ROW_START, L_COL_START};     // Reinicio la estructura de escritura para el lado izquierdo
-        right = (coordinatesType){R_ROW_START, R_COL_START};    // Reinicio la estructura de escritura para el lado derecho
-        all = (coordinatesType){A_ROW_START, A_COL_START};      // Reinicio la estructura de escritura para la pantalla
-    }
+    // Reiniciamos la escritura en dicha porcion
+    coordinates[position].row_current = coordinates[position].row_start;
+    coordinates[position].col_current = coordinates[position].col_start;
 }
 
 //-----------------------------------------------------------------------
@@ -331,55 +240,32 @@ void clear(positionType position){
 //  position: La posicion de la pantalla donde se desea borrar el ultimo caracter
 //-----------------------------------------------------------------------
 void delete_last_char(positionType position){
-    uint8_t * to_delete;
-    if(position == LEFT){
-        if(!(left.row == L_ROW_START && left.col == L_COL_START)){
-            if(left.col == L_COL_START){
-                left.row--;
-                left.col = L_COL_END;
-                while(*(video_start + 160 * left.row + left.col) == ' ' && left.col > L_COL_START){
-                    left.col -= NEXT_COL;
+    // Solo debo borrar si no estoy en la posicion inicial de la porcion pasada por parametros (pues sino no habria nada para borrar)
+    if(!(coordinates[position].row_current == coordinates[position].row_start &&
+        coordinates[position].col_current == coordinates[position].col_start)){
+            // Si el proximo caracter es al principio de una fila (distinta de la primera) entonces debo borrar el ultimo caracter
+            // ingresado de la fila anterior
+            if(coordinates[position].col_current == coordinates[position].col_start){
+                // Me muevo a la fila anterior
+                coordinates[position].row_current--;
+                // Para la columna es mas dificil, porque no esta asegurado que el ultimo caracter se imprimio en la ultima posicion
+                // Por lo que debo encontrar la primera posicion en la que hay un caracter distinto de ' ' (vacio) empezando por el final
+                // para hallar el ultimo caracter ingresado
+                // Si llego al principio de la fila, entonces puede ser que se ingreso un caracter y se presiono ENTER o directamente
+                // se presiono ENTER
+                coordinates[position].col_current = coordinates[position].col_end;
+                while(*(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current) == ' ' &&
+                    coordinates[position].col_current > coordinates[position].col_start){
+                        coordinates[position].col_current -= NEXT_COL;
                 }
-            }
+            } 
+            // En cambio, si estoy en la mitad o al final de una fila, entonces debo borrar el caracter en la posicion anterior
             else {
-                left.col -= NEXT_COL;
+                coordinates[position].col_current -= NEXT_COL;
             }
-            *(video_start + 160 * left.row + left.col) = ' ';
-            *(video_start + 160 * left.row + left.col + 1) = 0;
-        }
-    }
-    else if (position == RIGHT){
-        if(!(right.row == R_ROW_START && right.col == R_COL_START)){
-            if(right.col == R_COL_START){
-                right.row--;
-                right.col = R_COL_END;
-                while(*(video_start + 160 * right.row + right.col) == ' ' && right.col > R_COL_START){
-                    right.col -= NEXT_COL;
-                }
-            }
-            else {
-                right.col -= NEXT_COL;
-            }
-            *(video_start + 160 * right.row + right.col) = ' ';
-            *(video_start + 160 * right.row + right.col + 1) = 0;
-        }
-    }
-    else {
-        // position == ALL
-        if(!(all.row == A_ROW_START && all.col == A_COL_START)){
-            if(all.col == A_COL_START){
-                all.row--;
-                all.col = A_COL_END;
-                while(*(video_start + 160 * all.row + all.col) == ' ' && all.col > A_COL_START){
-                    all.col -= NEXT_COL;
-                }
-            }
-            else {
-                all.col -= NEXT_COL;
-            }
-            *(video_start + 160 * all.row + all.col) = ' ';
-            *(video_start + 160 * all.row + all.col + 1) = 0;
-        }
+            // Borro el ultimo caracter ingresado
+            *(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current) = ' ';
+            *(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current + 1) = 0;
     }
 }
 
