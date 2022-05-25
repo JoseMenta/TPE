@@ -138,6 +138,7 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncPrintHex((uint64_t)sampleCodeModuleAddress);
 	ncNewline();
 	ncPrint("  Calling the sample code module returned: ");
+    //Aca enttra al sampleCodeModule.c
 	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
 	ncNewline();
 	ncNewline();
@@ -150,12 +151,10 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncNewline();
 
 	ncPrint("[Finished]");
-    ncClear();
 
     print_lines();
 //    ncPrint("Funciona?");
     //Testeos del driver que hicimos
-    //clear(LEFT);
 //    print("Hola",WHITE,RIGHT);
 //    clear(ALL);//borra toda la pantalla!!!
 //println("PARA TODOS dahjfhajdfhkjfhdajkfhdkjfhdkjahfdkjhdafkjdhjkdafhdjkfhakjhakahfjkahfkjdfhkjdahdfkjhkjfhdakjdf", YELLOW, ALL);
@@ -193,7 +192,7 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 //    delete_last_char(RIGHT);
 //    print("Chau", RED, LEFT);
 //    print("QUE", YELLOW, RIGHT);
-    zero_division_exc();
+//    zero_division_exc();
     //  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,LEFT);
   //  print("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",WHITE,RIGHT);
         //    clear(RIGHT);

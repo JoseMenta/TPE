@@ -25,7 +25,7 @@
 #define A_COL_END (WIDTH - NEXT_COL)
 
 #define SCREEN_ENDED(pos) ((pos).row_current == (pos).row_end && (pos).col_current == (pos).col_end)
-#define OFFSET(pos) (WIDTH*((pos).row_current) + (pos).col_current)
+#define VIDEO_OFFSET(pos) (WIDTH*((pos).row_current) + (pos).col_current)
 
 //TODO: sacar magic numbers
 typedef struct{
@@ -64,7 +64,7 @@ static uint8_t * const video_start = (uint8_t *) 0xB8000;
 void print_char(char c, formatType letterFormat, positionType position){
     uint8_t * curr = video_start;                   // La primera direccion de video
     // A esto se le suma el offset correspondiente
-    curr += OFFSET(coordinates[position]);
+    curr += VIDEO_OFFSET(coordinates[position]);
     // Luego, imprimimos el caracter (si es \n hara un salto de linea)
     print_aux(curr, c, letterFormat, position);
     if(SCREEN_ENDED(coordinates[position])){
@@ -209,7 +209,7 @@ void clear(positionType position){
         for(coordinatesType c = {A_ROW_START, A_COL_START, A_ROW_START, A_COL_START, A_ROW_END, A_COL_END};
             c.row_current != A_ROW_END || c.col_current != A_COL_END;
             next(&c)){
-                uint8_t * aux = video_start + OFFSET(c);
+                uint8_t * aux = video_start + VIDEO_OFFSET(c);
                 *(aux) = ' ';       // "Borrar" = Vacio
                 *(aux + 1) = 0;     // Formato default
         }
@@ -224,7 +224,7 @@ void clear(positionType position){
     for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
         c.row_current != coordinates[position].row_current || c.col_current != coordinates[position].col_current;
         next(&c)){
-            uint8_t * aux = video_start + OFFSET(c);
+            uint8_t * aux = video_start + VIDEO_OFFSET(c);
             *(aux) = ' ';       // "Borrar" = Vacio
             *(aux + 1) = 0;     // Formato default
     }

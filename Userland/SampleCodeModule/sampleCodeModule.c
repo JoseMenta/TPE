@@ -14,6 +14,11 @@ int main() {
 	//Test if BSS is properly set up: Es decir que se ha limpiado el segmento BSS en _loader.c
 	if (var1 == 0 && var2 == 0)
 		return 0xDEADC0DE;
+    return 0xDEADBEEF;
 
-	return 0xDEADBEEF;
+    /*
+    sys_write("$ ", 0x0f);
+    while(true)
+        scanf();
+    */
 }

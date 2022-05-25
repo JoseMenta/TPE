@@ -234,7 +234,7 @@ _exception6Handler:
 ;   rax: Depende de la syscall, o -2 si no es un parametro valido
 ;------------------------------------------------------------------------------------
 _syscallHandler:
-    pushState                                   ; Resguardamos los registros
+    saveRegs curr_context                       ; Resguardamos los registros
     cmp rax, 0
     jz sys_read                                 ; Syscall para read (id = 0)
     cmp rax, 1
@@ -280,33 +280,33 @@ sys_write:
 ; Exec: Guarda un proceso
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   rbx: puntero a la primera instruccion del programa
+;   rbx: cantidad de programas que se desea correr (1 o 2)
+;   rcx: vector con las direcciones de inicio de los programas (si son 2, el primero es el de la izquierda)
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   rax: 0 si logro correr el programa; -1 si no
 ;------------------------------------------------------------------------------------
 sys_exec:
     mov rdi, rbx
+    mov rsi, rcx
     call exec_handler
     jmp fin
 
 ;-------------------------------------------------------------------------------------
-; Exit: Termina la ejecucion
+; Exit: Termina la ejecucion del proceso que la llama
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   rbx: codigo de error
 ;-------------------------------------------------------------------------------------
 ; Retorno:
-;   rax: numero de proceso
+;   rax: 0 si pudo terminarlo, -1 si no
 ;------------------------------------------------------------------------------------
 sys_exit:
-    mov rdi, rbx
     call exit_handler
     jmp fin
 
 fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
-    popState                                        ; Recuperamos los registros
+    restoreRegs curr_context                        ; Recuperamos los registros
     mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
     iret
 

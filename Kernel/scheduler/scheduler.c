@@ -26,10 +26,13 @@ void change_context();
 void copy_context(uint64_t* source, uint64_t* dest);
 void default_process();
 
+positionType get_current_position(){
+    return process_array[currentProcess_index].position.
+}
 //Constantes para poder "suspender" a las semipantallas
 //uint8_t left_pid;
 //uint8_t right_pid;
-uint64_t * getCurrContext(void);
+uint64_t * getCurrContext(void); //funcion auxiliar
 //Quizas lo mas claro sea hacer las 2 funciones por separado
 //-----------------------------------------------------------------------
 // add_process: Agrega un proceso que se maneja en toda la pantalla
@@ -37,19 +40,19 @@ uint64_t * getCurrContext(void);
 // Argumentos:
 // - start_position: la direccion de memoria donde comienza el proceso
 //-----------------------------------------------------------------------
-void add_process_1(void * start_position){
-//    uint8_t running_process = 0;
-//    for(int i = 0; i < process_array_len; i++){
-//        if(process_array[i].status == RUNNING){
-//            running_process = i;
-//        }
-//    }
-    uint64_t * curr_context = getCurrContext();
-//    currentProcess_index = process_array_len;
-    setup_context(process_array[process_array_len].registers,start_position,curr_context[RSP]-(process_array_len+1)*OFFSET);
-    process_array[process_array_len].position = ALL;
-    process_array[process_array_len++].status = RUNNING;
-}
+//void add_process_1(void * start_position){
+////    uint8_t running_process = 0;
+////    for(int i = 0; i < process_array_len; i++){
+////        if(process_array[i].status == RUNNING){
+////            running_process = i;
+////        }
+////    }
+//    uint64_t * curr_context = getCurrContext();
+////    currentProcess_index = process_array_len;
+//    setup_context(process_array[process_array_len].registers,start_position,curr_context[RSP]-(process_array_len+1)*OFFSET);
+//    process_array[process_array_len].position = ALL;
+//    process_array[process_array_len++].status = RUNNING;
+//}
 
 
 //-----------------------------------------------------------------------
@@ -59,25 +62,25 @@ void add_process_1(void * start_position){
 // - left_start: la direccion de memoria donde comienza el programa en left
 // - left_start: la direccion de memoria donde comienza el programa en right
 //-----------------------------------------------------------------------
-void add_left_right_process(void* left_start, void* right_start){
-    //pauso a todos los procesos anteriores
-    for(int i = 0; i < process_array_len; i++){
-        if(process_array[i].status == RUNNING){
-            process_array[i].status = WAITING;
-        }
-    }
-    uint64_t * curr_context = getCurrContext();
-    setup_context(process_array[process_array_len].registers,left_start,curr_context[RSP]-(process_array_len+1)*OFFSET);
-    process_array[process_array_len].position = ALL;
-    process_array[process_array_len++].status = RUNNING;
-
-    // Tiene que cambiar el arreglo curr_context
-    setup_context(process_array[process_array_len].registers,right_start,curr_context[RSP]-(process_array_len+1)*OFFSET);
-    process_array[process_array_len].position = ALL;
-    process_array[process_array_len++].status = RUNNING;
-    //rsp1 == rsp+1000
-    //rsp2 == rsp+2000
-}
+//void add_left_right_process(void* left_start, void* right_start){
+//    //pauso a todos los procesos anteriores
+//    for(int i = 0; i < process_array_len; i++){
+//        if(process_array[i].status == RUNNING){
+//            process_array[i].status = WAITING;
+//        }
+//    }
+//    uint64_t * curr_context = getCurrContext();
+//    setup_context(process_array[process_array_len].registers,left_start,curr_context[RSP]-(process_array_len+1)*OFFSET);
+//    process_array[process_array_len].position = ALL;
+//    process_array[process_array_len++].status = RUNNING;
+//
+//    // Tiene que cambiar el arreglo curr_context
+//    setup_context(process_array[process_array_len].registers,right_start,curr_context[RSP]-(process_array_len+1)*OFFSET);
+//    process_array[process_array_len].position = ALL;
+//    process_array[process_array_len++].status = RUNNING;
+//    //rsp1 == rsp+1000
+//    //rsp2 == rsp+2000
+//}
 
 //Se puede llamar 2 veces para agregar 2 procesos, total hasta que no vuelve al handler no cambia el contexto
 //Con lo que se complica es identificar a cada proceso como left y right si son llamadas separadas, y eso es importante para
@@ -172,6 +175,7 @@ void suspend_right(){
 //}
 
 void change_context(){
+    if(process_array_len==0) ret
     //runnable: guarda la cantidad de procesos que estan el estado RUNNING o SUSPENDED
     //TODO: que ya este calculado
     uint64_t* curr_context = getCurrContext();

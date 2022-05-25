@@ -37,6 +37,7 @@ static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
 */
 
 // Si se presiona una tecla, esta se almacena en la siguiente posicion en el buffer
+//TODO: agregar manejo de combinacion de teclas para suspender/reiniciar procesos
 void keyboard_handler(){
 
     uint8_t key = get_keyboard_scan_code();

@@ -1,7 +1,7 @@
 #include <syscalls.h>
 
-int read_handler(char* str){
-    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard
+uint8_t read_handler(char* str){
+    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard.c
     extern int read;
     extern int write;
 
@@ -13,18 +13,32 @@ int read_handler(char* str){
     return 1;                       // Devolvemos la cantidad de caracteres leidos
 }
 
-int write_handler(char* str, formatType format){
+uint8_t write_handler(char * str, formatType format){
+//
+//    extern process_t process_array[];
+//    extern  uint8_t currentProcess_index;
+//
+//    print(str, format, process_array[currentProcess_index].position);        // Imprime por pantalla
     positionType position = LEFT;
-    print(str, format, position);        // Imprime por pantalla
+    print(str, format, position);
 }
 
 
-int exec_handler(void * program){
+uint8_t exec_handler(uint8_t cant, void ** programs){
+    if(cant == 0 || cant > 2)
+        return -1;
+    if(cant==1){
+        add_process(programs[0],ALL);
+    }else{
+        add_process(programs[0],LEFT);
+        add_process(programs[1],RIGHT);
+    }
     return 0;
-    // addProcess(program);
 }
 
-int exit_handler(int errCode){
-    return 0;
+uint8_t exit_handler(){
+    terminate_process();
+    return 0; //El errCode no lo usamos aca, no tiene mucho sentido para varios procesos
+    return errCode;
     // finishProcess();
 }

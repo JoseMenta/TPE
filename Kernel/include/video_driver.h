@@ -2,7 +2,7 @@
 #define TPE_VIDEO_DRIVER_H
 
 #include <stdint.h>
-//#include <scheduler.h>
+#include <scheduler.h>
 
 /*
 #define BLACK       0x00

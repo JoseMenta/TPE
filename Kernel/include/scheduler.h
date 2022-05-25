@@ -25,8 +25,10 @@ typedef struct {                                        // Estructura de un proc
     positionType position;                              // Posicion en pantalla del proceso
 } process_t;
 
-void addProcess(void * program);                        // Agrega un proceso al arreglo de procesos
-void finishProcess(void);                               // Finaliza un proceso (luego sera borrado)
-positionType getCurrentPosition(void);                  // Devuelve la posicion del programa corriendo en el momento
-
+void add_process(void * process_start, positionType position)                       // Agrega un proceso al arreglo de procesos
+void terminate_process(void);                               // Finaliza un proceso (luego sera borrado)
+positionType get_current_position(void);                  // Devuelve la posicion del programa corriendo en el momento
+void suspend_left();
+void suspend_right();
+void change_context();
 #endif
