@@ -1,5 +1,5 @@
 GLOBAL cpuVendor
-
+GLOBAL default_process
 section .text
 	
 cpuVendor:							; Devuelve un string del nombre del fabricante del procesador (por ejemplo, si es Intel devuelve el string "Genuine Intel")
@@ -27,5 +27,6 @@ cpuVendor:							; Devuelve un string del nombre del fabricante del procesador (
 	ret
 
 default_process:
-    mov rax, 1 ;no se si necesita tener esta instruccion, probar despues
+    ;mov rax, 1 ;no se si necesita tener esta instruccion, probar despues
+    nop
     jmp default_process ;usa al procesador y no cambia las cosas
