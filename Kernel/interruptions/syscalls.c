@@ -14,16 +14,13 @@ uint8_t read_handler(char* str){
 }
 
 uint8_t write_handler(char * str, formatType format){
-//
-//    extern process_t process_array[];
-//    extern  uint8_t currentProcess_index;
-//
-//    print(str, format, process_array[currentProcess_index].position);        // Imprime por pantalla
+
+//    print(str, format, get_current_position());        // Imprime por pantalla
     positionType position = LEFT;
     print(str, format, position);
 }
 
-
+//TODO: que cant sea un enum
 uint8_t exec_handler(uint8_t cant, void ** programs){
     if(cant == 0 || cant > 2)
         return -1;
@@ -37,8 +34,6 @@ uint8_t exec_handler(uint8_t cant, void ** programs){
 }
 
 uint8_t exit_handler(){
-    terminate_process();
-    return 0; //El errCode no lo usamos aca, no tiene mucho sentido para varios procesos
-    return errCode;
+    return terminate_process();
     // finishProcess();
 }

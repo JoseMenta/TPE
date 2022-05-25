@@ -1,15 +1,6 @@
 #include <scheduler.h>
 #include <stdint.h>
 
-//typedef struct {                                        // Estructura de un proceso
-//    //uint8_t id;                                       // ID del proceso
-//    uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa
-//    statusType status;                                  // Estado del proceso
-//    positionType position;                              // Posicion en pantalla del proceso
-//} process_t;
-
-//Otra idea: Podemos hacer que los procesos esten en un lugar fijo de la memoria
-//Tendriamos que ver donde se encuentra el stack y "reservar" memoria en esos lugares
 process_t process_array[5] = {{{0}}};
 uint8_t process_array_len = 0;
 uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
@@ -27,7 +18,7 @@ void copy_context(uint64_t* source, uint64_t* dest);
 void default_process();
 
 positionType get_current_position(){
-    return process_array[currentProcess_index].position.
+    return process_array[currentProcess_index].position;
 }
 //Constantes para poder "suspender" a las semipantallas
 //uint8_t left_pid;
@@ -109,10 +100,11 @@ void add_process(void * process_start, positionType position){
 }
 
 //exit
-void terminate_process(){
-    if(process_array_len==1) return;//No puedo terminar el proceso raiz
+uint8_t terminate_process(){
+    if(process_array_len==1) return-1;//No puedo terminar el proceso raiz
     process_array[currentProcess_index].status = TERMINATED;
     change_context();//tengo que ver cual es el proximo que corro
+    return 0;
 }
 
 // Teclas especiales
@@ -175,7 +167,7 @@ void suspend_right(){
 //}
 
 void change_context(){
-    if(process_array_len==0) ret
+    if(process_array_len==0) return; //Para que no cambie el contexto si no hay procesos (el el TT del kernel)
     //runnable: guarda la cantidad de procesos que estan el estado RUNNING o SUSPENDED
     //TODO: que ya este calculado
     uint64_t* curr_context = getCurrContext();

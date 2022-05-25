@@ -19,14 +19,13 @@ typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI,
 #define OFFSET (1000)                                     // Espacio que se le va a dejar de stack a cada proceso
 
 typedef struct {                                        // Estructura de un proceso
-    //uint8_t id;                                       // ID del proceso
     uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa
     statusType status;                                  // Estado del proceso
     positionType position;                              // Posicion en pantalla del proceso
 } process_t;
 
-void add_process(void * process_start, positionType position)                       // Agrega un proceso al arreglo de procesos
-void terminate_process(void);                               // Finaliza un proceso (luego sera borrado)
+void add_process(void * process_start, positionType position);                       // Agrega un proceso al arreglo de procesos
+uint8_t terminate_process(void);                               // Finaliza un proceso (luego sera borrado)
 positionType get_current_position(void);                  // Devuelve la posicion del programa corriendo en el momento
 void suspend_left();
 void suspend_right();

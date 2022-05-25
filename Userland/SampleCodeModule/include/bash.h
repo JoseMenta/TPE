@@ -1,7 +1,11 @@
 #ifndef TPE_BASH_H
 #define TPE_BASH_H
 
-#include <string.h>
+
+#include <libc.h>
+#include <programs.h>
+
+#define LOGOUT "logout"
 
 void bash();
 

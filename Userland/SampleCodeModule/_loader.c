@@ -24,7 +24,7 @@ int _start() {
 
 }
 
-// Dada una direccion de memoria d, un entero z y una longitud n, setea el valor z desde [d] hasta [d+n-1] 
+// Dada una direccion de memoria d, un entero z y una longitud n, setea el valor z desde [d] hasta [d+n-1]
 void * memset(void * destiation, int32_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;
 	char * dst = (char*)destiation;
