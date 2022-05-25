@@ -139,7 +139,7 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncNewline();
 	ncPrint("  Calling the sample code module returned: ");
     //Aca enttra al sampleCodeModule.c
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
+   // ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
 	ncNewline();
 	ncNewline();
 
@@ -153,6 +153,11 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 	ncPrint("[Finished]");
 
     print_lines();
+    ncClear();
+
+
+
+    ((EntryPoint)sampleCodeModuleAddress)();
 //    ncPrint("Funciona?");
     //Testeos del driver que hicimos
 //    print("Hola",WHITE,RIGHT);

@@ -72,7 +72,8 @@ void print_char(char c, formatType letterFormat, positionType position){
         scroll_up(position);
     }
     // Obtenemos la proxima posicion sobre la cual imprimir en la porcion correspondiente
-    next(&coordinates[position]);
+    if(c!='\n')
+        next(&coordinates[position]);
 }
 
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position){
@@ -157,6 +158,7 @@ void scroll_up(positionType position){
         c.row_current != coordinates[position].row_current || c.col_current != coordinates[position].col_current;
         next(&c)){
             *(video_start + c.row_current * WIDTH + c.col_current) = *(video_start + (c.row_current+1) * WIDTH + c.col_current);
+            *(video_start + c.row_current * WIDTH + c.col_current + 1) = *(video_start + (c.row_current+1) * WIDTH + c.col_current + 1);
     }
     // Nos paramos en la fila anterior pues todo se subio una fila arriba
     if(coordinates[position].row_current >= 1){

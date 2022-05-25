@@ -27,6 +27,7 @@ EXTERN write_handler
 EXTERN read_handler
 EXTERN exec_handler
 EXTERN exit_handler
+EXTERN time_handler
 
 SECTION .text
 
@@ -242,7 +243,9 @@ _syscallHandler:
     cmp rax, 2
     jz sys_exec                                 ; Syscall para exec (id = 2)
     cmp rax, 3
-    jz sys_exit                                 ; Syscall para exit (id = 4)
+    jz sys_exit                                 ; Syscall para exit (id = 3)
+    cmp rax, 4
+    jz sys_time                                 ; Syscall para time (id = 4)
     mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
     jmp fin
 
@@ -304,11 +307,25 @@ sys_exit:
     call exit_handler
     jmp fin
 
+;-------------------------------------------------------------------------------------
+; Time: Devuelve el valor para la unidad de tiempo indicada en el parametro
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: 0 = secs, 2 = mins, 4 = hour, 7 = day, 8 = month, 9 = year
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: el valor para el tipo de unidad indicada
+;------------------------------------------------------------------------------------
+sys_time:
+    mov rdi, rbx
+    call time_handler
+    jmp fin
+
 fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     restoreRegs curr_context                        ; Recuperamos los registros
     mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
-    iret
+    iretq
 
 
 

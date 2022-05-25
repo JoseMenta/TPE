@@ -23,20 +23,36 @@ void printmem(){
     return;
 }
 
-void hora(){
-    return;
-}
+//-----------------------------------------------------------------------
+// hora: imprime fecha y hora local
+//-----------------------------------------------------------------------
+// Argumentos:
+//
+//-----------------------------------------------------------------------
+// imprime:
+//      Fecha y hora local:
+//          Miercoles 25/05/2022 15:35hs
+//-----------------------------------------------------------------------
 
-void primos(){
-//    for(int i=0; ; i++){
-//        if(is_prime()){
-//            print_number(i, WHITE);
-//            print_string(" ", WHITE);
-//        }
-//    }
-}
+void hora() {
+    /*
+       print_string("Fecha y hora local: \n", WHITE);
+       Char ** week = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
+       print_string("    ", wHITE);
+       print_string(week[get_week()], WHITE);
+       print_string(" ");
+       print_number(get_day(), WHITE);
+       print_string("/", WHITE);
+       print_number(get_month(), WHITE);
+       print_string("/", WHITE);
+       print_number(get_year(), WHITE);
+       print_string(" ", WHITE);
+       print_number(get_hour(), WHITE);
+       print_string(":", WHITE);
+       print_number(get_min(), WHITE);
+       print_string("hs\n", WHIET);
+       return;
 
-void fibonacci(){
-    return;
+   */
 }
 

@@ -1,5 +1,5 @@
 #include <keyboard.h>
-#include <naiveConsole.h>
+#include <queue.h>
 
 //Constantes para los scan_code
 #define BLOCK_MAYUSC 58
@@ -13,11 +13,12 @@
 
 
 //El buffer guarda el ASCII del valor presionado en el teclado
-char buffer[BUFF_LENGTH];
+queue_t queue = {{0}};
+//char buffer[BUFF_LENGTH];
 static int key_case = -1;               // Estado actual del formato de la letra (mayuscula: 1, o minuscula: -1)
 static int key_case_default = -1;       // Estado default del formato de la letra
-uint8_t write = 0;                      // Puntero de escritura
-uint8_t read = 0;                       // Puntero de lectura
+//uint8_t write = 0;                    // Puntero de escritura
+//uint8_t read = 0;                     // Puntero de lectura
 
 //teclado Mac
 static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
@@ -66,13 +67,14 @@ void keyboard_handler(){
         //Tenemos que guardar esa tecla
         if (key_case > 0 && IS_ALPHA(keyboard_reference[key])){
             // Es una mayuscula
-            buffer[write] = keyboard_reference[key] - UPPER_OFFSET;
+            //buffer[write] = keyboard_reference[key] - UPPER_OFFSET;
+            enqueue(&queue,keyboard_reference[key] - UPPER_OFFSET);
         } else {
             // Es una minuscula u otro tipo de caracter que no es letra
-            buffer[write] = keyboard_reference[key];
+            //buffer[write] = keyboard_reference[key];
+            enqueue(&queue,keyboard_reference[key]);
         }
-        write = (write == BUFF_LENGTH-1) ? 0 : write+1;
-        ncPrintChar(buffer[write-1]);
+//        write = (write == BUFF_LENGTH-1) ? 0 : write+1;
     }
 
 }

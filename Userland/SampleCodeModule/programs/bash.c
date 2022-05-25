@@ -1,5 +1,5 @@
-#include <bash.h>
-
+//#include <bash.h>
+//
 //char buffer[100];
 //int buffer_index = 0;
 //

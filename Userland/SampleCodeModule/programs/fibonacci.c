@@ -1,6 +1,6 @@
 #include <fibonacci.h>
 
-//void fibonacci(void){
+void fibonacci(void){
 //    uint64_t num_1 = 0;
 //    uint64_t num_2 = 1;
 //    print_number(num_1);
@@ -12,4 +12,4 @@
 //        print_number(aux);
 //    }
 //    sys_exit(0);
-//}
+}
