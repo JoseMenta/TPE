@@ -18,6 +18,7 @@ GLOBAL _syscallHandler                      ; Ejecuta las interrupciones de soft
 GLOBAL _exception0Handler					; Es una funcion que ejecuta la excepcion de id 0 (division por cero)
 GLOBAL _exception6Handler					; Es una funcion que ejecuta la excepcion de id 6 (invalid opcode)
 GLOBAL getRegisters							; Funcion para obtener el valor de los registros
+GLOBAL getCurrContext
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
@@ -29,32 +30,59 @@ EXTERN exit_handler
 
 SECTION .text
 
-; Es una macro que recibe 0 argumentos y guarda en un arreglo todos los registros al momento de lanzarse una excepcion
-%macro saveRegs 0
+; Es una macro que guarda en un arreglo pasado por parametros todos los registros
+%macro saveRegs 1
     pushfq                              ; Pushea los flags
-    pop qword [reg + 136]               ; Los guarda en la estructura auxiliar
-    mov [reg], r8
-	mov [reg+8], r9
-	mov [reg+16], r10
-	mov [reg+24], r11
-	mov [reg+32], r12
-	mov [reg+40], r13
-	mov [reg+48], r14
-	mov [reg+56], r15
-	mov [reg+64], rax
-	mov [reg+72], rbx
-	mov [reg+80], rcx
-	mov [reg+88], rdx
-	mov [reg+96], rsi
-	mov [reg+104], rdi
-	mov [reg+112], rbp
-    mov [reg+120], rsp
+    pop qword [%1 + 136]               ; Los guarda en la estructura auxiliar
+    mov [%1], r8
+	mov [%1+8], r9
+	mov [%1+16], r10
+	mov [%1+24], r11
+	mov [%1+32], r12
+	mov [%1+40], r13
+	mov [%1+48], r14
+	mov [%1+56], r15
+	mov [%1+64], rax
+	mov [%1+72], rbx
+	mov [%1+80], rcx
+	mov [%1+88], rdx
+	mov [%1+96], rsi
+	mov [%1+104], rdi
+	mov [%1+112], rbp
+    mov [%1+120], rsp
     push rax
-    mov qword rax, [rsp+8]                      ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
-    mov qword [reg+128], rax                    ; Guardo en el arreglo, el valor de RIP
+    mov qword rax, [rsp+8]                  ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
+    mov qword [%1+128], rax                 ; Guardo en el arreglo, el valor de RIP
     pop rax
 %endmacro
 
+; Es una macro que recupera el valor de los registros desde un arreglo pasado por parametros
+%macro restoreRegs 1
+        push qword[%1 + 136]                ; Pushea los flags (solo se pueden restaurar los flags desde el stack)
+        popfq                               ; Restarura los flags
+        mov r8, qword[%1]
+    	mov r9, qword[%1+8]
+    	mov r10, qword[%1+16]
+    	mov r11, qword[%1+24]
+    	mov r12, qword[%1+32]
+    	mov r13, qword[%1+40]
+    	mov r14, qword[%1+48]
+    	mov r15, qword[%1+56]
+    	mov rax, qword[%1+64]
+    	mov rbx, qword[%1+72]
+    	mov rcx, qword[%1+80]
+    	mov rdx, qword[%1+88]
+    	mov rsi, qword[%1+96]
+    	mov rdi, qword[%1+104]
+    	mov rbp, qword[%1+112]
+        mov rsp, qword[%1+120]                      ; Esto es lo que hace el cambio de contexto, se mueve a otro punto del stack
+        push rax
+        mov qword rax, [%1+128]                     ; Guardo en RAX el valor de RIP obtenido en saveRegs
+        mov qword [rsp+8], rax                      ; tengo que hacer rsp+8 por el push de rax
+        ;nota: gdb agrega en el stach un elemento que es la funcion donde esta el ususario en este momento
+        ;ese no es un elemento del stack, es solo para que el usuario sepa donde esta
+        pop rax
+%endmacro
 ; Es una macro que recibe 0 argumentos y pushea al stack todos los registros para resguardarlos
 %macro pushState 0							
 	push rax
@@ -96,8 +124,8 @@ SECTION .text
 ; Macro para todas las irq, segun el parametro que paso es como entra en el case de irq
 ; Es una macro que recibe por argumento el codigo de la interrupcion lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro irqHandlerMaster 1
-	pushState
-
+	;pushState
+    saveRegs curr_context
 	mov rdi, %1 ; pasaje de parametro (%1 representa el valor del primer, y unico, argumento)
 	call irqDispatcher
 
@@ -105,18 +133,20 @@ SECTION .text
 	mov al, 20h
 	out 20h, al
 
-	popState
+	;popState
+	restoreRegs curr_context
 	iretq
 %endmacro
 
 
 ; Es una macro que recibe por argumento el codigo de la excepción lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro exceptionHandler 1
-    saveRegs
-    pushState                   ; Guarda en un arreglo el valor de los registros al lanzar una excepcion
+    saveRegs exc_state
+    ;pushState                   ; Guarda en un arreglo el valor de los registros al lanzar una excepcion
 	mov rdi, %1                         ; Pasaje de parametro
 	call exceptionDispatcher            ; Llamamos al dispatcher de excepciones
-    popState
+    ;popState
+    restoreRegs exc_state
 	iretq
 %endmacro
 
@@ -284,7 +314,7 @@ fin:
 
 
 ;-------------------------------------------------------------------------------------
-; getRegisters: obtener los valores de los registros
+; getCurrContext: obtener los valores de los registros
 ;-------------------------------------------------------------------------------------
 ; parametros:
 ;   null
@@ -293,7 +323,15 @@ fin:
 ; 	vector con el valor de los registros ordenados segun:
 ;	"R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "
 ;-------------------------------------------------------------------------------------
+getCurrContext:
+    push rbp
+    mov rbp, rsp
 
+    mov rax, curr_context
+
+    mov rsp, rbp
+    pop rbp
+    ret
 
 getRegisters:
 	push rbp
@@ -323,7 +361,7 @@ getRegisters:
 ;	mov [reg+120], rsp
 ;	mov [reg+128], rip
 
-	mov rax, reg                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
+	mov rax, exc_state                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
 
 	mov rsp, rbp
 	pop rbp
@@ -335,8 +373,8 @@ haltcpu:
 	ret
 
 
-
+; TODO: Usar un unico arreglo para los registros
 SECTION .bss
-	reg resb 144		        ; Guarda 8*18 lugares de memoria (para los 18 registros)
+	exc_state resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
 	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
-	aux resq 1          ; Variable auxiliar
+	aux resq 1                  ; Variable auxiliar
