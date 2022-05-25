@@ -1,15 +1,31 @@
 #include <scheduler.h>
 #include <stdint.h>
-
+typedef struct {                                        // Estructura de un proceso
+    //uint8_t id;                                       // ID del proceso
+    uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa
+    statusType status;                                  // Estado del proceso
+    positionType position;                              // Posicion en pantalla del proceso
+} process_t;
+//Otra idea: Podemos hacer que los procesos esten en un lugar fijo de la memoria
+//Tendriamos que ver donde se encuentra el stack y "reservar" memoria en esos lugares
 process_t process_array[5] = {{{0}}};
 uint8_t process_array_len = 0;
-uint8_t currentProcess_index = 0;
-
+uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
+//El arreglo va a estar compuesto por
+//[main_userland,bash,...(procesos que llama el bash)]
+//Si la cantidad de procesos es 4 => se estan corriendo pantallas divididas
+//Si es 3 => se esta corriendo solo un proceso encima de la terminal
+//Si es 2 => se esta corriendo solo la terminal
+//Si es 1 => Esta en userland
+//Dejamos main_userland para poder terminar con el kernel sin tener que forzar la salida
 void setup_context(uint64_t* context,void* new_rip, uint64_t new_rsp);
 void change_context();
-
+void copy_context(uint64_t* source, uint64_t* dest);
+//Constantes para poder "suspender" a las semipantallas
+//uint8_t left_pid;
+//uint8_t right_pid;
 uint64_t * getCurrContext(void);
-
+//Quizas lo mas claro sea hacer las 2 funciones por separado
 //-----------------------------------------------------------------------
 // add_process: Agrega un proceso que se maneja en toda la pantalla
 //-----------------------------------------------------------------------
@@ -17,12 +33,12 @@ uint64_t * getCurrContext(void);
 // - start_position: la direccion de memoria donde comienza el proceso
 //-----------------------------------------------------------------------
 void add_process(void * start_position){
-    uint8_t running_process = 0;
-    for(int i = 0; i < process_array_len; i++){
-        if(process_array[i].status == RUNNING){
-            running_process = i;
-        }
-    }
+//    uint8_t running_process = 0;
+//    for(int i = 0; i < process_array_len; i++){
+//        if(process_array[i].status == RUNNING){
+//            running_process = i;
+//        }
+//    }
     uint64_t * curr_context = getCurrContext();
 //    currentProcess_index = process_array_len;
     setup_context(process_array[process_array_len].registers,start_position,curr_context[RSP]-(process_array_len+1)*OFFSET);
@@ -57,8 +73,96 @@ void add_left_right_process(void* left_start, void* right_start){
     //rsp1 == rsp+1000
     //rsp2 == rsp+2000
 }
+//Se puede llamar 2 veces para agregar 2 procesos, total hasta que no vuelve al handler no cambia el contexto
+//Con lo que se complica es identificar a cada proceso como left y right si son llamadas separadas, y eso es importante para
+//Poder suspender a cada semipantalla (en ese caso, se supone que los procesos se agregan de izquierda a derecha)
+void add_process(void* process_start, positionType position){
+    uint64_t * curr_context = getCurrContext();
+    if(process_array_len==0){
+        //Es el primer proceso que se agrega, me guardo el contexto actual en otro proceso
+        //Para poder volver al proceso que lo llamo
+        copy_context(curr_context,process_array[process_array_len].registers); //copio el contexto
+        process_array[process_array_len].position = ALL;
+        process_array[process_array_len++].status = WAITING; //Espera a que termine el proceso que lo llamo
+    }
+    //guardo el contexto del que agrega el proceso
+    copy_context(curr_context,process_array[currentProcess_index].registers);
+    //cambio su estado para que se ejecute recien cuando termina el que llamo
+    process_array[currentProcess_index].status = WAITING;
 
+    //Se ubica "arriba" del stack del que lo llama
+//    setup_context(process_array[process_array_len].registers,process_start,curr_context[RSP]-(process_array_len)*OFFSET);
+    //Se ubica Offset veces encima del stack del main_userland
+    setup_context(process_array[process_array_len].registers,process_start,process_array[0].registers[ESP]-(process_array_len)*OFFSET);
+    process_array[process_array_len].position = position;
+    process_array[process_array_len++].status = RUNNING;
+}
+//exit
+void terminate_process(){
+    if(process_array_len==1) return;//No puedo terminar el proceso raiz
+    process_array[currentProcess_index].status = TERMINATED;
+    change_context();//tengo que ver cual es el proximo que corro
+}
+void suspend_left(){
+    if(process_array_len!=4){//Si no estoy en multiples ventanas
+        return;
+    }
+    process_array[2].status = SUSPENDED;
+}
+void suspend_right(){
+    if(process_array_len!=4){
+        return;
+    }
+    process_array[3].status = SUSPENDED;
+}
 
+void change_context(){
+    uint64_t * curr_context = getCurrContext();
+    //guardo el contexto del proceso actual
+    if(process_array[currentProcess_index].status==RUNNING) {
+        //Si estaba corriendo el default, no tengo que cambiar los registros
+        copy_context(curr_context, process_array[currentProcess_index].registers);
+    }
+    //Cuento la cantidad de procesos que se pueden correr en el momento
+    int runnable = 0; //Esto lo podria tener calculado de antes
+    for(int i = 0; i<process_array_len;i++){
+        if(process_array[i].status==RUNNING || process_array[i].status==SUSPENDED){
+            runnable++;
+        }
+    }
+    int last_waiting = process_array_len-1;
+    for(;last_waiting>0 && process_array_len[last_waiting]!=WAITING;last_waiting--); //voy hasta el padre que esta mas abajo
+    //Si ya termminaron los que estaban corriendo, tengo que ir al padre
+    if(runnable==0){//Terminaron los subprocesos, tengo que volver al que los llama
+//        int i = process_array_len-1;
+//        for(; i>=0 && process_array[i].status!=WAITING; i--);//deberia cortar siempre por la segunda condicion
+//            if(process_array[i].status==WAITING) break;
+//            me quedo con el padre que esta "mas abajo" en el arbol
+//            puedo pensar al arreglo como una impresion por niveles de un arbol
+
+        currentProcess_index = last_waiting;
+        copy_context(process_array[currentProcess_index].registers,curr_context);//gurado el contexto
+        process_array[currentProcess_index].status = RUNNING;
+        //"Elimino" a todos los procesos terminados
+        process_array_len = currentProcess_index+1;
+    }else{
+        if(last_waiting+1!=process_array_len-1){//Si hay 2 procesos que se pueden correr
+            //Elijo el que no se este corriendo de los que estaban
+            currentProcess_index = (currentProcess_index==last_waiting+1)?last_waiting+2:last_waiting+1;
+        }//Si no, tengo que volver a correr el mismo
+        if(process_array[currentProcess_index].status==SUSPENDED){
+            curr_context[RIP] = &defaultprocess;
+        }else{
+            copy_context(process_array[curr_context].registers,curr_context);
+        }
+    }
+
+}
+void copy_context(uint64_t* source, uint64_t* dest){
+    for(int i = 0; i<REGISTERS_COUNT;i++){
+        dest[i] = source[i];
+    }
+}
 //-----------------------------------------------------------------------
 // setup_context: Inicializa los registros para el nuevo proceso
 //-----------------------------------------------------------------------
@@ -84,18 +188,18 @@ void setup_context(uint64_t* context, void * new_rip, uint64_t new_rsp){
 //-----------------------------------------------------------------------
 // Argumentos:
 //-----------------------------------------------------------------------
-void change_context(){
-    //Si no hay procesos corriendo (en el primer llamado):
-    //  solo pasar el nuevo contexto que esta en la estructura en los registros
-    //  poner el estado en RUNNING
-    //  return
-    //Si hay procesos corriendo:
-    //  Guardar el contexto actual (que saco con el getter de asm) en la estructura
-    //  No cambiamos el estado del proceso que sacamos, pues sigue corriendo
-    //  ver cual es el siguiente proceso a ejecutar (que es el siguiente en estado running)
-    //  Cargar el contexto del siguiente proceso
-    //  return
-    return;
-}
+//void change_context(){
+//    //Si no hay procesos corriendo (en el primer llamado):
+//    //  solo pasar el nuevo contexto que esta en la estructura en los registros
+//    //  poner el estado en RUNNING
+//    //  return
+//    //Si hay procesos corriendo:
+//    //  Guardar el contexto actual (que saco con el getter de asm) en la estructura
+//    //  No cambiamos el estado del proceso que sacamos, pues sigue corriendo
+//    //  ver cual es el siguiente proceso a ejecutar (que es el siguiente en estado running)
+//    //  Cargar el contexto del siguiente proceso
+//    //  return
+//    return;
+//}
 
 

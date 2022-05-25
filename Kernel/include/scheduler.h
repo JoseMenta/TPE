@@ -4,8 +4,11 @@
 #define TPE_SCHEDULER_H
 
 #include <stdint.h>
-
-typedef enum {RUNNING = 0, PAUSED, FINISHED} statusType;     // Estado en el que se puede encontrar un programa/proceso
+//RUNNING: El proceso debe correrse
+//WAITING: El proceso esta esperando a que terminen procesos que el ejecuto
+//SUSPENDED: El proceso fue suspendido (con una de las teclas indicadas). En su lugar se ejecuta el proceso default (while 1)
+//FINISHED: El proceso fue terminado, ya se puede eliminar cuando se reinicie el proceso que lo ejecuto
+typedef enum {RUNNING = 0, WAITING, SUSPENDED, TERMINATED} statusType;     // Estado en el que se puede encontrar un programa/proceso
 
 typedef enum {ALL = 0, LEFT, RIGHT} positionType;       // Posicion del programa en pantalla
 

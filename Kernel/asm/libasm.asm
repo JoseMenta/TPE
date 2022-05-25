@@ -25,3 +25,7 @@ cpuVendor:							; Devuelve un string del nombre del fabricante del procesador (
 	mov rsp, rbp
 	pop rbp
 	ret
+
+default_process:
+    mov rax, 1 ;no se si necesita tener esta instruccion, probar despues
+    jmp default_process ;usa al procesador y no cambia las cosas
