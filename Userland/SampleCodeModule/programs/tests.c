@@ -14,11 +14,11 @@ void write_test(){
 void read_test(){
     char str[10] = {0};
     print_string("Char: ", WHITE);
-    while(1){
-        sys_read(str);
-        sys_write(str, WHITE);
-    }
-    sys_exit(0);
+//    while(1){
+//        sys_read(str);
+//        sys_write(str, WHITE);
+//    }
+    sys_exit();
 
 //    str[0] = '\0';
 //    int read = 0;

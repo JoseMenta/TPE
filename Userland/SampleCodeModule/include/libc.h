@@ -17,7 +17,7 @@ typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8
 uint8_t sys_write(const char * string, formatType format);
 uint8_t sys_read(char * c);
 uint8_t sys_exec(uint8_t process_c, void ** process_v);
-uint8_t sys_exit(uint8_t err_code);
+uint8_t sys_exit();
 
 void* get_program(const char * str);
 uint8_t get_char(void);

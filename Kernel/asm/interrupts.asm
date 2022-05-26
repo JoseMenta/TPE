@@ -50,10 +50,38 @@ SECTION .text
 	mov [%1+96], rsi
 	mov [%1+104], rdi
 	mov [%1+112], rbp
-    mov [%1+120], rsp
+    mov [%1+120], rsp  ;esto guarda el rsp en el handler que esta un poco mas arriba de donde se interrumpio
+    ;En la estructura de curr_contex guardo este, despues vemos si hay que cambiar la macro para las excepciones
+    ;asi guardamos el rsp de donde ocurre la excepcion
     push rax
+
+    ;RIP
     mov qword rax, [rsp+8]                  ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
     mov qword [%1+128], rax                 ; Guardo en el arreglo, el valor de RIP
+
+    ;CS
+    mov qword rax, [rsp+16] ;guardo el CS en el stack
+    mov qword [iretq_registers], rax
+
+    ;FLAGS
+    mov qword rax, [rsp+24] ;guardo los RFLAGS
+    mov qword [iretq_registers+8], rax
+
+    ;RSP
+    ;mov qword rax, [rsp + 32] ;sumo 8 a lo que puse en notas porque esta rax
+    ;mov qword[iretq_registers+16], rax ;guardo el rsp del que la "llama"
+    ;RSP guardo el del momento donde llega al handler
+    ;Despues le resto 40 cuando cambio el contexto
+
+    ;SS
+    mov qword rax, [rsp + 40] ;guardo SS
+    mov qword [iretq_registers + 24], rax
+
+    ;Otra cosa que falta y esta ahi (creo que es el alineamiento de stack)
+;    mov qword rax, [rsp + 48]
+;    mov qword [iretq_registers + 32], rax
+
+
     pop rax
 %endmacro
 
@@ -77,11 +105,43 @@ SECTION .text
     	mov rdi, qword[%1+104]
     	mov rbp, qword[%1+112]
         mov rsp, qword[%1+120]                      ; Esto es lo que hace el cambio de contexto, se mueve a otro punto del stack
+
         push rax
-        mov qword rax, [%1+128]                     ; Guardo en RAX el valor de RIP obtenido en saveRegs
-        mov qword [rsp+8], rax                      ; tengo que hacer rsp+8 por el push de rax
+        lea rax, [rsp + 56] ;esta 48 + 8 (por rax) = 56 mas abajo
+        ;mov qword rax, [iretq_registers+16]
+        mov qword [rsp+32], rax ;guardo RSP
+
+
+
+
         ;nota: gdb agrega en el stack un elemento que es la funcion donde esta el ususario en este momento
         ;ese no es un elemento del stack, es solo para que el usuario sepa donde esta
+        ;Esto lo agrego por lo que vi de iretq
+        ;RIP
+        mov qword rax, [%1+128]                     ; Guardo en RAX el valor de RIP obtenido en saveRegs
+        mov qword [rsp+8], rax                      ; tengo que hacer rsp+8 por el push de rax
+
+        ;CS
+        mov qword rax, [iretq_registers]
+        mov qword [rsp+16],rax
+
+        ;FLAGS
+        mov qword rax, [iretq_registers+8]
+        mov qword [rsp+24],rax
+
+
+        ;mov rax, rsp
+        ;sub rax, 48h ;va a ser 56 mas abajo del que estaba en el handler (para considerar a los cambios por el stack frame de la interrupcion)
+
+
+        ;SS
+        mov qword rax, [iretq_registers +32] ;restauro SS
+        mov qword [rsp+40], rax
+
+        ;Alineamiento de memoria
+;        mov qword rax, [iretq_registers + 32]
+;        mov qword [rsp + 48], rax
+
         pop rax
 %endmacro
 ; Es una macro que recibe 0 argumentos y pushea al stack todos los registros para resguardarlos
@@ -395,5 +455,7 @@ haltcpu:
 ; TODO: Usar un unico arreglo para los registros
 SECTION .bss
 	exc_state resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
+	;exc_state es distinto a curr_contex porque en el primero guardo el rsp de donde ocurre la excepcion y no de cuando llega al handler
 	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
+	iretq_registers resb 144         ; Auxiliar para guardar otras cosas que deja iretq
 	aux resq 1                  ; Variable auxiliar

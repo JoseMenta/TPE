@@ -1,6 +1,5 @@
 #include <syscalls.h>
 #include <queue.h>
-
 uint8_t read_handler(char* str){
 //    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard.c
 //    extern int read;
@@ -24,8 +23,9 @@ uint8_t write_handler(const char * str, formatType format){
         positionType position = LEFT;
         print(str, format, position);
     }
+    print(str, format, get_current_position());        // Imprime por pantalla
     return 0; //para que no me tire warning por ahora
-//    print(str, format, get_current_position());        // Imprime por pantalla
+
 }
 
 //TODO: que cant sea un enum

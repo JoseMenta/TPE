@@ -94,7 +94,7 @@ sys_exit:
     push rbp
     mov rbp, rsp
 
-    mov rbx, rdi
+    ;mov rbx, rdi
     mov rax, 3
     int 80h
 

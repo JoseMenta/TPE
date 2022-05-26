@@ -10,6 +10,13 @@ static int var2 = 0;
 
 
 int main() {
+//    uint64_t main_rip = (uint64_t)&main; //esto tiene la direccion de RIP cuando empieza main
+//    uint64_t main_rip_2 = (uint64_t)main;
+//    //Son equivalentes las 2 de arriba
+//    void* main_rip_3 = main; //Estas las guardan como un hexa (es lo mismo que antes, pero gdb lo muestra distinto por el tipo)
+//    void* main_rip_4 = &main;
+    //Son equivalentes las 2 de arriba
+    //Dan 40007d cuando las compile
 	//All the following code may be removed 
 //	*v = 'X';
 //	*(v+1) = 0x74;
@@ -21,9 +28,10 @@ int main() {
 //    sys_write("holaaaa UserSpace", WHITE);
     //zero_division_exc();
 
-    void * aux[1] = {write_test};
+    void * aux[1] = {read_test};
     sys_exec(1, aux);
-    (uint64_t) write_test;
+    //(uint64_t) write_test;
+    sys_write("fin",WHITE);
      return 0;
 
 }
