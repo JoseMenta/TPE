@@ -10,6 +10,9 @@ GLOBAL get_hour
 GLOBAL get_min
 GLOBAL sys_exec
 GLOBAL sys_exit
+GLOBAL get_registers
+GLOBAL get_memory
+
 
 section .text
 
@@ -223,4 +226,69 @@ get_min:
 ; FIN FUNCIONES PARA MANEJO DE FECHA Y HORA
 ;-------------------------------------------------------------------------------------
 
+
+;-------------------------------------------------------------------------------------
+; get_registers: Obtener el valor de los registros
+;-------------------------------------------------------------------------------------
+; Parametros:
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   el vector con el valor de los registros
+;------------------------------------------------------------------------------------
+get_registers:
+    push rbp
+    mov rbp, rsp
+
+    pushfq                              ; Pushea los flags
+    pop qword [reg + 136]                ; Los guarda en la estructura auxiliar
+    mov [reg], r8
+	mov [reg+8], r9
+	mov [reg+16], r10
+	mov [reg+24], r11
+	mov [reg+32], r12
+	mov [reg+40], r13
+	mov [reg+48], r14
+	mov [reg+56], r15
+	mov [reg+64], rax
+	mov [reg+72], rbx
+	mov [reg+80], rcx
+	mov [reg+88], rdx
+	mov [reg+96], rsi
+	mov [reg+104], rdi
+	pop rax
+	mov [reg+112], rax
+	push rax
+    mov [reg+120], rbp                      ; deberia ir rsp pero por stack frame dejo este
+    mov qword rax, [rbp+8]                  ; Guardo en rax el valor de RIP
+    mov qword [reg+128], rax                ; Guardo en el arreglo, el valor de RIP
+
+    mov rax, reg
+
+    mov rbp, rsp
+    pop rbp
+    ret
+
+
+;-------------------------------------------------------------------------------------
+; get_memory: Obtener un vuelco de memoria de 32bits
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rdi: puntero al lugar de memoria donde realizar el vuelco
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   el valor de la direccion de memoria de 32bits
+;------------------------------------------------------------------------------------
+get_memory:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 0
+    mov eax, [rdi]
+
+    mov rbp, rsp
+    pop rbp
+    ret
+
+SECTION .bss
+	reg resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
 

@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <libc.h>
 
+#define COUNT_REGS (18)
+
 void inforeg();
 
 void printmem();

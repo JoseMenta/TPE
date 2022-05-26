@@ -31,5 +31,7 @@ uint8_t get_month(void);
 uint8_t get_year(void);
 uint8_t get_hour(void);
 uint8_t get_min(void);
+uint64_t* get_registers(void);
+uint64_t get_memory(uint32_t* pointer);
 
 #endif //TPE_LIBC_H
