@@ -17,7 +17,7 @@ uint8_t read_handler(char* str){
     return 1;                       // Devolvemos la cantidad de caracteres leidos
 }
 
-uint8_t write_handler(char * str, formatType format){
+uint8_t write_handler(const char * str, formatType format){
     extern uint8_t process_array_len;
     if(process_array_len==0){
         //No se cargaron procesos, por default imprime en LEFT
@@ -32,7 +32,7 @@ uint8_t write_handler(char * str, formatType format){
 uint8_t exec_handler(uint8_t cant, void ** programs){
     if(cant == 0 || cant > 2)
         return -1;
-    if(cant==1){
+    else if(cant==1){
         add_process(programs[0],ALL);
     }else{
         add_process(programs[0],LEFT);
@@ -44,7 +44,6 @@ uint8_t exec_handler(uint8_t cant, void ** programs){
 
 uint8_t exit_handler(){
     return terminate_process();
-    // finishProcess();
 }
 
 uint8_t time_handler(timeType time_unit){

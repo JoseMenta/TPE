@@ -156,7 +156,6 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
     ncClear();
 
 
-
     ((EntryPoint)sampleCodeModuleAddress)();
 //    ncPrint("Funciona?");
     //Testeos del driver que hicimos

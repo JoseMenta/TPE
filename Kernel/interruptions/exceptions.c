@@ -1,28 +1,23 @@
-#include <naiveConsole.h>
-#include <stdint.h>
-
-void zero_division();
-void invalid_opcode();
-
-typedef void (* exception) ();
+#include <exceptions.h>
 
 exception exceptions[2] = {zero_division, invalid_opcode};              // Arreglo de punteros a funcion de excepciones
 
-uint64_t* getRegisters(void);
-void printRegisters();
-
-static const char * Names[18] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
+static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
 
 void exceptionDispatcher(int exception) {
 	exceptions[exception]();
+    //terminate_process();//Matamos al programa que lanzo la excepcion
 	return;
 }
 
-// Esta funcion es la que se ejecutara al realizarse una division por cero (exceptionID = 0)
+//-----------------------------------------------------------------------
+// zero_division: Excepcion ejecutada al realizarse una division por cero (exceptionID = 0)
+//-----------------------------------------------------------------------
 void zero_division() {
-	ncPrint("Excepcion generada: Division por cero");		//ponerlo bien con el sys_write
-	printRegisters();
+	write_handler("EXCEPCION generada: Division por cero\n", RED);
+	print_registers();
 }
+
 /*
 programa a llamar desde el Userland cuando quiero la excepcion
 void zero_division() {
@@ -42,11 +37,14 @@ zero_division_exc:
 */
 
 
-// Esta funcion es la que se ejecutara al utilizar un operador invalido (exceptionID = 6)
+//-----------------------------------------------------------------------
+// zero_division: Excepcion ejecutada al utilizar un operador invalido (exceptionID = 6)
+//-----------------------------------------------------------------------
 void invalid_opcode() {
-	ncPrint("Excepcion generada: Invalid opcode");		//ponerlo bien con el sys_write
-	printRegisters();
+	write_handler("EXCEPCION generada: Invalid opcode\n", RED);
+	print_registers();
 }
+
 /*
 programa a llamar desde el Userland cuando quiero la exepcion
 void invalid_opcode() {
@@ -65,12 +63,21 @@ invalid_opcode_exc:
 	ret
 */
 
-void printRegisters(){
-	ncPrint("Registros al momento de la excepcion: ");
-	//pongo en reg los valores de los registros
-	uint64_t* reg = getRegisters();
-	for(int i=0; i<18; i++){
-		ncPrint(Names[i]);				//ponerlo bien con el sys_write
-		ncPrintHex(reg[i]);
+//-----------------------------------------------------------------------
+// print_registers: Imprime el estado de los registros
+//-----------------------------------------------------------------------
+// Argumentos:
+//  void
+//-----------------------------------------------------------------------
+void print_registers(){
+	write_handler("Registros al momento de la excepcion: \n", RED);
+	// Pongo en reg los valores de los registros
+	uint64_t * reg = get_registers();
+    char reg_str[20];
+	for(int i=0; i<COUNT_REGS; i++){
+		write_handler(Names[i], RED);
+		to_hex(reg_str, reg[i]);
+        write_handler(reg_str,RED);
+        write_handler("\n", RED);
 	}
 }

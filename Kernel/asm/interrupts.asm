@@ -17,13 +17,13 @@ GLOBAL _syscallHandler                      ; Ejecuta las interrupciones de soft
 
 GLOBAL _exception0Handler					; Es una funcion que ejecuta la excepcion de id 0 (division por cero)
 GLOBAL _exception6Handler					; Es una funcion que ejecuta la excepcion de id 6 (invalid opcode)
-GLOBAL getRegisters							; Funcion para obtener el valor de los registros
+GLOBAL get_registers							; Funcion para obtener el valor de los registros
 GLOBAL getCurrContext
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
 
-EXTERN write_handler
+EXTERN write_handler                        ; Handler de los syscalls
 EXTERN read_handler
 EXTERN exec_handler
 EXTERN exit_handler
@@ -80,7 +80,7 @@ SECTION .text
         push rax
         mov qword rax, [%1+128]                     ; Guardo en RAX el valor de RIP obtenido en saveRegs
         mov qword [rsp+8], rax                      ; tengo que hacer rsp+8 por el push de rax
-        ;nota: gdb agrega en el stach un elemento que es la funcion donde esta el ususario en este momento
+        ;nota: gdb agrega en el stack un elemento que es la funcion donde esta el ususario en este momento
         ;ese no es un elemento del stack, es solo para que el usuario sepa donde esta
         pop rax
 %endmacro
@@ -235,6 +235,7 @@ _exception6Handler:
 ;   rax: Depende de la syscall, o -2 si no es un parametro valido
 ;------------------------------------------------------------------------------------
 _syscallHandler:
+    cli
     saveRegs curr_context                       ; Resguardamos los registros
     cmp rax, 0
     jz sys_read                                 ; Syscall para read (id = 0)
@@ -325,6 +326,7 @@ fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     restoreRegs curr_context                        ; Recuperamos los registros
     mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
+    sti
     iretq
 
 
@@ -350,7 +352,7 @@ getCurrContext:
     pop rbp
     ret
 
-getRegisters:
+get_registers:
 	push rbp
 	mov rbp, rsp
 

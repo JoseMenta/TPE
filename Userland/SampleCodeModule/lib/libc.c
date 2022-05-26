@@ -65,7 +65,7 @@ uint8_t get_char(void){
 // Retorno:
 //      cantidad de caracteres escritos
 //---------------------------------------------------------------------------------
-uint8_t print_string(char * s1, formatType format){
+uint8_t print_string(const char * s1, formatType format){
     return sys_write(s1, format);
 }
 
@@ -165,7 +165,7 @@ uint64_t strcmp(const char* s1, const char* s2){
 // Retorno
 //   - el puntero al programa a ejecutar
 //---------------------------------------------------------------------------------
-void* get_program(char * str){
+void* get_program(const char * str){
     for(int i = 0; i<CANT_PROG;i++){
         if(strcmp(str,programs_names[i])==0){
                 return programs_list[i];

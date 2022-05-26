@@ -4,7 +4,7 @@
 process_t process_array[5] = {{{0}}};
 uint8_t process_array_len = 0;
 uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
-
+//TODO: Agregar un flag para ver si el usuario queria salir del programa, y recien ahi restaurar a los waiting
 //El arreglo va a estar compuesto por
 //[main_userland,bash,...(procesos que llama el bash)]
 //Si la cantidad de procesos es 4 => se estan corriendo pantallas divididas
@@ -76,6 +76,7 @@ uint64_t * getCurrContext(void); //funcion auxiliar
 //Se puede llamar 2 veces para agregar 2 procesos, total hasta que no vuelve al handler no cambia el contexto
 //Con lo que se complica es identificar a cada proceso como left y right si son llamadas separadas, y eso es importante para
 //Poder suspender a cada semipantalla (en ese caso, se supone que los procesos se agregan de izquierda a derecha)
+//Este es para agregar solo un proceso
 void add_process(void * process_start, positionType position){
     uint64_t * curr_context = getCurrContext();
     if(process_array_len == 0){
@@ -96,14 +97,36 @@ void add_process(void * process_start, positionType position){
     setup_context(process_array[process_array_len].registers,process_start,process_array[0].registers[RSP]-(process_array_len)*OFFSET);
     process_array[process_array_len].position = position;
     process_array[process_array_len++].status = RUNNING;
+    currentProcess_index = process_array_len-1; //Que se corra el que se agrego
     change_context();
+//    if(process_array_len == 0){
+//        //Es el primer proceso que se agrega, me guardo el contexto actual en otro proceso
+//        //Para poder volver al proceso que lo llamo
+//        copy_context(curr_context,process_array[process_array_len].registers); //copio el contexto
+//        process_array[process_array_len].position = ALL;
+//        process_array[process_array_len++].status = WAITING; //Espera a que termine el proceso que lo llamo
+//    }
+//    //guardo el contexto del que agrega el proceso
+//    copy_context(curr_context,process_array[currentProcess_index].registers);
+//    //cambio su estado para que se ejecute recien cuando termina el que llamo
+//    process_array[currentProcess_index].status = WAITING;
+//
+//    //Se ubica "arriba" del stack del que lo llama
+////    setup_context(process_array[process_array_len].registers,process_start,curr_context[RSP]-(process_array_len)*OFFSET);
+//    //Se ubica Offset veces encima del stack del main_userland
+//    setup_context(process_array[process_array_len].registers,process_start,process_array[0].registers[RSP]-(process_array_len)*OFFSET);
+//    process_array[process_array_len].position = position;
+//    process_array[process_array_len++].status = RUNNING;
+//    currentProcess_index = process_array_len-1;//Que se corra el ultimo
+//    change_context();
 }
-
+//TODO: implementar la funcion para llamar a 2 procesos
 //exit
 uint8_t terminate_process(){
-    if(process_array_len==1) return-1;//No puedo terminar el proceso raiz
+    if(process_array_len==1)
+        return-1;//No puedo terminar el proceso raiz
     process_array[currentProcess_index].status = TERMINATED;
-    change_context();//tengo que ver cual es el proximo que corro
+    change_context();                                           // Tengo que ver cual es el proximo que corro
     return 0;
 }
 
@@ -185,7 +208,7 @@ void change_context(){
         // Lanzar excepcion
         // Estamos haciendo algo mal
     }
-    if(runnable == 2){
+    else if(runnable == 2){
         //TODO: verificar que la primera condicion siempre es verdadera
         if(process_array_len >= 4 && process_array[2+LEFT].status == SUSPENDED && process_array[2+RIGHT].status == SUSPENDED){
             // Ambos procesos estan parados
@@ -226,19 +249,29 @@ void change_context(){
             }
         }
     }
-    if(runnable == 1){
+    else if(runnable == 1){
+//        //Aca ya suponemos que curr_process_index esta RUNNING o SUSPENDED
+//        //En el primero, entra con curr_process_index==0;
+//        if(process_array[currentProcess_index].status == WAITING){
+//            //Tengo que correr el que se puede correr, y dejar a este
+//
+//        }
         if(process_array[currentProcess_index].status == SUSPENDED){
             // Ciclo nop
             curr_context[RIP] = (uint64_t) default_process;
             return;
         }
         else if(process_array[currentProcess_index].status == RUNNING){
+            //Lo guardamos para el caso donde se acaba de insertar
+            copy_context(process_array[currentProcess_index].registers,curr_context);
             // Sigue en el proceso actual
             return;
         }
     }
-    if(runnable == 0){
-        int i= process_array_len-1;
+    else if(runnable == 0){
+        // Si no hay procesos corriendo, va a rejecutar el ultimo proceso que se detuvo (el proceso mas joven
+        // , con indice más grande en el arreglo, en waiting
+        int i = process_array_len-1;
         for(; process_array[i].status != WAITING; i--);
         currentProcess_index = i;
         process_array[currentProcess_index].status = RUNNING;

@@ -63,6 +63,8 @@ void keyboard_handler(){
 //        key_case_default *= -1;
 //        key_case = key_case_default;
 //    }
+    // TODO: CAMBIAR LA LOGICA (NO SOLO REPRESENTABLES)
+    // Solo guardamos los caracteres que tienen una representacion grafica
     else if(IS_REPRESENTABLE(key)){
         //Tenemos que guardar esa tecla
         if (key_case > 0 && IS_ALPHA(keyboard_reference[key])){

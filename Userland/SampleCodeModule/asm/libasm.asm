@@ -2,6 +2,14 @@ GLOBAL sys_write
 GLOBAL sys_read
 GLOBAL zero_division_exc
 GLOBAL invalid_opcode_exc
+GLOBAL get_week
+GLOBAL get_day
+GLOBAL get_month
+GLOBAL get_year
+GLOBAL get_hour
+GLOBAL get_min
+GLOBAL sys_exec
+GLOBAL sys_exit
 
 section .text
 
@@ -104,9 +112,11 @@ zero_division_exc:
 	push rbp
 	mov rbp, rsp
 
-    mov rcx, 0
-    mov rax, 1
-	div rcx                 ; Hacemos la division 1 / 0
+;    mov rcx, 0
+;    mov rax, 1
+;	 div rcx                 ; Hacemos la division 1 / 0
+
+    int 0h
 
 	mov rsp, rbp
 	pop rbp
@@ -127,3 +137,90 @@ invalid_opcode_exc:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+;-------------------------------------------------------------------------------------
+; FUNCIONES PARA MANEJO DE FECHA Y HORA
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: categoria horaria que quiero segun : typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
+;   rax: la sys_call
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: entero con la categoria que quiero
+;-------------------------------------------------------------------------------------
+get_week:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 6
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+get_day:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 7
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+get_month:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 8
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+get_year:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 9
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+get_hour:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 4
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+get_min:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, 2
+    mov rax, 4
+    int 80h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+;-------------------------------------------------------------------------------------
+; FIN FUNCIONES PARA MANEJO DE FECHA Y HORA
+;-------------------------------------------------------------------------------------
+
+

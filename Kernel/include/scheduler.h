@@ -16,7 +16,7 @@ typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI,
 
 #define REGISTERS_COUNT (18)                              // Cantidad de registros
 
-#define OFFSET (1000)                                     // Espacio que se le va a dejar de stack a cada proceso
+#define OFFSET (10000)                                     // Espacio que se le va a dejar de stack a cada proceso
 
 typedef struct {                                        // Estructura de un proceso
     uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa

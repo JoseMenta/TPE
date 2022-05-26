@@ -33,7 +33,6 @@ void printmem(){
 //      Fecha y hora local:
 //          Miercoles 25/05/2022 15:35hs
 //-----------------------------------------------------------------------
-
 void hora() {
     /*
        print_string("Fecha y hora local: \n", WHITE);

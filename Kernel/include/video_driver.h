@@ -26,9 +26,9 @@
 typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DARK_GREY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED, PINK, YELLOW, WHITE} formatType;
 
 
-void print(char * str, formatType letterFormat, positionType position);
+void print(const char * str, formatType letterFormat, positionType position);
 void new_line(positionType position);
-void println(char * str, formatType letterFormat, positionType position);
+void println(const char * str, formatType letterFormat, positionType position);
 void scroll_up(positionType position);
 void print_char(char c, formatType letterFormat, positionType position);
 void print_dec_format(uint64_t value, positionType position);
@@ -37,6 +37,7 @@ void print_bin_format(uint64_t value, positionType position);
 void clear(positionType position);
 void print_lines();
 void delete_last_char(positionType position);
-
+void to_hex(char* str, uint64_t val);
+void to_decimal(char* str, uint64_t val);
 
 #endif

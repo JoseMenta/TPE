@@ -96,7 +96,7 @@ void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType pos
 //-----------------------------------------------------------------------
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
 //-----------------------------------------------------------------------
-void print(char * str, formatType letterFormat, positionType position){
+void print(const char * str, formatType letterFormat, positionType position){
     for(;*str!='\0';str++){
         print_char(*str,letterFormat,position);
     }
@@ -112,7 +112,7 @@ void print(char * str, formatType letterFormat, positionType position){
 //-----------------------------------------------------------------------
 // Si no hay mas lugar en la pantalla, llama a scroll_up
 //-----------------------------------------------------------------------
-void println(char * str, formatType letterFormat, positionType position){
+void println(const char * str, formatType letterFormat, positionType position){
     print(str,letterFormat,position);
     new_line(position);
 }
@@ -124,6 +124,9 @@ void println(char * str, formatType letterFormat, positionType position){
 // -position: La posicion de la pantalla donde se desea ir a la proxima linea
 //-----------------------------------------------------------------------
 void new_line(positionType position){
+    if(coordinates[position].row_current==coordinates[position].row_end){
+        scroll_up(position);
+    }
     // Posicionamos la fila de la porcion correspondiente en la proxima
     coordinates[position].row_current += 1;                            
     // Posicionamos la columna de la porcion correspondiente al principio     
@@ -271,3 +274,66 @@ void delete_last_char(positionType position){
     }
 }
 
+
+//-----------------------------------------------------------------------
+// uintToBase: Convierte un entero en la base indica por parametro en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  value: el valor del entero
+//  buffer: el string sobre cual copiar
+//  base: la base a convertir del entero
+//-----------------------------------------------------------------------
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
+{
+    char *p = buffer;
+    char *p1, *p2;
+    uint32_t digits = 0;
+
+    //Calculate characters for each digit
+    do
+    {
+        uint32_t remainder = value % base;
+        *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+        digits++;
+    }
+    while (value /= base);
+
+    // Terminate string in buffer.	(El \0 del string)
+    *p = 0;
+
+    //Reverse string in buffer. (Notar que al hacer el pasaje de int a char, se tiene el numero al reves pues se analiza de derecha a izquierda)
+    p1 = buffer;
+    p2 = p - 1;
+    while (p1 < p2)
+    {
+        char tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+        p1++;
+        p2--;
+    }
+
+    return digits;
+}
+
+//-----------------------------------------------------------------------
+// to_hex: Devuelve un entero hexadecimal en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  str: el string sobre cual copiar
+//  val: el valor del entero
+//-----------------------------------------------------------------------
+void to_hex(char * str, uint64_t val){
+    uintToBase(val,str,16);
+}
+
+//-----------------------------------------------------------------------
+// to_dec: Devuelve un entero decimal en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  str: el string sobre cual copiar
+//  val: el valor del entero
+//-----------------------------------------------------------------------
+void to_decimal(char * str, uint64_t val){
+    uintToBase(val,str,10);
+}
