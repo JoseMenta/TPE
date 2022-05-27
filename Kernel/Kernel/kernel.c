@@ -157,6 +157,10 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 
 
     ((EntryPoint)sampleCodeModuleAddress)();
+    print("Volvio al kernel despues de estar en sampleCodeModule!",WHITE,ALL);
+//    ncNewline();
+//    ncNewline();
+//    ncPrint("Volvio a kernel");
 //    ncPrint("Funciona?");
     //Testeos del driver que hicimos
 //    print("Hola",WHITE,RIGHT);

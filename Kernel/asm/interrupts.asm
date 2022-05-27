@@ -125,7 +125,8 @@ SECTION .text
         mov qword rax, [iretq_registers]
         mov qword [rsp+16],rax
 
-        ;FLAGS
+        ;FLAGS TODO: ver si este tiene que ser un valor especial para poder volver (Alejo dice que hay un flag que tiene que tener si esta en una interrupcion)
+        ;Ahora estoy dejando el valor del que crea el proceso en el caso de que este agregando
         mov qword rax, [iretq_registers+8]
         mov qword [rsp+24],rax
 

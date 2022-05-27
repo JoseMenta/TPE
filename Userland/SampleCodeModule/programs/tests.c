@@ -13,12 +13,13 @@ void write_test(){
 
 void read_test(){
     char str[10] = {0};
-    print_string("Char: ", WHITE);
+    print_string("Char: \n", WHITE);
 //    while(1){
 //        sys_read(str);
 //        sys_write(str, WHITE);
 //    }
     sys_exit();
+    //Si no esta esto, cuando llegue al final de la funcion va a hacer ret, pero en la direccion de retorno no va a encontrar una direccion (lo que encuentra es basura)
 
 //    str[0] = '\0';
 //    int read = 0;
