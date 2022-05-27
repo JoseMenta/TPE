@@ -30,4 +30,7 @@ positionType get_current_position(void);                  // Devuelve la posicio
 void suspend_left();
 void suspend_right();
 void change_context();
+//Implementacion alternativa
+void add_full_process(void* process_start);
+void add_two_processes(void* left_start, void* right_start);
 #endif

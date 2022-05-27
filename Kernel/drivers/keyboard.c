@@ -42,7 +42,12 @@ static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
 void keyboard_handler(){
 
     uint8_t key = get_keyboard_scan_code();
-
+    //Agrego la logica para cuando quiere volver
+    extern uint8_t want_to_return;
+    if(key==14){
+        //Si pone delete
+        want_to_return = 1;
+    }
     if(key == SHIFT1 || key == SHIFT2) {
         //Estamos usando que cuando se mantiene shift, no se mandan varias interrupciones
         //Si ese fuese el caso, entonces el comportamiento seria aleatorio
