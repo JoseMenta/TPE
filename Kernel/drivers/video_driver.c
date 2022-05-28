@@ -73,8 +73,9 @@ void print_char(char c, formatType letterFormat, positionType position){
         scroll_up(position);
     }
     // Obtenemos la proxima posicion sobre la cual imprimir en la porcion correspondiente
-    if(c!='\n')
+    if(c!='\n') {
         next(&coordinates[position]);
+    }
 }
 
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position){
@@ -98,6 +99,12 @@ void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType pos
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
 //-----------------------------------------------------------------------
 void print(const char * str, formatType letterFormat, positionType position){
+//    if(position!=LEFT && position!=RIGHT && position!=ALL) {
+//        char aux[] = "error con position";
+//        for(int i = 0; aux[i]!='\0';i++){
+//            print_char(aux[i],RED,LEFT);
+//        }
+//    }
     for(;*str!='\0';str++){
         print_char(*str,letterFormat,position);
     }
@@ -158,8 +165,15 @@ void next(coordinatesType * position){
 //-----------------------------------------------------------------------
 void scroll_up(positionType position){
     // Copiamos los caracteres de la fila n en n-1, n > 1
+//    for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
+//        c.row_current != coordinates[position].row_current-1 || c.col_current != coordinates[position].col_current;
+//        next(&c)){
+//        *(video_start + c.row_current * WIDTH + c.col_current) = *(video_start + (c.row_current+1) * WIDTH + c.col_current);
+//        *(video_start + c.row_current * WIDTH + c.col_current + 1) = *(video_start + (c.row_current+1) * WIDTH + c.col_current + 1);
+//    }
+//TODO: revisar esto, si no cuando hacemos (c.row_current+1) podemos caer en cualquier lado si coordinates[position].row_current==coordinates[position].row_end
     for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
-        c.row_current != coordinates[position].row_current || c.col_current != coordinates[position].col_current;
+        c.row_current < coordinates[position].row_end;
         next(&c)){
         *(video_start + c.row_current * WIDTH + c.col_current) = *(video_start + (c.row_current+1) * WIDTH + c.col_current);
         *(video_start + c.row_current * WIDTH + c.col_current + 1) = *(video_start + (c.row_current+1) * WIDTH + c.col_current + 1);
@@ -220,6 +234,8 @@ void clear(positionType position){
             *(aux + 1) = 0;     // Formato default
         }
         // Actualizamos los punteros de las distintas porciones
+        coordinates[ALL].row_current = coordinates[ALL].row_start;
+        coordinates[ALL].col_current = coordinates[ALL].col_start;
         coordinates[LEFT].row_current = coordinates[LEFT].row_start;
         coordinates[LEFT].col_current = coordinates[LEFT].col_start;
         coordinates[RIGHT].row_current = coordinates[RIGHT].row_start;

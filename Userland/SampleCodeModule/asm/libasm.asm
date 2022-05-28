@@ -7,7 +7,8 @@ GLOBAL sys_mem
 GLOBAL zero_division_exc
 GLOBAL invalid_opcode_exc
 GLOBAL get_registers
-
+GLOBAL get_memory
+GLOBAL get_register
 
 section .text
 
@@ -316,6 +317,13 @@ get_rip:
     pop rax
     jmp get_rip_return
 
+get_register:
+    push rbp
+    mov rbp, rsp
+    mov rax, cs
+    mov rbp, rsp
+    pop rbp
+    ret
 SECTION .bss
 	reg resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
 

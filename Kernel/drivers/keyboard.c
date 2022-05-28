@@ -93,7 +93,6 @@ void keyboard_handler(){
         // Primero debemos verificar si en vez de agregar una letra al buffer, se desea suspende o reanudar un proceso
         if(keyboard_reference[key] == 'f' && ctrl_pressed){
             //all_state: 1 si sigue corriendo, 0 si no
-
             if(all_state){
                 // Suspende el proceso si esta corriendo en pantalla completo y cambia el flag de all_state al asignarse
                 // Si no esta corriendo en pantalla completa (se hizo un split), entonces no hay que cambiar el flag

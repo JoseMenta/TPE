@@ -14,7 +14,8 @@ void read_test(){
 //    char str[10] = {0};
     uint64_t i = 0 ;
     while(1){
-//        print_number(i,WHITE);
+        print_number(get_register(),WHITE);
+        print_string("\n",WHITE);
 //        print_string("a",WHITE);
 //        print_string("\n",WHITE);
 //        i = (i+1)%10;

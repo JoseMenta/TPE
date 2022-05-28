@@ -39,5 +39,8 @@ uint8_t get_min(void);
 uint8_t get_secs(void);
 
 uint64_t* get_registers(void);
+uint64_t get_register(void);
+uint64_t get_memory(uint32_t* pointer);
+char * str_tok(char * buffer, char sep);
 
 #endif //TPE_LIBC_H

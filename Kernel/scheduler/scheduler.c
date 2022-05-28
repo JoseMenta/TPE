@@ -73,6 +73,8 @@ void change_context(){
             if(process_array[right_index].status!=RUNNING){
                 //Si el proceso de la derecha termino o esta suspendido
                 copy_context(process_array[left_index].registers,curr_context_arr);
+                currentProcess_index = left_index;
+//                switch_context(left_index); //Esto creo que hacia que no pueda volver
                 return; //Me quedo en el proceso de la izquierda
             }else{
                 //Cambio para que siga el proceso de la derecha
@@ -84,10 +86,13 @@ void change_context(){
             if (process_array[left_index].status!=RUNNING) {
                 // No hace nada: sigue con el proceso de la derecha
                 copy_context(process_array[right_index].registers,curr_context_arr);
+                currentProcess_index = right_index;
+//                switch_context(right_index);
                 return;
             } else {
                 //Cambio para que siga el proceso de la izquierda
                 switch_context(left_index);
+                return;
             }
         }
     }else if (runnable==1){
@@ -128,27 +133,33 @@ uint8_t terminate_process(){
 
 uint8_t suspend_left(){
     uint64_t* curr_context_arr = getCurrContext();
-    if(left_index==-1 || process_array[left_index].status==TERMINATED) return 1;
+    if(left_index==-1 || process_array[left_index].status==TERMINATED || process_array[left_index].status==SUSPENDED) return 1;
     process_array[left_index].status = SUSPENDED;
-    copy_context(curr_context_arr,process_array[left_index].registers);
+    if(currentProcess_index==left_index) {
+        copy_context(curr_context_arr, process_array[left_index].registers);
+    }
     change_context();
     return 0;
 }
 
 uint8_t suspend_right(){
     uint64_t* curr_context_arr = getCurrContext();
-    if(right_index==-1 || process_array[right_index].status==TERMINATED) return 1;
+    if(right_index==-1 || process_array[right_index].status==TERMINATED ||process_array[right_index].status==SUSPENDED) return 1;
     process_array[right_index].status = SUSPENDED;
-    copy_context(curr_context_arr,process_array[right_index].registers);
+    if(currentProcess_index==right_index) {//Solo tengo que guardar el estado si se estaba corriendo ese cuando se suspendio
+        copy_context(curr_context_arr, process_array[right_index].registers); //guardo el contexto actual
+    }
     change_context();
     return 0;
 }
 
 uint8_t suspend_full(){
     uint64_t* curr_context_arr = getCurrContext();
-    if(full_index==-1 || process_array[full_index].status==TERMINATED) return 1;
+    if(full_index==-1 || process_array[full_index].status==TERMINATED || process_array[full_index].status==SUSPENDED) return 1;
     process_array[full_index].status = SUSPENDED;
-    copy_context(curr_context_arr,process_array[full_index].registers);
+    if(currentProcess_index==full_index) {
+        copy_context(curr_context_arr, process_array[full_index].registers);
+    }
     change_context();
     return 0;
 }
@@ -225,10 +236,10 @@ static void switch_context(uint8_t new_index){
         copy_context(curr_context_arr,process_array[currentProcess_index].registers); //Guardo el contexto actual en el proceso que se estaba corriendo
     }
     copy_context(process_array[new_index].registers,curr_context_arr);//Cargo el contexto del nuevo proceso para que se configure antes de iretq
-    if(process_array[new_index].status==SUSPENDED){
-        //Si esta suspendido, cambio el RIP para que en su lugar se ejecute el default_process
-        curr_context_arr[RIP] = (uint64_t) &default_process;
-    }
+//    if(process_array[new_index].status==SUSPENDED){
+//        //Si esta suspendido, cambio el RIP para que en su lugar se ejecute el default_process
+//        curr_context_arr[RIP] = (uint64_t) &default_process;
+//    }
     currentProcess_index = new_index; //Indico que se comienza a ejecutar ese proceso
 }
 //Funciones auxiliares de la implementacion

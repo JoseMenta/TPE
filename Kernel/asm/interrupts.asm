@@ -31,7 +31,7 @@ EXTERN time_handler
 EXTERN mem_handler
 
 SECTION .text
-
+;TODO: guardar los 2 rsp, y poner la diferencia en base a eso
 ; Es una macro que guarda en un arreglo pasado por parametros todos los registros
 %macro saveRegs 1
     pushfq                              ; Pushea los flags
@@ -55,7 +55,12 @@ SECTION .text
     ;En la estructura de curr_contex guardo este, despues vemos si hay que cambiar la macro para las excepciones
     ;asi guardamos el rsp de donde ocurre la excepcion
     push rax
-
+    push rbx
+    mov rax, rsp
+    mov rbx, qword[rsp + 40] ;el rsp de antes 24+8+8
+    sub rbx, rax ;la diferencia entre los rsp es el ancho del stack frame, la guardo para armar el stack del otro
+    mov qword[off],rbx
+    pop rbx
     ;RIP
     mov qword rax, [rsp+8]                  ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
     mov qword [%1+128], rax                 ; Guardo en el arreglo, el valor de RIP
@@ -108,9 +113,14 @@ SECTION .text
         mov rsp, qword[%1+120]                      ; Esto es lo que hace el cambio de contexto, se mueve a otro punto del stack
 
         push rax
-        lea rax, [rsp + 56] ;esta 48 + 8 (por rax) = 56 mas abajo
+        push rbx
+        mov rbx, qword[off] ;guardo el offset de antes
+        mov rax, rsp ;el rsp nuevo
+        add rax, rbx ;le dejo la misma diferencia que en el stack que lo llama
+        ;lea rax, [rsp + 56] ;esta 48 + 8 (por rax) = 56 mas abajo
         ;mov qword rax, [iretq_registers+16]
-        mov qword [rsp+32], rax ;guardo RSP
+        mov qword [rsp+40], rax ;guardo RSP 24+8+8
+        pop rbx
 
 
 
@@ -480,5 +490,7 @@ SECTION .bss
 	exc_state resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
 	;exc_state es distinto a curr_contex porque en el primero guardo el rsp de donde ocurre la excepcion y no de cuando llega al handler
 	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
+	;TODO: cambiar tamaño
 	iretq_registers resb 144         ; Auxiliar para guardar otras cosas que deja iretq
 	aux resq 1                  ; Variable auxiliar
+	off resq 1
