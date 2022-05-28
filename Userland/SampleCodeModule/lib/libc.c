@@ -175,6 +175,27 @@ void* get_program(const char * str){
     return NULL;
 }
 
+//---------------------------------------------------------------------------------
+// str_tok: va retornando strings divididos por un separador
+//---------------------------------------------------------------------------------
+// Argumentos:
+//   - buffer con texto largo a tokenizar
+//   - separador para cortar el string largo
+//---------------------------------------------------------------------------------
+// Retorno
+//   - substrings separador por separador
+//---------------------------------------------------------------------------------
+//int last_index = 0;
+//char aux[100];
+//
+//char * str_tok(char * buffer, char sep){
+//    int base = last_index;
+//    for(; buffer[last_index]!=sep && buffer[last_index]!='\0'; last_index++){
+//        aux[base -last_index] = buffer[last_index];
+//    }
+//    aux[base - last_index +1 ] = '\0'
+//    return aux;
+//}
 
 
 

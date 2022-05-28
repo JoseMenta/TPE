@@ -3,10 +3,10 @@
 #include <tests.h>
 #include <programs.h>
 
-char * v = (char*)0xB8000 + 79 * 2;
-
-static int var1 = 0;
-static int var2 = 0;
+//char * v = (char*)0xB8000 + 79 * 2;
+//
+//static int var1 = 0;
+//static int var2 = 0;
 
 
 int main() {
@@ -28,12 +28,14 @@ int main() {
 //    sys_write("holaaaa UserSpace", WHITE);
     //zero_division_exc();
 
-    void * aux[2] = {&read_test,&write_test};
+    void * aux[2] = {&read_test,&read_test};
     sys_exec(2, aux);
 //    void * aux[2] = {read_test};
 //    sys_exec(1, aux);
     //(uint64_t) write_test;
     sys_write("fin",WHITE);
+
+    //bash();
      return 0;
 
 }

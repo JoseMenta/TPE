@@ -4,6 +4,7 @@
 #define TPE_SCHEDULER_H
 
 #include <stdint.h>
+
 //RUNNING: El proceso debe correrse
 //WAITING: El proceso esta esperando a que terminen procesos que el ejecuto
 //SUSPENDED: El proceso fue suspendido (con una de las teclas indicadas). En su lugar se ejecuta el proceso default (while 1)
@@ -24,13 +25,18 @@ typedef struct {                                        // Estructura de un proc
     positionType position;                              // Posicion en pantalla del proceso
 } process_t;
 
-void add_process(void * process_start, positionType position);                       // Agrega un proceso al arreglo de procesos
-uint8_t terminate_process(void);                               // Finaliza un proceso (luego sera borrado)
-positionType get_current_position(void);                  // Devuelve la posicion del programa corriendo en el momento
-void suspend_left();
-void suspend_right();
-void change_context();
-//Implementacion alternativa
-void add_full_process(void* process_start);
-void add_two_processes(void* left_start, void* right_start);
+void add_process(void * process_start, positionType position);      // Agrega un proceso al arreglo de procesos
+uint8_t terminate_process(void);                                    // Finaliza un proceso (luego sera borrado)
+positionType get_current_position(void);                            // Devuelve la posicion del programa corriendo en el momento
+
+uint8_t suspend_left();                                                 // Funciones para la logica de pausar y reanudar un proceso
+uint8_t suspend_right();
+uint8_t suspend_full();
+uint8_t restart_left();
+uint8_t restart_right();
+uint8_t restart_full();
+
+void change_context();                                              // Cambia de proceso si es que puede
+void add_full_process(void* process_start);                         // Agrega un nuevo proceso al arreglo de procesos
+void add_two_processes(void* left_start, void* right_start);        // Agrega dos nuevos procesos (left y right) al arreglo de procesos
 #endif

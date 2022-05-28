@@ -128,24 +128,21 @@ void printmem(char * dir_memoria){                          // deberia ir como p
 //          Miercoles 25/05/2022 15:35hs
 //-----------------------------------------------------------------------
 void hora() {
-    /*
        print_string("Fecha y hora local: \n", WHITE);
-       Char ** week = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
-       print_string("    ", wHITE);
+       char * week[] = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
+       print_string("    ", WHITE);
        print_string(week[get_week()], WHITE);
-       print_string(" ");
+       print_string(" ", WHITE);
        print_number(get_day(), WHITE);
        print_string("/", WHITE);
        print_number(get_month(), WHITE);
        print_string("/", WHITE);
        print_number(get_year(), WHITE);
        print_string(" ", WHITE);
-       print_number(get_hour(), WHITE);
+       print_number(get_hour()-3, WHITE);
        print_string(":", WHITE);
        print_number(get_min(), WHITE);
-       print_string("hs\n", WHIET);
+       print_string("hs\n", WHITE);
        return;
-
-   */
 }
 

@@ -186,6 +186,7 @@ SECTION .text
 ; Macro para todas las irq, segun el parametro que paso es como entra en el case de irq
 ; Es una macro que recibe por argumento el codigo de la interrupcion lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro irqHandlerMaster 1
+
 	;pushState
     saveRegs curr_context
 	mov rdi, %1 ; pasaje de parametro (%1 representa el valor del primer, y unico, argumento)
@@ -203,12 +204,14 @@ SECTION .text
 
 ; Es una macro que recibe por argumento el codigo de la excepción lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro exceptionHandler 1
+
     saveRegs exc_state
     ;pushState                   ; Guarda en un arreglo el valor de los registros al lanzar una excepcion
 	mov rdi, %1                         ; Pasaje de parametro
 	call exceptionDispatcher            ; Llamamos al dispatcher de excepciones
     ;popState
     restoreRegs exc_state
+
 	iretq
 %endmacro
 
@@ -296,7 +299,7 @@ _exception6Handler:
 ;   rax: Depende de la syscall, o -2 si no es un parametro valido
 ;------------------------------------------------------------------------------------
 _syscallHandler:
-    cli
+    ;cli
     saveRegs curr_context                       ; Resguardamos los registros
     cmp rax, 0
     jz sys_read                                 ; Syscall para read (id = 0)
@@ -387,7 +390,7 @@ fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     restoreRegs curr_context                        ; Recuperamos los registros
     mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
-    sti
+    ;sti
     iretq
 
 

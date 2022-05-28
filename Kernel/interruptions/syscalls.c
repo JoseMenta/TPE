@@ -1,5 +1,6 @@
 #include <syscalls.h>
 #include <queue.h>
+#include <scheduler.h>
 uint8_t read_handler(char* str){
 //    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard.c
 //    extern int read;
@@ -33,11 +34,11 @@ uint8_t exec_handler(uint8_t cant, void ** programs){
     if(cant == 0 || cant > 2)
         return -1;
     else if(cant==1){
+        //clear(ALL);
         add_full_process(programs[0]);
         //add_process(programs[0],ALL);
     }else{
-        //add_process(programs[0],LEFT);
-        //add_process(programs[1],RIGHT);
+        //clear(ALL);//Limpio la pantalla y reinicio las posiciones de ambas subpantallas
         add_two_processes(programs[0],programs[1]);
         print_lines();
     }

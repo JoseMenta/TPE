@@ -6,7 +6,7 @@
 #include <programs.h>
 
 #define LOGOUT "logout"
-
+#define ASCII_DELETE 127
 void bash();
 
 #endif
