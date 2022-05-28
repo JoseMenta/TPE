@@ -18,21 +18,26 @@ uint8_t sys_write(const char * string, formatType format);
 uint8_t sys_read(char * c);
 uint8_t sys_exec(uint8_t process_c, void ** process_v);
 uint8_t sys_exit();
+uint8_t sys_time(timeType time_unit);
+uint8_t sys_mem(uint64_t init_dir, uint8_t * arr);
 
-void* get_program(const char * str);
+void * get_program(const char * str);
 uint8_t get_char(void);
 uint8_t print_string(const char * s1, formatType format);
 uint8_t print_number(uint64_t number, formatType format);
 uint64_t strcmp(const char * s1, const char * s2);
+char * to_hex(char * str, uint64_t val);
+uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+char * str_tok(char * buffer, char sep);
 
-uint8_t get_week(void);
-uint8_t get_day(void);
-uint8_t get_month(void);
 uint8_t get_year(void);
+uint8_t get_month(void);
+uint8_t get_day_week(void);
+uint8_t get_day(void);
 uint8_t get_hour(void);
 uint8_t get_min(void);
+uint8_t get_secs(void);
+
 uint64_t* get_registers(void);
-uint64_t get_memory(uint32_t* pointer);
-char * str_tok(char * buffer, char sep);
 
 #endif //TPE_LIBC_H

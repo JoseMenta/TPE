@@ -1,6 +1,5 @@
 #include <syscalls.h>
-#include <queue.h>
-#include <scheduler.h>
+
 uint8_t read_handler(char* str){
 //    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard.c
 //    extern int read;
@@ -21,8 +20,9 @@ uint8_t write_handler(const char * str, formatType format){
     extern uint8_t process_array_len;
     if(process_array_len==0){
         //No se cargaron procesos, por default imprime en LEFT
-        positionType position = LEFT;
+        positionType position = ALL;
         print(str, format, position);
+        return 0;
     }
     print(str, format, get_current_position());        // Imprime por pantalla
     return 0; //para que no me tire warning por ahora
@@ -51,4 +51,23 @@ uint8_t exit_handler(){
 
 uint8_t time_handler(timeType time_unit){
     return get_time(time_unit);
+}
+
+uint8_t mem_handler(uint64_t init_dir, uint8_t * arr){
+    uint8_t i = 0;
+    // Empiezo a completar el arreglo, siempre y cuando la direccion consultada sea menor a la ultima
+    // Asi se evita overflow
+    for(; (i < MAX_ARRAY_SIZE) && (init_dir + i < MAX_MEM_ADDRESS); i++){
+        arr[i] = get_data(init_dir + i);
+    }
+    // Si el for corto por el overflow, se guarda el dato almacenado en la ultima direccion
+    if(init_dir + i == MAX_MEM_ADDRESS){
+        arr[i++] = get_data(MAX_MEM_ADDRESS);
+    }
+    // Si aun quedan espacios libres (i < 32), se completa con NULL
+    for(int j = i; j < MAX_ARRAY_SIZE; j++){
+        arr[j] = NULL;
+    }
+    // En i se almacenan la cantidad real de datos que se pudieron almacenar
+    return i;
 }

@@ -1,7 +1,8 @@
 #include <libc.h>
-#include <math.h>
 
 static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
+
+const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week, get_day, get_month, get_year};
 
 void help(){
     print_string("Programas disponibles:\n", WHITE);
@@ -13,12 +14,6 @@ void help(){
     print_string("    primos: Despliega los numeros primos a partir del 1\n", WHITE);
     print_string("    fibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
 }
-
-//void zero_division_exc(){} esta en asm->libasm.asm
-//void invalid_opcode_exc(){} esta en asm->libasm.asm
-void to_hex(char * str, uint64_t val);
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
-uint64_t get_memory(uint32_t* pointer);
 
 
 void inforeg(){
@@ -34,59 +29,26 @@ void inforeg(){
     }
 }
 
-//-----------------------------------------------------------------------
-// uintToBase: Convierte un entero en la base indica por parametro en un string
-//-----------------------------------------------------------------------
-// Argumentos:
-//  value: el valor del entero
-//  buffer: el string sobre cual copiar
-//  base: la base a convertir del entero
-//-----------------------------------------------------------------------
-static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
-{
-    char *p = buffer;
-    char *p1, *p2;
-    uint32_t digits = 0;
 
-    //Calculate characters for each digit
-    do
-    {
-        uint32_t remainder = value % base;
-        *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
-        digits++;
+
+void printmem(uint64_t init_dir){
+    uint8_t mem_arr[32] = {0};
+    uint8_t dim = sys_mem(init_dir, mem_arr);
+
+    char str[21] = {0};                                                             // 2^64 tiene 20 digitos mas el "\0"
+    print_string("Datos almacenados a partir de la direccion 0x", WHITE);
+    print_string(to_hex(str, init_dir), WHITE);
+    print_string(":\n", WHITE);
+    for(int i = 0; i < dim; i++){
+        print_string("0x", WHITE);
+        print_string(to_hex(str, init_dir + i), WHITE);
+        print_string(": ", WHITE);
+        print_string("0x", WHITE);
+        print_string(to_hex(str, mem_arr[i]), WHITE);
+        print_string("    ", WHITE);
     }
-    while (value /= base);
-
-    // Terminate string in buffer.	(El \0 del string)
-    *p = 0;
-
-    //Reverse string in buffer. (Notar que al hacer el pasaje de int a char, se tiene el numero al reves pues se analiza de derecha a izquierda)
-    p1 = buffer;
-    p2 = p - 1;
-    while (p1 < p2)
-    {
-        char tmp = *p1;
-        *p1 = *p2;
-        *p2 = tmp;
-        p1++;
-        p2--;
-    }
-
-    return digits;
+    print_string("\n", WHITE);
 }
-
-//-----------------------------------------------------------------------
-// to_hex: Devuelve un entero hexadecimal en un string
-//-----------------------------------------------------------------------
-// Argumentos:
-//  str: el string sobre cual copiar
-//  val: el valor del entero
-//-----------------------------------------------------------------------
-void to_hex(char * str, uint64_t val){
-    uintToBase(val,str,16);
-}
-
-void printmem(){}
 
 /*
 void printmem(char * dir_memoria){                          // deberia ir como parametro de la funcion, cambia bastante la logica de analizebuffer
@@ -118,30 +80,33 @@ void printmem(char * dir_memoria){                          // deberia ir como p
 */
 
 //-----------------------------------------------------------------------
-// hora: imprime fecha y hora local
+// tiempo: imprime fecha y hora local en tiempo GMT-3
 //-----------------------------------------------------------------------
 // Argumentos:
-//
+//  null
 //-----------------------------------------------------------------------
-// imprime:
-//      Fecha y hora local:
-//          Miercoles 25/05/2022 15:35hs
+// Imprime:
+//      Fecha y hora local (GMT-3):
+//          Miercoles 25/05/2022 15:35:20hs
 //-----------------------------------------------------------------------
-void hora() {
-       print_string("Fecha y hora local: \n", WHITE);
-       char * week[] = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
+void tiempo() {
+       print_string("Fecha y hora local (GMT-3): \n", WHITE);
+       // TODO: Chequear que valor devuelve para cada dia
+       char * week[] = {" ", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
        print_string("    ", WHITE);
-       print_string(week[get_week()], WHITE);
+       print_string(week[time_arr[DAY_WEEK]()], WHITE);
        print_string(" ", WHITE);
-       print_number(get_day(), WHITE);
+       print_number(time_arr[DAY_MONTH](), WHITE);
        print_string("/", WHITE);
-       print_number(get_month(), WHITE);
+       print_number(time_arr[MONTH](), WHITE);
        print_string("/", WHITE);
-       print_number(get_year(), WHITE);
+       print_number(time_arr[YEAR](), WHITE);
        print_string(" ", WHITE);
-       print_number(get_hour()-3, WHITE);
+       print_number(time_arr[HOUR]()-3, WHITE);
        print_string(":", WHITE);
-       print_number(get_min(), WHITE);
+       print_number(time_arr[MIN](), WHITE);
+       print_string(":", WHITE);
+       print_number(time_arr[SEC](), WHITE);
        print_string("hs\n", WHITE);
        return;
 }

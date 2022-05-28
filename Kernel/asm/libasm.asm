@@ -1,6 +1,7 @@
 GLOBAL cpuVendor
 GLOBAL default_process
 GLOBAL get_time
+GLOBAL get_data
 
 section .text
 	
@@ -76,3 +77,25 @@ get_time:
 	mov rsp, rbp
 	pop rbp					; Desarmado de stack frame
 	ret
+
+
+;-------------------------------------------------------------------------------------
+; get_data: Devuelve el dato almacenado en la direccion ingresada
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rdi: direccion de memoria sobre el cual consultar
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   El dato almacenado
+;------------------------------------------------------------------------------------
+get_data:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 0
+    mov rax, [rdi]
+
+    mov rbp, rsp
+    pop rbp
+    ret
+

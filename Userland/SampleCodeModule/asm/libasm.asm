@@ -1,17 +1,12 @@
 GLOBAL sys_write
 GLOBAL sys_read
-GLOBAL zero_division_exc
-GLOBAL invalid_opcode_exc
-GLOBAL get_week
-GLOBAL get_day
-GLOBAL get_month
-GLOBAL get_year
-GLOBAL get_hour
-GLOBAL get_min
 GLOBAL sys_exec
 GLOBAL sys_exit
+GLOBAL sys_time
+GLOBAL sys_mem
+GLOBAL zero_division_exc
+GLOBAL invalid_opcode_exc
 GLOBAL get_registers
-GLOBAL get_memory
 
 
 section .text
@@ -106,6 +101,51 @@ sys_exit:
     ret
 
 ;-------------------------------------------------------------------------------------
+; sys_time: Devuelve el valor para la unidad de tiempo pasado
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rdi: el tipo de unidad (0 = secs, 2 = mins, 4 = hour, 6 = day of week, 7 = day, 8 = month, 9 = year)
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   El valor para esa unidad de tiempo
+;------------------------------------------------------------------------------------
+sys_time:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, rdi
+    mov rax, 4
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;-------------------------------------------------------------------------------------
+; sys_mem:  Dado un arreglo de 32 bytes y una direccion de memoria, completa el arreglo con la informacion
+;           guardada en dicha direccion y las 31 siguientes
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rdi: direccion de memoria inicial
+;   rsi: direccion de memoria del arreglo
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   Cantidad de datos que realmente se almacenaron (los restantes son NULL)
+;------------------------------------------------------------------------------------
+sys_mem:
+    push rbp
+    mov rbp, rsp
+
+    mov rcx, rsi
+    mov rbx, rdi
+    mov rax, 5
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;-------------------------------------------------------------------------------------
 ; zero_division_exc: Programa para generar un excepcion de division por cero
 ;-------------------------------------------------------------------------------------
 ; Parametros:
@@ -151,77 +191,77 @@ invalid_opcode_exc:
 ; Retorno:
 ;   rax: entero con la categoria que quiero
 ;-------------------------------------------------------------------------------------
-get_week:
-    push rbp
-    mov rbp, rsp
+;get_week:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 6
-    mov rax, 4
-    int 80h
+;    mov rbx, 6
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
-get_day:
-    push rbp
-    mov rbp, rsp
+;get_day:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 7
-    mov rax, 4
-    int 80h
+;    mov rbx, 7
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
-get_month:
-    push rbp
-    mov rbp, rsp
+;get_month:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 8
-    mov rax, 4
-    int 80h
+;    mov rbx, 8
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
-get_year:
-    push rbp
-    mov rbp, rsp
+;get_year:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 9
-    mov rax, 4
-    int 80h
+;    mov rbx, 9
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
-get_hour:
-    push rbp
-    mov rbp, rsp
+;get_hour:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 4
-    mov rax, 4
-    int 80h
+;    mov rbx, 4
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
-get_min:
-    push rbp
-    mov rbp, rsp
+;get_min:
+;    push rbp
+;    mov rbp, rsp
 
-    mov rbx, 2
-    mov rax, 4
-    int 80h
+;    mov rbx, 2
+;    mov rax, 4
+;    int 80h
 
-	mov rsp, rbp
-	pop rbp
-	ret
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 ;-------------------------------------------------------------------------------------
 ; FIN FUNCIONES PARA MANEJO DE FECHA Y HORA
 ;-------------------------------------------------------------------------------------
@@ -255,12 +295,16 @@ get_registers:
 	mov [reg+88], rdx
 	mov [reg+96], rsi
 	mov [reg+104], rdi
-	pop rax
-	mov [reg+112], rax
-	push rax
-    mov [reg+120], rbp                      ; deberia ir rsp pero por stack frame dejo este
-    mov qword rax, [rbp+8]                  ; Guardo en rax el valor de RIP
+	mov [reg+112], rbp
+    mov [reg+120], rbp                      ; Deberia ir rsp pero por stack frame dejo este
+
+    push rax
+    call get_rip
+
+get_rip_return:
     mov qword [reg+128], rax                ; Guardo en el arreglo, el valor de RIP
+
+    pop rax
 
     mov rax, reg
 
@@ -268,26 +312,9 @@ get_registers:
     pop rbp
     ret
 
-
-;-------------------------------------------------------------------------------------
-; get_memory: Obtener un vuelco de memoria de 32bits
-;-------------------------------------------------------------------------------------
-; Parametros:
-;   rdi: puntero al lugar de memoria donde realizar el vuelco
-;-------------------------------------------------------------------------------------
-; Retorno:
-;   el valor de la direccion de memoria de 32bits
-;------------------------------------------------------------------------------------
-get_memory:
-    push rbp
-    mov rbp, rsp
-
-    mov rax, 0
-    mov eax, [rdi]
-
-    mov rbp, rsp
-    pop rbp
-    ret
+get_rip:
+    pop rax
+    jmp get_rip_return
 
 SECTION .bss
 	reg resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
