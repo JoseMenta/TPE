@@ -28,10 +28,11 @@ int main() {
 //    sys_write("holaaaa UserSpace", WHITE);
     //zero_division_exc();
 
-    void * aux[2] = {&read_test,&read_test};
-    sys_exec(2, aux);
-//    void * aux[2] = {read_test};
-//    sys_exec(1, aux);
+//    void * aux[2] = {&infinite_test,&infinite_test};
+//    sys_exec(2, aux);
+    void * aux[] = {multiple_left_right_call};
+    sys_exec(1, aux);
+
     //(uint64_t) write_test;
     //sys_write("fin",WHITE);
     //tiempo();

@@ -54,6 +54,7 @@ void keyboard_handler(){
     if(key == ESC){
         //Si pone ESC, se cortan todos los procesos que se encuentren corriendo en el momento y vuelve al proceso que los llamo
         want_to_return = 1;
+        change_context();
         // Al reiniciar un proceso antiguo, se pierde el estado de los procesos pues se eliminaron
         all_state = left_state = right_state = 1;
     }

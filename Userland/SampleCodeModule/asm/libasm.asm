@@ -320,7 +320,7 @@ get_rip:
 get_register:
     push rbp
     mov rbp, rsp
-    mov rax, cs
+    mov rax, rsp
     mov rbp, rsp
     pop rbp
     ret
