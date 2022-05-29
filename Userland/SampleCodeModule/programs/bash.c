@@ -137,7 +137,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
 //
 
 void analyze_buffer(void) {
-    // Obtenemos los strings sin espacios de los ingresado en la terminal
+    // Obtenemos los strings sin espacios de los ingresados en la terminal
     int prev_token = 0;
     int new_token = str_tok(buffer, ' ');
     // Si no se ingreso texto, solo ENTER, no se hace nada
@@ -153,7 +153,7 @@ void analyze_buffer(void) {
         new_token = str_tok(buffer+prev_token+1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
         if(new_token == 0){
-            print_string("\nLa computadora está lista para apagarse.\nPresione ESC para salir.\n", WHITE);
+            print_string("\nLa computadora esta lista para apagarse.\nPresione ESC para salir.\n", WHITE);
             sys_exit(0);
         }
         else {
@@ -284,8 +284,8 @@ void analyze_buffer(void) {
     }
     program_t struct_b = {program_b, i, arg_b};
     // Y se ejecutan los dos ultimos programas
-    program_t structs2[] = {struct_a, struct_b};
-    sys_exec(1, structs2);
+    program_t structs[] = {struct_a, struct_b};
+    sys_exec(2, structs);
     return;
 
     /*
