@@ -38,9 +38,9 @@ void load_idt() {
   setup_IDT_entry (0x80, (uint64_t)&_syscallHandler);       // Manejo de syscalls 0x80
 
 
-	//Solo interrupcion timer tick habilitadas: Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0
-	picMasterMask(0x00);  //todo CAMBIAR!!! esta asi solo para que ande toodo
-	picSlaveMask(0x00);
+	// Habilitamos el timer tick (IRQ0) y el teclado (IRQ1): Al setearse en 0 solo el primer bit del PIC maestro, solo se habilita la interrupcion IRQ0
+	picMasterMask(0xFC);
+	picSlaveMask(0xFF);
         
 	_sti();                                                   // Habilita las interrupciones enmascarables
 }

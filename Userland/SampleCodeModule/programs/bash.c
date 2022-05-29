@@ -148,6 +148,7 @@ void analyze_buffer(void) {
         new_token = str_tok(buffer+prev_token+1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
         if(new_token == 0){
+            print_string("\nPresione ESC para salir\n", WHITE);
             sys_exit(0);
         }
         else {
@@ -185,6 +186,7 @@ void analyze_buffer(void) {
     if (new_token == 0) {
         uint64_t program[1] = {(uint64_t)program_a};
         sys_exec(1, (void *)program);
+
         return;
     }
 

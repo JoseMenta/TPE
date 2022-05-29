@@ -157,7 +157,8 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 
 
     ((EntryPoint)sampleCodeModuleAddress)();
-    print("Volvio al kernel despues de estar en sampleCodeModule!",WHITE,ALL);
+    clear(ALL);
+    print("Programa terminado!",WHITE,ALL);
 //    ncNewline();
 //    ncNewline();
 //    ncPrint("Volvio a kernel");

@@ -1,5 +1,4 @@
 #include <keyboard.h>
-#include <queue.h>
 
 
 #define IS_ALPHA(x) ((x) >= 'a' && (x) <= 'z') ? 1 : 0
@@ -11,7 +10,7 @@ queue_t queue = {{0}};
 static int key_case = -1;               // Estado actual del formato de la letra (mayuscula: 1, o minuscula: -1)
 static int key_case_default = -1;       // Estado default del formato de la letra
 
-static int ctrl_pressed = 1;
+static int ctrl_pressed = 0;
 static int left_state = 1;
 static int right_state = 1;
 static int all_state = 1;
@@ -73,12 +72,12 @@ void keyboard_handler(){
 //    }
 
     // Logica para el pausado y reanudado de procesos
-//    else if(key == CTRL){
-//        ctrl_pressed = 1;
-//    }
-//    else if (key == CTRL+RELEASED) {
-//        ctrl_pressed = 0;
-//    }
+    else if(key == CTRL){
+        ctrl_pressed = 1;
+    }
+    else if (key == CTRL+RELEASED) {
+        ctrl_pressed = 0;
+    }
 
     // Guardamos en el buffer solo aquellas teclas que puedan ser referenciables: letras, digitos y espacios (\n, \t, etc)
     else if(IS_REFERENCEABLE(key)){
@@ -127,5 +126,9 @@ void keyboard_handler(){
             enqueue(&queue,keyboard_reference[key]);
         }
     }
+}
+
+void clear_keyboard_buffer(){
+    clear_queue(&queue);
 }
 

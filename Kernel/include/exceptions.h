@@ -6,8 +6,6 @@
 #include <stdint.h>
 #include <scheduler.h>
 
-#define COUNT_REGS (18)
-
 void zero_division();
 void invalid_opcode();
 

@@ -51,3 +51,9 @@ uint8_t dequeue(queue_t* queue){
     queue->first = (queue->first + 1) % MAX;
     return ans;
 }
+
+void clear_queue(queue_t* queue){
+    queue->len = 0;
+    queue->first = 0;
+    queue->last = 0;
+}

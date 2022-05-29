@@ -22,7 +22,7 @@ GLOBAL getCurrContext
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
-
+EXTERN clear_queue                          ; Limpia el buffer del teclado
 EXTERN write_handler                        ; Handler de los syscalls
 EXTERN read_handler
 EXTERN exec_handler
@@ -130,7 +130,9 @@ SECTION .text
     ;CS: deberia ser igual para todos
     mov qword rax, [rsp+16] ;guardo el CS en el stack
     mov qword [iretq_registers], rax
-
+    ;guardo el rsp donde ocurrio la interrupcion/excepcion por si lo necesita el handler (en las excepciones se usa)
+    mov qword rax, [rsp + 32]
+    mov qword [%1 + 152], rax ;lo guardo para que lo imprima la excepcion
     ;FLAGS: lo guardo para cada proceso
     mov qword rax, [rsp+24] ;guardo los RFLAGS
     mov qword [%1+ 144], rax ;lo guarda en el contexto actual
@@ -260,7 +262,8 @@ SECTION .text
         ;mov qword rax, [iretq_registers + 8]
         mov qword [rsp+24],rax
 
-
+        ;NOTA: no usamos el ACTUAL_RSP del vector para restaurar el rsp (se usa solo para imprimir en la excepcion)
+        ;Se restaura con la diferencia registrada en el momento de la excepcion/interrupcion
         ;mov rax, rsp
         ;sub rax, 48h ;va a ser 56 mas abajo del que estaba en el handler (para considerar a los cambios por el stack frame de la interrupcion)
 
@@ -737,13 +740,13 @@ haltcpu:
 
 ; TODO: Usar un unico arreglo para los registros
 SECTION .bss
-	exc_state resb 152		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
+	;exc_state resb 152		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
 	;exc_state es distinto a curr_contex porque en el primero guardo el rsp de donde ocurre la excepcion y no de cuando llega al handler
-	curr_context resb 152       ; Contexto del programa (para almacenar procesos)
+	curr_context resb 160       ; Contexto del programa (para almacenar procesos)
 	;TODO: cambiar tamaño
-	iretq_registers resb 144         ; Auxiliar para guardar otras cosas que deja iretq
-	aux resq 1                  ; Variable auxiliar
-	off resq 1
+	iretq_registers resb 144    ; Auxiliar para guardar otras cosas que pushea iretq
+	aux resq 1                  ; Variable auxiliar para resguardar el valor de retorno de las syscalls
+	off resq 1                  ; Calculo el offset de las interrupciones y excepciones (esto se debe a que lo que se pushea el stack varia)
 
 SECTION .data
 	r8_o equ 0

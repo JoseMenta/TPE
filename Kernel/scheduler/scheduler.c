@@ -1,6 +1,7 @@
 #include <scheduler.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <keyboard.h>
 #include <video_driver.h>
 #define ORIGINAL_PROCESS_INDEX 0
 #define DEFAULT_PROCESS_INDEX 4
@@ -147,6 +148,7 @@ void change_context(){
         left_index = -1;
         right_index = -1;
         full_index = i; //El nuevo proceso en la pantalla completa es el ultimo que se freno
+        clear_keyboard_buffer();
         clear(process_array[i].position);//Limpia la pantalla para el proceso que vuelve
         switch_context(i);//Cambio el contexto al de ese proceso
         process_array_len = i +1;//Elimino a los procesos que venian despues de el

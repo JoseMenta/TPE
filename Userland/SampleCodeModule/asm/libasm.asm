@@ -156,11 +156,11 @@ zero_division_exc:
 	push rbp
 	mov rbp, rsp
 
-;    mov rcx, 0
-;    mov rax, 1
-;	 div rcx                 ; Hacemos la division 1 / 0
+    mov rcx, 0
+    mov rax, 1
+	 div rcx                 ; Hacemos la division 1 / 0
 
-    int 0h
+;    int 0h
 
 	mov rsp, rbp
 	pop rbp
@@ -176,7 +176,11 @@ invalid_opcode_exc:
 	push rbp
 	mov rbp, rsp
 
-	ud2                     ; Genera un invalid opcode
+;    mov rcx, 0
+;    mov rax, 1
+;	div rcx
+    mov cr6, rax
+;	ud2                     ; Genera un invalid opcode
 
 	mov rsp, rbp
 	pop rbp

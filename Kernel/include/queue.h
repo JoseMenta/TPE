@@ -19,5 +19,5 @@ typedef struct{
 void enqueue(queue_t* queue, int elem);
 uint8_t dequeue(queue_t* queue);
 uint8_t is_empty(queue_t* queue);
-
+void clear_queue(queue_t* queue);
 #endif //TPE_QUEUE_H

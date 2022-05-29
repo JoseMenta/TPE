@@ -1,17 +1,17 @@
-#include <math.h>
-#include <libc.h>
+#include <primos.h>
 
+uint8_t is_prime(uint64_t number);
 
-int is_prime(int number){
-    for(int i=2; i <= number/2; i++){
-        if(number%i ==0)
+uint8_t is_prime(uint64_t number){
+    for(int i=FIRST_PRIME; i*i <= number; i++){
+        if(number%i == 0)
             return 0;
     }
     return 1;
 }
 
 void primos(){
-   for(int i=0; 1 ; i++){
+   for(uint64_t i=FIRST_PRIME; 1 ; i++){
         if(is_prime(i)){
            print_number(i, WHITE);
            print_string("\n", WHITE);
