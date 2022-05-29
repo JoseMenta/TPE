@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <scheduler.h>
+#include <keyboard.h>
 
 /*
 #define BLACK       0x00

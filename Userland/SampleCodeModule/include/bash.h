@@ -7,6 +7,6 @@
 
 #define LOGOUT "logout"
 #define ASCII_DELETE 127
-void bash();
+void bash(void);
 
 #endif

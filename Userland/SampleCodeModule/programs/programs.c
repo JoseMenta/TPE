@@ -13,6 +13,7 @@ void help(){
     print_string("    hora: Fecha y hora actuales\n", WHITE);
     print_string("    primos: Despliega los numeros primos a partir del 1\n", WHITE);
     print_string("    fibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
+    sys_exit();
 }
 
 
@@ -27,11 +28,13 @@ void inforeg(){
         print_string(reg_str,WHITE);
         print_string("\n", WHITE);
     }
+    sys_exit();
 }
 
+//void printmem(uint64_t init_dir)
 
-
-void printmem(uint64_t init_dir){
+void printmem(){
+    uint64_t init_dir = 0x400000;
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);
 
@@ -45,9 +48,10 @@ void printmem(uint64_t init_dir){
         print_string(": ", WHITE);
         print_string("0x", WHITE);
         print_string(to_hex(str, mem_arr[i]), WHITE);
-        print_string("    ", WHITE);
+        (i%2==0)? print_string("    ", WHITE): print_string("\n", WHITE);
     }
     print_string("\n", WHITE);
+    sys_exit();
 }
 
 /*
@@ -108,6 +112,6 @@ void tiempo() {
        print_string(":", WHITE);
        print_number(time_arr[SEC](), WHITE);
        print_string("hs\n", WHITE);
-       return;
+       sys_exit();
 }
 

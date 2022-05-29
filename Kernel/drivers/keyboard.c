@@ -1,16 +1,7 @@
 #include <keyboard.h>
 #include <queue.h>
 
-//Constantes para los scan_code
-#define BLOCK_MAYUSC 58
-#define SHIFT1 42
-#define SHIFT2 54
-#define CTRL 29
-#define ESC 1
-#define RELEASED 128
-#define ASCII_DELETE 127
-#define UPPER_OFFSET ('a'-'A')  //0x20
-#define KEYBOARD_REFERENCE_LENGTH 54
+
 #define IS_ALPHA(x) ((x) >= 'a' && (x) <= 'z') ? 1 : 0
 #define IS_REFERENCEABLE(x) ((x) <= KEYBOARD_REFERENCE_LENGTH && keyboard_reference[(x)]!='\0')
 
@@ -29,11 +20,11 @@ static int all_state = 1;
 static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
                                    '6','7','8','9','0','-','=',
                                    ASCII_DELETE,' ','q','w','e','r','t',
-                                   'y','u','i','o','p','[',']','\\',
+                                   'y','u','i','o','p','[',']','\n',
                                    '\0','a','s','d','f','g','h','j',
-                                   'k','l',';','\'','\n','\0','\\',
+                                   'k','l',';','\'','|','\0','\\',
                                    'z','x','c','v','b','n','m',',',
-                                   '.','/','\0'};
+                                   '.','/','\0', '\0', '\0', ' '};
 //teclado windows
 /*static int keyboard_reference2[] = {'0', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
                                     '\'', '¡', '0', '0', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',

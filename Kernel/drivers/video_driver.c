@@ -81,6 +81,8 @@ void print_char(char c, formatType letterFormat, positionType position){
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position){
     if(c == '\n'){
         new_line(position);
+    }else if(c == ASCII_DELETE){
+        delete_last_char(position);
     }else{
         //Imprime el caracter en la posicion indicada
         *curr = c;                      // Imprimo el ASCII
@@ -157,6 +159,29 @@ void next(coordinatesType * position){
     }
 }
 
+void prev(coordinatesType * position){
+    // Si el proximo caracter es al principio de una fila (distinta de la primera) entonces debo borrar el ultimo caracter
+    // ingresado de la fila anterior
+    if(position->col_current == position->col_start){
+        // Me muevo a la fila anterior
+        position->row_current--;
+        // Para la columna es mas dificil, porque no esta asegurado que el ultimo caracter se imprimio en la ultima posicion
+        // Por lo que debo encontrar la primera posicion en la que hay un caracter distinto de ' ' (vacio) empezando por el final
+        // para hallar el ultimo caracter ingresado
+        // Si llego al principio de la fila, entonces puede ser que se ingreso un caracter y se presiono ENTER o directamente
+        // se presiono ENTER
+        position->col_current = position->col_end;
+        while (*(video_start + 160 * position->row_current + position->col_current) == ' ' &&
+               position->col_current > position->col_start){
+            position->col_current -= NEXT_COL;
+        }
+    }
+    // En cambio, si estoy en la mitad o al final de una fila, entonces debo borrar el caracter en la posicion anterior
+    else {
+        position->col_current -= NEXT_COL;
+    }
+}
+
 //-----------------------------------------------------------------------
 // scroll_up: Mueve los caracteres una linea arriba (la primera se pierde)
 //-----------------------------------------------------------------------
@@ -213,7 +238,7 @@ void print_lines(){
         *(video_start + WIDTH * i + col1) = '|';
         *(video_start + WIDTH * i + col1 + 1) = WHITE;
         *(video_start + WIDTH * i + col2) = '|';
-        *(video_start + WIDTH * i + col1 + 1) = WHITE;
+        *(video_start + WIDTH * i + col2 + 1) = WHITE;
     }
 }
 
@@ -265,29 +290,15 @@ void delete_last_char(positionType position){
     // Solo debo borrar si no estoy en la posicion inicial de la porcion pasada por parametros (pues sino no habria nada para borrar)
     if(!(coordinates[position].row_current == coordinates[position].row_start &&
          coordinates[position].col_current == coordinates[position].col_start)){
-        // Si el proximo caracter es al principio de una fila (distinta de la primera) entonces debo borrar el ultimo caracter
-        // ingresado de la fila anterior
-        if(coordinates[position].col_current == coordinates[position].col_start){
-            // Me muevo a la fila anterior
-            coordinates[position].row_current--;
-            // Para la columna es mas dificil, porque no esta asegurado que el ultimo caracter se imprimio en la ultima posicion
-            // Por lo que debo encontrar la primera posicion en la que hay un caracter distinto de ' ' (vacio) empezando por el final
-            // para hallar el ultimo caracter ingresado
-            // Si llego al principio de la fila, entonces puede ser que se ingreso un caracter y se presiono ENTER o directamente
-            // se presiono ENTER
-            coordinates[position].col_current = coordinates[position].col_end;
-            while(*(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current) == ' ' &&
-                  coordinates[position].col_current > coordinates[position].col_start){
-                coordinates[position].col_current -= NEXT_COL;
-            }
-        }
-            // En cambio, si estoy en la mitad o al final de una fila, entonces debo borrar el caracter en la posicion anterior
-        else {
-            coordinates[position].col_current -= NEXT_COL;
-        }
+        prev(&coordinates[position]);
         // Borro el ultimo caracter ingresado
         *(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current) = ' ';
         *(video_start + 160 * coordinates[position].row_current + coordinates[position].col_current + 1) = 0;
+        // Me paro uno mas antes para poder escribir la proxima letra
+        if(!(coordinates[position].row_current == coordinates[position].row_start &&
+             coordinates[position].col_current == coordinates[position].col_start)) {
+            prev(&coordinates[position]);
+        }
     }
 }
 

@@ -7,6 +7,7 @@ static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12
 void exceptionDispatcher(int exception) {
 	exceptions[exception]();
     //terminate_process();//Matamos al programa que lanzo la excepcion
+    terminate_process();
 	return;
 }
 

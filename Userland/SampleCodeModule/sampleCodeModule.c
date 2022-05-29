@@ -2,7 +2,7 @@
 #include <libc.h>
 #include <tests.h>
 #include <programs.h>
-
+#include <bash.h>
 //char * v = (char*)0xB8000 + 79 * 2;
 //
 //static int var1 = 0;
@@ -30,16 +30,23 @@ int main() {
 
 //    void * aux[2] = {&infinite_test,&infinite_test};
 //    sys_exec(2, aux);
-    void * aux[] = {multiple_left_right_call};
-    sys_exec(1, aux);
+ //void * aux[] = {multiple_left_right_call};
+//    sys_exec(1, aux);
 
+//    void * aux[2] = {&read_test,&read_test};
+//    sys_exec(2, aux);
+//    void * aux[2] = {read_test};
+//    sys_exec(1, aux);
     //(uint64_t) write_test;
     //sys_write("fin",WHITE);
     //tiempo();
     //inforeg();
-    //printmem(0x400000);
-
-    //bash();
-     return 0;
+    //printmem(0x400000)
+    void * aux[] = {bash};
+    sys_exec(1, aux);
+//    bash();
+//    void * aux[1] = {&bash()};
+//    sys_exec(1,aux);
+    return 0;
 
 }

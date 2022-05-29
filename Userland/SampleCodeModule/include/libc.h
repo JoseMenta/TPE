@@ -11,7 +11,7 @@ typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DA
 
 typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
 
-#define NULL ((void*) 0)
+#define NULL (0)
 #define CANT_PROG (8)
 
 uint8_t sys_write(const char * string, formatType format);
@@ -21,14 +21,13 @@ uint8_t sys_exit();
 uint8_t sys_time(timeType time_unit);
 uint8_t sys_mem(uint64_t init_dir, uint8_t * arr);
 
-void * get_program(const char * str);
+uint64_t get_program(const char * str);
 uint8_t get_char(void);
 uint8_t print_string(const char * s1, formatType format);
 uint8_t print_number(uint64_t number, formatType format);
 uint64_t strcmp(const char * s1, const char * s2);
 char * to_hex(char * str, uint64_t val);
 uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
-char * str_tok(char * buffer, char sep);
 
 uint8_t get_year(void);
 uint8_t get_month(void);
@@ -41,6 +40,6 @@ uint8_t get_secs(void);
 uint64_t* get_registers(void);
 uint64_t get_register(void);
 uint64_t get_memory(uint32_t* pointer);
-char * str_tok(char * buffer, char sep);
+int str_tok(char * buffer, char sep);
 
 #endif //TPE_LIBC_H

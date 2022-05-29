@@ -4,6 +4,7 @@
 #include <video_driver.h>
 #include <syscalls.h>
 #include <stdint.h>
+#include <scheduler.h>
 
 #define COUNT_REGS (18)
 

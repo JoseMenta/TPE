@@ -125,17 +125,29 @@ void change_context(){
     if(runnable==0 || want_to_return){
         //Terminaron todos los procesos que se podian correr
         if(!want_to_return){
-            //corre el proceso default
+            //corre el proceso default, se queda esperando a que toque esc
             switch_context(DEFAULT_PROCESS_INDEX); //Me quedo esperando a que quiera volver (voy a estar en el contexto de uno de los que estaba corriendo)
             return;
         }
+        if(runnable!=0){//No llego al final el proceso
+////            if(want_to_return) {
+//                if(currentProcess_index==full_index){
+//                    runnable-=1;
+//                }else{
+//                    runnable-=2;
+//                }
+////            }
+            runnable = 0;
+        }
         want_to_return = 0; //Lo seteo para el proximo uso
         int i = process_array_len-1;
-        for(; process_array[i].status != WAITING; i--); //Busco el index del ultimo proceso WAITIN
+        for(; process_array[i].status != WAITING; i--); //Busco el index del ultimo proceso WAITING
         process_array[i].status=RUNNING;
         runnable++;
-        full_index = i; //El nuevo proceso en la pantalla completa es el
-        clear(process_array[i].position);//Limplia la pantalla para el proceso que vuelve
+        left_index = -1;
+        right_index = -1;
+        full_index = i; //El nuevo proceso en la pantalla completa es el ultimo que se freno
+        clear(process_array[i].position);//Limpia la pantalla para el proceso que vuelve
         switch_context(i);//Cambio el contexto al de ese proceso
         process_array_len = i +1;//Elimino a los procesos que venian despues de el
         return;
@@ -160,8 +172,8 @@ void change_context(){
     }else if(runnable==1){
         if(process_array[currentProcess_index].status==TERMINATED){
             int next_index = (currentProcess_index==left_index)?right_index:left_index;
-            if(currentProcess_index == left_index) left_index = -1;
-            if(currentProcess_index == right_index) right_index = -1;
+//            if(currentProcess_index == left_index) left_index = -1;
+//            if(currentProcess_index == right_index) right_index = -1;
             switch_context(next_index);
         }else if(process_array[currentProcess_index].status==SUSPENDED){
             switch_context(DEFAULT_PROCESS_INDEX);
@@ -339,7 +351,7 @@ static void switch_context(uint8_t new_index){
         copy_context(curr_context_arr,process_array[currentProcess_index].registers);
     }
     if(process_array[new_index].status!= RUNNING || new_index==DEFAULT_PROCESS_INDEX){  //Si no esta corriendo, corro a default en su lugar
-        //Cuando esta WAITING o TERMINATED, corre en su lugar el defautl process
+        //Cuando esta WAITING o TERMINATED, corre en su lugar el default process
         copy_context(process_array[DEFAULT_PROCESS_INDEX].registers,curr_context_arr);//Copio el contexto del default_process
     }else {
         copy_context(process_array[new_index].registers, curr_context_arr);

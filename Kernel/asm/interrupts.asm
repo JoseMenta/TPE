@@ -466,12 +466,12 @@ SECTION .text
 ; Es una macro que recibe por argumento el codigo de la excepción lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro exceptionHandler 1
 
-    saveRegs exc_state
+    saveRegs curr_context
     ;pushState                   ; Guarda en un arreglo el valor de los registros al lanzar una excepcion
 	mov rdi, %1                         ; Pasaje de parametro
 	call exceptionDispatcher            ; Llamamos al dispatcher de excepciones
     ;popState
-    restoreRegs exc_state
+    restoreRegs curr_context
 
 	iretq
 %endmacro
@@ -723,7 +723,7 @@ get_registers:
 ;	mov [reg+120], rsp
 ;	mov [reg+128], rip
 
-	mov rax, exc_state                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
+	mov rax, curr_context                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
 
 	mov rsp, rbp
 	pop rbp

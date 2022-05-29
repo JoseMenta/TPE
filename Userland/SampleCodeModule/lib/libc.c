@@ -1,13 +1,13 @@
 #include <libc.h>
 
-char * programs_names[CANT_PROG] = {"help",
+char * programs_names[CANT_PROG] = {"nnn",
                           "div0",
-                          "invalid opcode",
-                          "inforeg",
-                          "printmem",
-                          "hora",
-                          "primos",
-                          "fibonacci"};
+                          "iiii",
+                          "ggg",
+                          "mmm",
+                          "hhh",
+                          "ppp",
+                          "bbbb"};
 
 programs programs_list[CANT_PROG] = {help,
                             zero_division_exc,
@@ -165,7 +165,7 @@ uint64_t strcmp(const char* s1, const char* s2){
 // Retorno
 //   - el puntero al programa a ejecutar
 //---------------------------------------------------------------------------------
-void * get_program(const char * str){
+uint64_t get_program(const char * str){
     for(int i = 0; i<CANT_PROG;i++){
         if(strcmp(str,programs_names[i])==0){
                 return programs_list[i];
@@ -267,26 +267,22 @@ uint8_t get_secs(void){
 }
 
 //---------------------------------------------------------------------------------
-// str_tok: va retornando strings divididos por un separador
+// str_tok: Retorna el indice de la primera aparicion del separador (un caracter) en el string
 //---------------------------------------------------------------------------------
 // Argumentos:
-//   - buffer con texto largo a tokenizar
-//   - separador para cortar el string largo
+//   - buffer: El texto a analizar
+//   - sep: El caracter a encontrar
+//   - is_end: Indica si termino de leer el string (llego al \0) = 1, 0 si no
 //---------------------------------------------------------------------------------
 // Retorno
-//   - substrings separador por separador
+//   - El indice de la primera aparicion de sep en buffer o de \0
 //---------------------------------------------------------------------------------
-//int last_index = 0;
-//char aux[100];
-//
-//char * str_tok(char * buffer, char sep){
-//    int base = last_index;
-//    for(; buffer[last_index]!=sep && buffer[last_index]!='\0'; last_index++){
-//        aux[base -last_index] = buffer[last_index];
-//    }
-//    aux[base - last_index +1 ] = '\0'
-//    return aux;
-//}
+int str_tok(char * buffer, char sep){
+    int i=0;
+    for(; buffer[i]!=sep && buffer[i]!='\0'; i++);
+    return i;
+}
+
 
 
 
