@@ -42,7 +42,7 @@ int main() {
     //tiempo();
     //inforeg();
     //printmem(0x400000)
-    void * aux[] = {bash};
+    program_t aux[] = {{bash, 0, NULL}};
     sys_exec(1, aux);
 //    bash();
 //    void * aux[1] = {&bash()};

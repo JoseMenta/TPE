@@ -5,8 +5,11 @@
 #include <libc.h>
 #include <programs.h>
 
-#define LOGOUT "logout"
-#define ASCII_DELETE 127
-void bash(void);
+#define LOGOUT ("logout")             // El string con el cual se debe finalizar bash
+#define ASCII_DELETE (127)            // El valor ASCII de la tecla borrar
+#define MAX_BUFFER_SIZE (100)         // Tamaño maximo de caracteres que puede almacenar el buffer
+#define MAX_ARGS_SIZE (2)             // La cantidad máxima de argumentos que vamos a aceptar en un programa
+
+void bash(uint64_t arg_c, const char ** arg_v);
 
 #endif

@@ -1,6 +1,7 @@
 #include <bash.h>
+#include <libc.h>
 
-char buffer[100];
+char buffer[MAX_BUFFER_SIZE];
 int buffer_index = 0;
 
 void analyze_buffer(void);
@@ -16,7 +17,11 @@ void copy_token(char * token, int * start_token, int end_token);
 // Retorno
 //   void
 //---------------------------------------------------------------------------------
-void bash(void){
+void bash(uint64_t arg_c, const char ** arg_v){
+    if(arg_c!=0){
+        print_string("Error: el programa no recibe argumentos",STDERR);
+        sys_exit();
+    }
     print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
     char c[2] = {0, 0};
     while(1){
@@ -35,7 +40,7 @@ void bash(void){
                 buffer[--buffer_index] = '\0';
                 print_string(c, WHITE);
             }
-        }else if(c[0] != -1){
+        }else if(c[0] != -1 && buffer_index < MAX_BUFFER_SIZE){
             buffer[buffer_index++] = c[0];
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);
@@ -158,10 +163,10 @@ void analyze_buffer(void) {
     }
 
     // Consultamos si el primer string es un programa valido
-    uint64_t program_a = get_program(tokens);
+    void * program_a = get_program(tokens);
     // Si no se encontro programa, entonces no es un string valido
     if(program_a == NULL){
-        // Lanzar error: print rojo
+        // Lanzar error: El primer string es un programa valido
         print_string("\nERROR: programa invalido\n", RED);
         return;
     }
@@ -181,15 +186,29 @@ void analyze_buffer(void) {
 //      }
 //    }
 
-    new_token = str_tok(buffer+prev_token+1, ' ');
-    // Si solo habia un string (y valido) entonces se ejecuta un programa en toda la pantalla
-    if (new_token == 0) {
-        uint64_t program[1] = {(uint64_t)program_a};
-        sys_exec(1, (void *)program);
+    char arg_a[MAX_ARGS_SIZE][MAX_BUFFER_SIZE] = {{0}};         // Argumentos del programa A
+    int pipe_or_end_reached = 0;                                // Flag que indica si se llego a un pipe o al final del string
+    int i=0;                                                    // Itera sobre el arreglo de argumentos
+    for(; i < MAX_ARGS_SIZE && !pipe_or_end_reached; i++){      // Recorrera siempre y cuando quede espacio para los argumentos o hasta llegar a un pipe o \0
+        new_token = str_tok(buffer+prev_token+1, ' ');          // Obtenemos el proximo token, el cual puede ser un nuevo argumento, | o \0
+        prev_token++;
+        copy_token(arg_a[i], &prev_token, new_token);           // Subo el argumento al arreglo de argumentos
 
+        // Si es un '|' o es el ultimo token, quiero que no lea mas argumentos
+        if(strcmp(arg_a[i], "|") == 0 || strcmp(arg_a[i], "\0") == 0) {
+            arg_a[i][0] = '\0';                                 // Si se leyo un | o \0 debemos borrar el ultimo argumento pues se copio eso
+            i--;                                                // Contabilizamos como argumento al pipe o \0, por lo que debemos decrementar
+            pipe_or_end_reached = 1;                            // Actualizamos el flag
+        }
+    }
+    program_t struct_a = {program_a, i, arg_a};
+    // Si se leyo un \0, entonces se ejecuta un solo programa
+    if (new_token == 0) {
+        program_t structs[] = {struct_a};
+        sys_exec(1, structs);
         return;
     }
-
+    /*
     // En cambio, si hay mas de un string, el proximo debe ser un pipe
     // Copiamos el segundo token
     prev_token++;
@@ -202,7 +221,7 @@ void analyze_buffer(void) {
     }
 
     // Si llega aca es porque hubo un programa valido seguido de un |
-    new_token = str_tok(buffer+prev_token+1, ' ');
+
     // Si no hay un tercer string tambien es invalido pues debe ser 'pgm1 | pgm2'
     if(new_token == 0){
         // Lanzar error: print rojo
@@ -210,12 +229,23 @@ void analyze_buffer(void) {
         return ;
     }
     prev_token++;
+    */
+
+    // Si llegamos aca es porque leimos un |
+    new_token = str_tok(buffer+prev_token+1, ' ');
+    if(new_token == 0){
+        // Lanzar error: Hubo un pipe pero no hubo un string despues de él
+        print_string("\nERROR: Programa de consola derecha ausente\n", RED);
+        return;
+    }
+
+    prev_token++;
     copy_token(tokens, &prev_token, new_token);
     // Luego, consultamos si el primer string es un programa valido
-    uint64_t program_b = get_program(tokens);
+    void * program_b = get_program(tokens);
     // Si no lo es lanza error
     if (program_b == NULL) {
-        // Lanzar error: print rojo
+        // Lanzar error: Programa invalido
         print_string("\nERROR: programa para consola derecha invalido\n", RED);
         return;
     }
@@ -234,11 +264,36 @@ void analyze_buffer(void) {
 //      }
 //    }
 
+    // Si llegamos aca es porque leimos dos programas validos, falta leer los arguementos del segundo programa
+
+
+    char  arg_b[MAX_ARGS_SIZE][MAX_BUFFER_SIZE] = {{0}};        // Argumentos del programa B
+    pipe_or_end_reached = 0;                                    // Flag que indica si se llego a un pipe o al final del string
+    i=0;                                                        // Itera sobre el arreglo de argumentos
+    for(; i < MAX_ARGS_SIZE && !pipe_or_end_reached; i++){      // Recorrera siempre y cuando quede espacio para los argumentos o hasta llegar a un pipe o \0
+        new_token = str_tok(buffer+prev_token+1, ' ');          // Obtenemos el proximo token, el cual puede ser un nuevo argumento, | o \0
+        prev_token++;
+        copy_token(arg_b[i], &prev_token, new_token);           // Subo el argumento al arreglo de argumentos
+
+        // Si es el ultimo token, quiero que no lea mas argumentos
+        if(strcmp(arg_b[i], "\0") == 0) {
+            arg_b[i][0] = '\0';                                 // Si se leyo un \0 debemos borrar el ultimo argumento pues se copio eso
+            i--;                                                // Contabilizamos como argumento al pipe o \0, por lo que debemos decrementar
+            pipe_or_end_reached = 1;                            // Actualizamos el flag
+        }
+    }
+    program_t struct_b = {program_b, i, arg_b};
+    // Y se ejecutan los dos ultimos programas
+    program_t structs2[] = {struct_a, struct_b};
+    sys_exec(1, structs2);
+    return;
+
+    /*
     // Y no debe haber mas strings, para asi ejecutar dos programas
     new_token = str_tok(buffer+prev_token+1, ' ');
     if (new_token == 0) {
-        uint64_t program[2] = {program_a, program_b};
-        sys_exec(2, (void *)program);
+        void * program[2] = {program_a, program_b};
+        sys_exec(2, program);
         return;
     }
     // Si los hay lanza error, mala sintaxis
@@ -246,7 +301,7 @@ void analyze_buffer(void) {
         // Lanzar error: print rojo
         print_string("\nERROR: cantidad de programas invalida\n", RED);
         return ;
-    }
+    }*/
 }
 
 

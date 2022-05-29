@@ -10,20 +10,20 @@
 
 typedef uint8_t (* time_func) ();
 
-void inforeg();
+void inforeg(uint64_t arg_c, const char** arg_v);
 
-void printmem();
+void printmem(uint64_t arg_c, const char** arg_v);
 
-void tiempo();
+void tiempo(uint64_t arg_c, const char** arg_v);
 
-void primos();
+void primos(uint64_t arg_c, const char ** arg_v);
 
-void fibonacci();
+void fibonacci(uint64_t arg_c, const char** arg_v);
 
-void help();
+void help(uint64_t arg_c, const char** arg_v);
 
-void zero_division_exc();
+void zero_division_exc(uint64_t arg_c, const char** arg_v);
 
-void invalid_opcode_exc();
+void invalid_opcode_exc(uint64_t arc_c, const char** arg_v);
 
 #endif //TPE_PROGRAMS_H

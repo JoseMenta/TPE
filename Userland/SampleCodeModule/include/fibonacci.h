@@ -4,6 +4,6 @@
 #include <stdint.h>
 #include <libc.h>
 
-void fibonacci(void);
+void fibonacci(uint64_t arg_c, const char** arg_v);
 
 #endif

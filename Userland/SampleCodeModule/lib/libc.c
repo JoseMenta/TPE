@@ -9,7 +9,7 @@ char * programs_names[CANT_PROG] = {"nnn",
                           "ppp",
                           "bbbb"};
 
-programs programs_list[CANT_PROG] = {help,
+void* programs_list[CANT_PROG] = {help,
                             zero_division_exc,
                             invalid_opcode_exc,
                             inforeg,
@@ -165,7 +165,7 @@ uint64_t strcmp(const char* s1, const char* s2){
 // Retorno
 //   - el puntero al programa a ejecutar
 //---------------------------------------------------------------------------------
-uint64_t get_program(const char * str){
+void* get_program(const char * str){
     for(int i = 0; i<CANT_PROG;i++){
         if(strcmp(str,programs_names[i])==0){
                 return programs_list[i];

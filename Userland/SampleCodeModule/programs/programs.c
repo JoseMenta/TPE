@@ -4,7 +4,11 @@ static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12
 
 const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week, get_day, get_month, get_year};
 
-void help(){
+void help(uint64_t arg_c, const char** arg_v){
+    if(arg_c!=0){
+        print_string("Error: el programa no recibe argumentos",STDERR);
+        sys_exit();
+    }
     print_string("Programas disponibles:\n", WHITE);
     print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
     print_string("\tdiv0: Genera una excepcion por division por cero\n", WHITE);
@@ -17,7 +21,11 @@ void help(){
 }
 
 
-void inforeg(){
+void inforeg(uint64_t arg_c, const char** arg_v){
+    if(arg_c!=0){
+        print_string("Error: El programa no recibe argumentos",STDERR);
+        sys_exit();
+    }
     print_string("Registros: \n", WHITE);
     // Pongo en reg los valores de los registros
     uint64_t * reg = get_registers();
@@ -33,7 +41,11 @@ void inforeg(){
 
 //void printmem(uint64_t init_dir)
 //limit = 0xFFFFFFFD9
-void printmem(){
+void printmem(uint64_t arg_c, const char** arg_v){
+    if(arg_c!=1){
+        print_string("ERROR: El programa debe recibir unicamente 1 argumento", STDERR);
+        sys_exit();
+    }
     uint64_t init_dir = 0xFFFFFFFD9;
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);
@@ -93,28 +105,33 @@ void printmem(char * dir_memoria){                          // deberia ir como p
 //      Fecha y hora local (GMT-3):
 //          Miercoles 25/05/2022 15:35:20hs
 //-----------------------------------------------------------------------
-void tiempo() {
-       print_string("Fecha y hora local (GMT-3): \n", WHITE);
-       // TODO: Chequear que valor devuelve para cada dia
-       char * week[] = {" ", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
-       print_string("    ", WHITE);
-       print_string(week[time_arr[DAY_WEEK]()], WHITE);
-       print_string(" ", WHITE);
-       print_number(time_arr[DAY_MONTH](), WHITE);
-       print_string("/", WHITE);
-       print_number(time_arr[MONTH](), WHITE);
-       print_string("/", WHITE);
-       print_number(time_arr[YEAR](), WHITE);
-       print_string(" ", WHITE);
-       int hs = time_arr[HOUR]();
-       if(hs < 3)                           // Caso particular: Cuando en Greenwich es el dia siguiente al de Argentina
-           hs = 24 + hs;
-       print_number(hs - 3, WHITE);
-       print_string(":", WHITE);
-       print_number(time_arr[MIN](), WHITE);
-       print_string(":", WHITE);
-       print_number(time_arr[SEC](), WHITE);
-       print_string("hs\n", WHITE);
-       sys_exit();
+void tiempo(uint64_t arg_c, const char ** arg_v) {
+    if(arg_c!=0){
+        print_string("Error: El programa no recibe argumentos",STDERR);
+        sys_exit();
+    }
+    print_string("Fecha y hora local (GMT-3): \n", WHITE);
+    // TODO: Chequear que valor devuelve para cada dia
+    char * week[] = {" ", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
+    print_string("    ", WHITE);
+    print_string(week[time_arr[DAY_WEEK]()], WHITE);
+    print_string(" ", WHITE);
+    print_number(time_arr[DAY_MONTH](), WHITE);
+    print_string("/", WHITE);
+    print_number(time_arr[MONTH](), WHITE);
+    print_string("/", WHITE);
+    print_number(time_arr[YEAR](), WHITE);
+    print_string(" ", WHITE);
+    int hs = time_arr[HOUR]();
+    if(hs < 3) {                          // Caso particular: Cuando en Greenwich es el dia siguiente al de Argentina
+        hs = 24 + hs;
+    }
+    print_number(hs - 3, WHITE);
+    print_string(":", WHITE);
+    print_number(time_arr[MIN](), WHITE);
+    print_string(":", WHITE);
+    print_number(time_arr[SEC](), WHITE);
+    print_string("hs\n", WHITE);
+    sys_exit();
 }
 

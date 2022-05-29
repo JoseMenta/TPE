@@ -30,7 +30,7 @@ uint8_t write_handler(const char * str, formatType format){
 }
 
 //TODO: que cant sea un enum
-uint8_t exec_handler(uint8_t cant, void ** programs){
+uint8_t exec_handler(uint8_t cant, const program_t* programs){//Recibe un vector de program_t
     if(cant == 0 || cant > 2)
         return -1;
     else if(cant==1){

@@ -1,5 +1,5 @@
 #include <tests.h>
-
+/*
 void write_test(){
 //    sys_write("Imprimiendo en blanco\n", WHITE);
 //    sys_write("imprimiendo en rojo\n", RED);
@@ -85,3 +85,4 @@ void print_test(){
     print_string("deberia dar 54: ", YELLOW);
     print_number(54, WHITE);
 }
+*/

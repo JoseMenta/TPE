@@ -18,7 +18,7 @@ uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
 //Si es 2 => se esta corriendo solo la terminal
 //Si es 1 => Esta en userland
 //Dejamos main_userland para poder terminar con el kernel sin tener que forzar la salida
-void setup_context(uint64_t* context,void* new_rip, uint64_t new_rsp, uint64_t prev_actual_rflags);
+void setup_context(uint64_t* context,program_t program, uint64_t new_rsp, uint64_t prev_actual_rflags);
 void change_context();
 void copy_context(uint64_t* source, uint64_t* dest);
 void default_process();
@@ -28,8 +28,8 @@ static int8_t left_index = -1;
 static int8_t right_index = -1;
 static int8_t full_index = -1;
 static uint8_t runnable = 0;
-void add_full_process(void* process_start);
-static int add_process_to_array(void* process_start, positionType position);
+//void add_full_process(pro);
+static int add_process_to_array(program_t process_start, positionType position);
 static void add_original_process();
 static void switch_context(uint8_t new_index);
 //Fin implementacion alternativa
@@ -42,9 +42,9 @@ uint64_t * getCurrContext(void); //funcion auxiliar, devuelve un vector que fue 
 
 
 //Lo siguiente es una implementacion alternativa de la logica del scheduler
-void add_process(void * process_start, positionType position){
-    add_full_process(process_start);
-}
+//void add_process(void * process_start, positionType position){
+//    add_full_process(process_start);
+//}
 
 //void change_context(){
 //    if(process_array_len==0) return; //No hay procesos disponibles para cambiar
@@ -122,7 +122,7 @@ void add_process(void * process_start, positionType position){
 void change_context(){
     //change_context cambia el contexto cuando llega un TT
     if(process_array_len==0) return;
-    uint64_t* curr_context_arr = getCurrContext();
+    //uint64_t* curr_context_arr = getCurrContext();
     if(runnable==0 || want_to_return){
         //Terminaron todos los procesos que se podian correr
         if(!want_to_return){
@@ -362,7 +362,7 @@ static void switch_context(uint8_t new_index){
 
 }
 
-void add_two_processes(void* left_start, void* right_start){
+void add_two_processes(program_t left, program_t right){
     if(process_array_len==0){
         add_original_process();
     }else{
@@ -370,12 +370,12 @@ void add_two_processes(void* left_start, void* right_start){
         runnable--;
     }
     process_array[currentProcess_index].status = WAITING; //Esto hace que switchContext no guarde el contexto => vuelve a empezar si no lo guardo en la mitad con un TT
-    left_index = add_process_to_array(left_start,LEFT);
-    right_index = add_process_to_array(right_start,RIGHT);
+    left_index = add_process_to_array(left,LEFT);
+    right_index = add_process_to_array(right,RIGHT);
     switch_context(right_index); //Cambia el contexto como para que primero se ejecute el programa de la izquierda
 }
 
-void add_full_process(void* process_start){
+void add_full_process(program_t process){
     if(process_array_len==0){ //si es el primer proceso, agrego a quien lo ejecuto tambien para poder volver
         add_original_process();
     }else{
@@ -383,7 +383,7 @@ void add_full_process(void* process_start){
         runnable--; //Deja de correr el que lo llama (bash), pues lo cambia a WAITING
     }
     process_array[currentProcess_index].status = WAITING; //Seteo al proceso actual para que espera hasta que termine el nuevo proceso
-    full_index = add_process_to_array(process_start,ALL);
+    full_index = add_process_to_array(process,ALL);
     switch_context(full_index); //Cambia el contexto para que se comience a ejecutar el nuevo programa
 }
 
@@ -424,9 +424,9 @@ static void add_original_process(){
 
 //Agrega un proceso al final del arreglo de procesos (en estado RUNNING)
 //Devuelve el index del proceso que se agrego
-static int add_process_to_array(void* process_start, positionType position){
+static int add_process_to_array(program_t process, positionType position){
     //Inicializo en contexto del nuevo proceso
-    setup_context(process_array[process_array_len].registers,process_start,process_array[0].registers[RSP]-(process_array_len)*OFFSET,process_array[0].registers[ACTUAL_RFLAGS]);
+    setup_context(process_array[process_array_len].registers,process,process_array[0].registers[RSP]-(process_array_len)*OFFSET,process_array[0].registers[ACTUAL_RFLAGS]);
     process_array[process_array_len].position = position;
     process_array[process_array_len++].status = RUNNING;
     runnable++; //aumento el contador de procesos que pueden correr
@@ -434,13 +434,15 @@ static int add_process_to_array(void* process_start, positionType position){
 }
 
 //Funciones auxiliares de la implementacion
-void setup_context(uint64_t * context, void * new_rip, uint64_t new_rsp, uint64_t prev_actual_rflags){
+void setup_context(uint64_t * context, program_t program, uint64_t new_rsp, uint64_t prev_actual_rflags){
     // Inicializa los registros en 0 para el nuevo programa
     for(int  i = 0; i<REGISTERS_COUNT; i++){
         context[i] = 0;
     }
     // Se indica la direccion de memoria donde comienza el proceso (programa)
-    context[RIP] = (uint64_t) new_rip;
+    context[RIP] = (uint64_t) program.start;
+    context[RDI] = program.cant_arg; //Paso la cantidad de argumentos
+    context[RSI] = (uint64_t) program.args; //Paso el vector de char*
     // Se indica la direccion de memoria donde comienza el stack local al proceso
     context[RSP] = new_rsp;
     context[ACTUAL_RFLAGS] = prev_actual_rflags; //Esto es importante, si no no vuelve bien

@@ -1,8 +1,8 @@
 #include <primos.h>
 
-uint8_t is_prime(uint64_t number);
 
-uint8_t is_prime(uint64_t number){
+
+static uint8_t is_prime(uint64_t number){
     for(int i=FIRST_PRIME; i*i <= number; i++){
         if(number%i == 0)
             return 0;
@@ -10,7 +10,11 @@ uint8_t is_prime(uint64_t number){
     return 1;
 }
 
-void primos(){
+void primos(uint64_t arg_c, const char ** arg_v){
+    if(arg_c!=0){
+        print_string("Error: el programa no recibe argumentos",STDERR);
+        sys_exit();
+    }
    for(uint64_t i=FIRST_PRIME; 1 ; i++){
         if(is_prime(i)){
            print_number(i, WHITE);

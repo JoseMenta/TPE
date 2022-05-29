@@ -615,14 +615,14 @@ sys_write:
 ;-------------------------------------------------------------------------------------
 ; Parametros:
 ;   rbx: cantidad de programas que se desea correr (1 o 2)
-;   rcx: vector con las direcciones de inicio de los programas (si son 2, el primero es el de la izquierda)
+;   rcx: vector con 1 o 2 program_t para inicializar a los programas (si son 2, el primero es el de la izquierda)
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   rax: 0 si logro correr el programa; -1 si no
 ;------------------------------------------------------------------------------------
 sys_exec:
-    mov rdi, rbx
-    mov rsi, rcx
+    mov rdi, rbx ;paso la cantidad de programas
+    mov rsi, rcx ;paso el vector de program_t
     call exec_handler
     jmp fin
 

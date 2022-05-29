@@ -7,6 +7,6 @@
 
 #define FIRST_PRIME 2
 
-void primos();
+void primos(uint64_t arg_c, const char ** arg_v);
 
 #endif
