@@ -17,7 +17,7 @@ void copy_token(char * token, int * start_token, int end_token);
 //   void
 //---------------------------------------------------------------------------------
 void bash(void){
-    print_string("$ Que modulo desea correr? \n$ ", WHITE);
+    print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
     char c[2] = {0, 0};
     while(1){
         c[0] = get_char();
@@ -148,7 +148,7 @@ void analyze_buffer(void) {
         new_token = str_tok(buffer+prev_token+1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
         if(new_token == 0){
-            print_string("\nPresione ESC para salir\n", WHITE);
+            print_string("\nLa computadora está lista para apagarse.\nPresione ESC para salir.\n", WHITE);
             sys_exit(0);
         }
         else {

@@ -32,9 +32,9 @@ void inforeg(){
 }
 
 //void printmem(uint64_t init_dir)
-
+//limit = 0xFFFFFFFD9
 void printmem(){
-    uint64_t init_dir = 0x400000;
+    uint64_t init_dir = 0xFFFFFFFD9;
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);
 
@@ -48,7 +48,7 @@ void printmem(){
         print_string(": ", WHITE);
         print_string("0x", WHITE);
         print_string(to_hex(str, mem_arr[i]), WHITE);
-        (i%2==0)? print_string("    ", WHITE): print_string("\n", WHITE);
+        (i%2==0)? print_string("\t", WHITE): print_string("\n", WHITE);
     }
     print_string("\n", WHITE);
     sys_exit();

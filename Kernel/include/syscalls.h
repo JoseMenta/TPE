@@ -10,7 +10,7 @@
 typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
 
 #define MAX_ARRAY_SIZE 32
-#define MAX_MEM_ADDRESS 0xFFFFFFFFFFFFFFFF
+#define MAX_MEM_ADDRESS 0xFFFFFFFF8                     // A partir de la proxima direccion, falla (suponemos que es un seg fault)
 #define NULL 0
 
 uint8_t read_handler(char * str);                       // Lee por pantalla el siguiente caracter y lo copia en str
