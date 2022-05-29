@@ -19,7 +19,7 @@ static int all_state = 1;
 //teclado Mac
 static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
                                    '6','7','8','9','0','-','=',
-                                   ASCII_DELETE,' ','q','w','e','r','t',
+                                   ASCII_DELETE,'\t','q','w','e','r','t',
                                    'y','u','i','o','p','[',']','\n',
                                    '\0','a','s','d','f','g','h','j',
                                    'k','l',';','\'','|','\0','\\',

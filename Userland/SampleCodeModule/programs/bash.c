@@ -27,7 +27,7 @@ void bash(void){
             //sino entonces dejo el \n e imprimo nueva linea con el buffer en 0
             analyze_buffer();
             clean_buffer();
-            print_string("\n$ ", WHITE);
+            print_string("$ ", WHITE);
         }else if(c[0] == ASCII_DELETE){
             if(buffer_index != 0) {
                 //si quiero borrar, al imprimirlo ya lo saque del video driver
@@ -137,6 +137,7 @@ void analyze_buffer(void) {
     int new_token = str_tok(buffer, ' ');
     // Si no se ingreso texto, solo ENTER, no se hace nada
     if(new_token == 0){
+        print_string("\n", WHITE);
         return;
     }
     char tokens[100];

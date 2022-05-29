@@ -27,7 +27,7 @@
 
 typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DARK_GREY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED, PINK, YELLOW, WHITE} formatType;
 
-
+void print_tab(positionType position, formatType letterFormat);
 void print(const char * str, formatType letterFormat, positionType position);
 void new_line(positionType position);
 void println(const char * str, formatType letterFormat, positionType position);

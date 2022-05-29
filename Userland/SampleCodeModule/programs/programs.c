@@ -6,13 +6,13 @@ const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week
 
 void help(){
     print_string("Programas disponibles:\n", WHITE);
-    print_string("    help: Despliega los distintos comandos disponibles\n", WHITE);
-    print_string("    div0: Genera una excepcion por division por cero\n", WHITE);
-    print_string("    invalid opcode: Genera una excepcion por division por cero\n", WHITE);
-    print_string("    printmem: Devuelve el vuelco de memoria de un puntero\n", WHITE);
-    print_string("    hora: Fecha y hora actuales\n", WHITE);
-    print_string("    primos: Despliega los numeros primos a partir del 1\n", WHITE);
-    print_string("    fibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
+    print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
+    print_string("\tdiv0: Genera una excepcion por division por cero\n", WHITE);
+    print_string("\tinvalid opcode: Genera una excepcion por division por cero\n", WHITE);
+    print_string("\tprintmem: Devuelve el vuelco de memoria de un puntero\n", WHITE);
+    print_string("\thora: Fecha y hora actuales\n", WHITE);
+    print_string("\tprimos: Despliega los numeros primos a partir del 1\n", WHITE);
+    print_string("\tfibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
     sys_exit();
 }
 
@@ -106,7 +106,10 @@ void tiempo() {
        print_string("/", WHITE);
        print_number(time_arr[YEAR](), WHITE);
        print_string(" ", WHITE);
-       print_number(time_arr[HOUR]()-3, WHITE);
+       int hs = time_arr[HOUR]();
+       if(hs < 3)                           // Caso particular: Cuando en Greenwich es el dia siguiente al de Argentina
+           hs = 24 + hs;
+       print_number(hs - 3, WHITE);
        print_string(":", WHITE);
        print_number(time_arr[MIN](), WHITE);
        print_string(":", WHITE);

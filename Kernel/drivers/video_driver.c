@@ -73,20 +73,46 @@ void print_char(char c, formatType letterFormat, positionType position){
         scroll_up(position);
     }
     // Obtenemos la proxima posicion sobre la cual imprimir en la porcion correspondiente
-    if(c!='\n') {
+    if(c!='\n' && c != '\t') {
         next(&coordinates[position]);
     }
 }
 
+//-----------------------------------------------------------------------
+// print_aux: Logica de impresion segun el caracter
+//-----------------------------------------------------------------------
+// Argumentos:
+// - curr: La posicion sobre la cual imprimir en pantalla
+// - letterFormat: el color de la letra, una constante de color definida en .h
+// - position: La posicion de la pantalla donde se desea ir a la proxima linea
+//-----------------------------------------------------------------------
 void print_aux(uint8_t * curr, char c, formatType letterFormat, positionType position){
-    if(c == '\n'){
+    if(c == '\n'){                      // Si recibe un \n, se imprime un salto de linea
         new_line(position);
-    }else if(c == ASCII_DELETE){
+    }else if(c == '\t'){                // Si recibe un \t, se imprime un tabulador (4 espacios)
+        print_tab(position, letterFormat);
+    }else if(c == ASCII_DELETE){        // Si recibe un BACKSPACE, borra el ultimo caracter ingresado
         delete_last_char(position);
     }else{
-        //Imprime el caracter en la posicion indicada
+        // Si no es ninguno de los anteriores, imprime el caracter en la posicion indicada
         *curr = c;                      // Imprimo el ASCII
         *(curr + 1) = letterFormat;     // Indico el color que va a tener
+    }
+}
+
+//-----------------------------------------------------------------------
+// print_tab: Imprime un tabulador
+//-----------------------------------------------------------------------
+// Argumentos:
+// - position: La posicion de la pantalla donde se desea ir a la proxima linea
+//-----------------------------------------------------------------------
+void print_tab(positionType position, formatType letterFormat){
+    int can_print = 1;
+    for(int i=0; i < 4 && can_print; i++){
+        if(coordinates[position].col_current == coordinates[position].col_end){
+            can_print = 0;
+        }
+        print_char(' ', WHITE, position);
     }
 }
 
