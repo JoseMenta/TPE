@@ -7,6 +7,7 @@
 #include <math.h>
 
 #define COUNT_REGS (18)
+#define MAX_MEMORY_SIZE (32)
 
 typedef uint8_t (* time_func) ();
 

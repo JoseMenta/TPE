@@ -4,10 +4,11 @@ static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12
 
 const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week, get_day, get_month, get_year};
 
-void help(uint64_t arg_c, const char** arg_v){
+uint64_t analyze_string(const char * str);
+
+void help(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
-        print_string("Error: el programa no recibe argumentos",STDERR);
-        sys_exit();
+        throw_error("Error: el programa no recibe argumentos");
     }
     print_string("Programas disponibles:\n", WHITE);
     print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
@@ -21,7 +22,7 @@ void help(uint64_t arg_c, const char** arg_v){
 }
 
 
-void inforeg(uint64_t arg_c, const char** arg_v){
+void inforeg(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         print_string("Error: El programa no recibe argumentos",STDERR);
         sys_exit();
@@ -39,22 +40,20 @@ void inforeg(uint64_t arg_c, const char** arg_v){
     sys_exit();
 }
 
-//void printmem(uint64_t init_dir)
+
 //limit = 0xFFFFFFFD9
-void printmem(uint64_t arg_c, const char** arg_v){
+void printmem(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=1){
-        print_string("ERROR: El programa debe recibir unicamente 1 argumento", STDERR);
-        sys_exit();
+        throw_error("ERROR: El programa debe recibir unicamente 1 argumento");
     }
-    uint64_t init_dir = 0xFFFFFFFD9;
+    uint64_t init_dir = analyze_string(&(arg_v[0]));
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);
-
     char str[21] = {0};                                                             // 2^64 tiene 20 digitos mas el "\0"
     print_string("Datos almacenados a partir de la direccion 0x", WHITE);
     print_string(to_hex(str, init_dir), WHITE);
     print_string(":\n", WHITE);
-    for(int i = 0; i < dim; i++){
+    for(int i = 0; i < MAX_MEMORY_SIZE; i++){
         print_string("0x", WHITE);
         print_string(to_hex(str, init_dir + i), WHITE);
         print_string(": ", WHITE);
@@ -107,25 +106,39 @@ void printmem(char * dir_memoria){                          // deberia ir como p
 //-----------------------------------------------------------------------
 void tiempo(uint64_t arg_c, const char ** arg_v) {
     if(arg_c!=0){
-        print_string("Error: El programa no recibe argumentos",STDERR);
-        sys_exit();
+        throw_error("Error: El programa no recibe argumentos");
     }
     print_string("Fecha y hora local (GMT-3): \n", WHITE);
-    // TODO: Chequear que valor devuelve para cada dia
     char * week[] = {" ", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"};
-    print_string("    ", WHITE);
-    print_string(week[time_arr[DAY_WEEK]()], WHITE);
-    print_string(" ", WHITE);
-    print_number(time_arr[DAY_MONTH](), WHITE);
-    print_string("/", WHITE);
-    print_number(time_arr[MONTH](), WHITE);
-    print_string("/", WHITE);
-    print_number(time_arr[YEAR](), WHITE);
-    print_string(" ", WHITE);
+    int day_months[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    print_string("\t", WHITE);
     int hs = time_arr[HOUR]();
-    if(hs < 3) {                          // Caso particular: Cuando en Greenwich es el dia siguiente al de Argentina
+    int day = time_arr[DAY_WEEK]();
+    int day_month = time_arr[DAY_MONTH]();
+    int month = time_arr[MONTH]();
+    int year = time_arr[YEAR]();
+//    int hs = 1;
+//    int day = 1;
+//    int day_month = 1;
+//    int month = 1;
+//    int year = 2022;
+    if(hs < 3){                                 // Caso particular: Cuando en Greenwich es el dia siguiente al de Argentina
+        year = (day == 1 && month==1)? year-1: year;
+        if(((year % 4 == 0)&&( year % 100 != 0)) || (year % 400== 0))
+            day_months[2] = 29;
+        month = (day == 1)? ((month == 1)? 12 : month-1) : month;
+        day_month = (day_month == 1)? day_months[month] : day_month-1;
+        day = (day == 1)? 7 : day-1;
         hs = 24 + hs;
     }
+    print_string(week[day], WHITE);
+    print_string(" ", WHITE);
+    print_number(day_month, WHITE);
+    print_string("/", WHITE);
+    print_number(month, WHITE);
+    print_string("/", WHITE);
+    print_number(year, WHITE);
+    print_string(" ", WHITE);
     print_number(hs - 3, WHITE);
     print_string(":", WHITE);
     print_number(time_arr[MIN](), WHITE);
@@ -134,4 +147,36 @@ void tiempo(uint64_t arg_c, const char ** arg_v) {
     print_string("hs\n", WHITE);
     sys_exit();
 }
+
+
+//-----------------------------------------------------------------------
+// analyze_string: Procesa el String de parametro
+//-----------------------------------------------------------------------
+// Argumentos:
+//  - str: parametro
+//-----------------------------------------------------------------------
+// Retorna:
+//  - el puntero que reprecenta el string
+//-----------------------------------------------------------------------
+uint64_t analyze_string(const char * str){
+    uint64_t val = 0;                               // lo paso a entero para poder desreferenciar
+    uint8_t len=0;
+    for(; str[len] != '\0'; len++);
+    if(len < 2 || str[0] != '0' || str[1] != 'x'){
+        throw_error("ERROR: El string ingresado no es un formato de direccion correcta");
+    }
+    uint64_t mult=1;
+    for(uint8_t i=len-1; i>1; i--, mult*=16){
+        char num = str[i];
+        if (num >= '0' && num <= '9')
+            val += (num - '0') * mult;
+        else if (num >= 'A' && num <='F')
+            val += (num - 'A' + 10) * mult;
+        else{
+            throw_error("ERROR: El string ingresado no es un formato de direccion correcta");
+        }
+    }
+    return val;
+}
+
 

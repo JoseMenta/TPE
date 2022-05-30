@@ -19,8 +19,7 @@ void copy_token(char * token, int * start_token, int end_token);
 //---------------------------------------------------------------------------------
 void bash(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
-        print_string("Error: el programa no recibe argumentos",STDERR);
-        sys_exit();
+        throw_error("Error: el programa no recibe argumentos");
     }
     print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
     char c[2] = {0, 0};
@@ -152,11 +151,11 @@ void analyze_buffer(void) {
     if(strcmp(tokens, LOGOUT) == 0){
         new_token = str_tok(buffer+prev_token+1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
-        if(new_token == 0){
+        if(new_token == 0) {
             print_string("\nLa computadora esta lista para apagarse.\nPresione ESC para salir.\n", WHITE);
             sys_exit(0);
         }
-        else {
+        else{
             print_string("\nERROR: expresion invalida\n", RED);
             return;
         }
@@ -305,15 +304,15 @@ void analyze_buffer(void) {
 }
 
 
-////---------------------------------------------------------------------------------
-//// clean_buffer: Limpia el buffer
-////---------------------------------------------------------------------------------
-//// Argumentos:
-////   void
-////---------------------------------------------------------------------------------
-//// Retorno
-////   void
-////---------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
+// clean_buffer: Limpia el buffer
+//---------------------------------------------------------------------------------
+// Argumentos:
+//   void
+//---------------------------------------------------------------------------------
+// Retorno
+//   void
+//---------------------------------------------------------------------------------
 void clean_buffer(void){
     for(int i = 0; i < buffer_index; i++){
         buffer[i] = '\0';

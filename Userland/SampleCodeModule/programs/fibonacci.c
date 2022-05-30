@@ -1,9 +1,8 @@
 #include <fibonacci.h>
 
-void fibonacci(uint64_t arg_c, const char** arg_v){
+void fibonacci(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
-        print_string("Error: El programa no recibe argumentos",STDERR);
-        sys_exit();
+        throw_error("Error: El programa no recibe argumentos");
     }
     uint64_t num_1 = 0;
     uint64_t num_2 = 1;

@@ -1,13 +1,13 @@
 #include <libc.h>
 
-char * programs_names[CANT_PROG] = {"nnn",
+char * programs_names[CANT_PROG] = {"help",
                           "div0",
-                          "iiii",
-                          "ggg",
-                          "mmm",
-                          "hhh",
-                          "ppp",
-                          "bbbb"};
+                          "opcode",
+                          "inforeg",
+                          "printmem",
+                          "tiempo",
+                          "primos",
+                          "fibonacci"};
 
 void* programs_list[CANT_PROG] = {help,
                             zero_division_exc,
@@ -183,16 +183,16 @@ void* get_program(const char * str){
 //  buffer: el string sobre cual copiar
 //  base: la base a convertir del entero
 //-----------------------------------------------------------------------
-uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
+uint64_t uintToBase(uint64_t value, char * buffer, uint64_t base)
 {
     char *p = buffer;
     char *p1, *p2;
-    uint32_t digits = 0;
+    uint64_t digits = 0;
 
     //Calculate characters for each digit
     do
     {
-        uint32_t remainder = value % base;
+        uint64_t remainder = value % base;
         *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
         digits++;
     }
@@ -284,7 +284,20 @@ int str_tok(char * buffer, char sep){
 }
 
 
-
+//---------------------------------------------------------------------------------
+// throw_error: Imprime un mensaje de error y corta el programa
+//---------------------------------------------------------------------------------
+// Argumentos:
+//   - str: mensaje de error a imprimir
+//---------------------------------------------------------------------------------
+// Retorno
+//   - void
+//---------------------------------------------------------------------------------
+void throw_error(char * str){
+    print_string("\n", WHITE);
+    print_string(str, STDERR);
+    sys_exit();
+}
 
 
 

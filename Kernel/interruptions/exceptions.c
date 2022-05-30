@@ -18,6 +18,7 @@ void exceptionDispatcher(int exception) {
 void zero_division() {
 	write_handler("EXCEPCION generada: Division por cero\n", RED);
 	print_registers();
+    write_handler("\n\nPulse ESC para volver a consola", WHITE);
 }
 
 /*
@@ -45,6 +46,7 @@ zero_division_exc:
 void invalid_opcode() {
 	write_handler("EXCEPCION generada: Invalid opcode\n", RED);
 	print_registers();
+    write_handler("\n\nPulse ESC para volver a consola", WHITE);
 }
 
 /*

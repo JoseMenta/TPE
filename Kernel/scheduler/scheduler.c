@@ -443,6 +443,7 @@ void setup_context(uint64_t * context, program_t program, uint64_t new_rsp, uint
     context[RIP] = (uint64_t) program.start;
     context[RDI] = program.cant_arg; //Paso la cantidad de argumentos
     context[RSI] = (uint64_t) program.args; //Paso el vector de char*
+    //context[RSI] = (uint64_t) program.args; //Paso el vector de char*
     // Se indica la direccion de memoria donde comienza el stack local al proceso
     context[RSP] = new_rsp;
     context[ACTUAL_RFLAGS] = prev_actual_rflags; //Esto es importante, si no no vuelve bien

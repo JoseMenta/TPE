@@ -21,6 +21,7 @@ typedef struct{
 #define CANT_PROG (8)
 #define STDOUT WHITE
 #define STDERR RED
+
 uint8_t sys_write(const char * string, formatType format);
 uint8_t sys_read(char * c);
 uint8_t sys_exec(uint8_t process_c, const program_t* process_v);
@@ -34,7 +35,7 @@ uint8_t print_string(const char * s1, formatType format);
 uint8_t print_number(uint64_t number, formatType format);
 uint64_t strcmp(const char * s1, const char * s2);
 char * to_hex(char * str, uint64_t val);
-uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+uint64_t uintToBase(uint64_t value, char * buffer, uint64_t base);
 
 uint8_t get_year(void);
 uint8_t get_month(void);
@@ -45,8 +46,8 @@ uint8_t get_min(void);
 uint8_t get_secs(void);
 
 uint64_t* get_registers(void);
-//uint64_t get_register(void);
 uint64_t get_memory(uint32_t* pointer);
 int str_tok(char * buffer, char sep);
+void throw_error(char * str);
 
 #endif //TPE_LIBC_H

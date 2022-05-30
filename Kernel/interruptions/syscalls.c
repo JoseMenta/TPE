@@ -53,6 +53,7 @@ uint8_t time_handler(timeType time_unit){
     return get_time(time_unit);
 }
 
+// TODO: Preguntar a horacio si lanzamos error si se supera el limite de memoria
 uint8_t mem_handler(uint64_t init_dir, uint8_t * arr){
     uint8_t i = 0;
     // Empiezo a completar el arreglo, siempre y cuando la direccion consultada sea menor a la ultima
