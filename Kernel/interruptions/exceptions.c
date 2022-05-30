@@ -80,8 +80,8 @@ void print_registers(){
     char reg_str[20];
     // Al llamar a write_handler, se consulta la posicion del proceso que se encuentra corriendo actualmente
     // y lo imprime en dicha posicion
-    reg[RSP] = reg[ACTUAL_RSP]; //Los otros se guardan para el scheduler
-    reg[RFLAGS] = reg[ACTUAL_RFLAGS]; //Los otros se guardan para el scheduler
+    //reg[RSP] = reg[ACTUAL_RSP]; //Los otros se guardan para el scheduler
+    //reg[RFLAGS] = reg[ACTUAL_RFLAGS]; //Los otros se guardan para el scheduler
 	for(int i=0; i<=RFLAGS; i++){
 		write_handler(Names[i], RED);
 		to_hex(reg_str, reg[i]);

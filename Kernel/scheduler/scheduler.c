@@ -400,7 +400,7 @@ static void add_original_process(){
     }
     process_array[DEFAULT_PROCESS_INDEX].registers[RSP] = process_array[ORIGINAL_PROCESS_INDEX].registers[RSP] - (5*OFFSET); //Lo dejo arriba de todos
     process_array[DEFAULT_PROCESS_INDEX].registers[RIP] = (uint64_t) &default_process;
-    process_array[DEFAULT_PROCESS_INDEX].registers[ACTUAL_RFLAGS] = process_array[ORIGINAL_PROCESS_INDEX].registers[ACTUAL_RFLAGS];
+    process_array[DEFAULT_PROCESS_INDEX].registers[RFLAGS] = process_array[ORIGINAL_PROCESS_INDEX].registers[RFLAGS];
     process_array[DEFAULT_PROCESS_INDEX].position = ALL;
     process_array[DEFAULT_PROCESS_INDEX].status = RUNNING; //No es importante, no se usa
     //No puedo hacer esto porque cuando hace process_array[0].registers, va a buscar basura
@@ -426,7 +426,7 @@ static void add_original_process(){
 //Devuelve el index del proceso que se agrego
 static int add_process_to_array(program_t process, positionType position){
     //Inicializo en contexto del nuevo proceso
-    setup_context(process_array[process_array_len].registers,process,process_array[0].registers[RSP]-(process_array_len)*OFFSET,process_array[0].registers[ACTUAL_RFLAGS]);
+    setup_context(process_array[process_array_len].registers,process,process_array[0].registers[RSP]-(process_array_len)*OFFSET,process_array[0].registers[RFLAGS]);
     process_array[process_array_len].position = position;
     process_array[process_array_len++].status = RUNNING;
     runnable++; //aumento el contador de procesos que pueden correr
@@ -446,7 +446,8 @@ void setup_context(uint64_t * context, program_t program, uint64_t new_rsp, uint
     //context[RSI] = (uint64_t) program.args; //Paso el vector de char*
     // Se indica la direccion de memoria donde comienza el stack local al proceso
     context[RSP] = new_rsp;
-    context[ACTUAL_RFLAGS] = prev_actual_rflags; //Esto es importante, si no no vuelve bien
+    //TODO: cambiar a un valor default con el flag de excepcion prendido
+    context[RFLAGS] = prev_actual_rflags; //Esto es importante, si no no vuelve bien
 }
 void copy_context(uint64_t* source, uint64_t* dest){
     for(int i = 0; i<REGISTERS_COUNT;i++){

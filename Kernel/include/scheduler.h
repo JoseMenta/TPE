@@ -15,9 +15,12 @@ typedef enum {RUNNING = 0, WAITING, SUSPENDED, TERMINATED} statusType;
 typedef enum {ALL = 0, LEFT, RIGHT} positionType;       // Posicion del programa en pantalla
 //ACTUAL_RFLAGS: Los flags cuando se prdoucen la interrupcion (cuando se inicia el proceo, se deja como estaban en el proceso que los ejecuto)
 //ACTUAL_RSP: El rsp cuando se produce la excepcion (no se usa en el scheduler, es para las excepciones)
-typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS, ACTUAL_RFLAGS,ACTUAL_RSP} registers; // El orden en el que llegan los registros en el arreglo
+//Implementacion original
+//typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS, ACTUAL_RFLAGS,ACTUAL_RSP} registers; // El orden en el que llegan los registros en el arreglo
+//Imoplementacion alternativa
+typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS} registers; // El orden en el que llegan los registros en el arreglo
 
-#define REGISTERS_COUNT (19)                              // Cantidad de registros (NOTA: no incluye a ACTUAL_RSP)
+#define REGISTERS_COUNT (18)                              // Cantidad de registros (NOTA: no incluye a ACTUAL_RSP)
 
 #define OFFSET (1000)                                     // Espacio que se le va a dejar de stack a cada proceso
 
