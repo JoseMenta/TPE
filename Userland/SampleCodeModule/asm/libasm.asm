@@ -89,18 +89,13 @@ sys_exec:
 ;   rdi: el codigo de error
 ;-------------------------------------------------------------------------------------
 ; Retorno:
-;   el codigo de error
+;   null
 ;------------------------------------------------------------------------------------
 sys_exit:
     push rbp
     mov rbp, rsp
 
-    mov rdi, exit_string
-    mov rsi, white
-    call print_string
 
-    ; TODO: Revisar este comentario
-    ;mov rbx, rdi
     mov rax, 3
     int 80h
 
@@ -338,8 +333,4 @@ get_register:
 
 SECTION .bss
 	reg resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)
-
-SECTION .data
-    exit_string db 10, 10, "Pulse ESC para volver a consola", 0
-    white equ 15
 

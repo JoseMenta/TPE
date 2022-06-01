@@ -49,5 +49,5 @@ uint64_t* get_registers(void);
 uint64_t get_memory(uint32_t* pointer);
 int str_tok(char * buffer, char sep);
 void throw_error(char * str);
-
+void pause_seconds(int seconds);
 #endif //TPE_LIBC_H

@@ -39,7 +39,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
                 buffer[--buffer_index] = '\0';
                 print_string(c, WHITE);
             }
-        }else if(c[0] != -1 && buffer_index < MAX_BUFFER_SIZE){
+        }else if(c[0] != -1 && buffer_index < MAX_BUFFER_SIZE) {
             buffer[buffer_index++] = c[0];
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);

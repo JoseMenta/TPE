@@ -12,6 +12,7 @@
 #define SHIFT1 42
 #define SHIFT2 54
 #define CTRL 29
+#define ALT 56
 #define ESC 1
 #define RELEASED 128
 #define ASCII_DELETE 127

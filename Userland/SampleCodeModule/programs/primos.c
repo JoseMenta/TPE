@@ -14,6 +14,7 @@ void primos(uint64_t arg_c, const char ** arg_v){
     }
    for(uint64_t i=FIRST_PRIME; 1 ; i++){
         if(is_prime(i)){
+//            pause_seconds(1);
            print_number(i, WHITE);
            print_string("\n", WHITE);
         }

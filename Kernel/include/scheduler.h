@@ -13,11 +13,7 @@
 typedef enum {RUNNING = 0, WAITING, SUSPENDED, TERMINATED} statusType;
 
 typedef enum {ALL = 0, LEFT, RIGHT} positionType;       // Posicion del programa en pantalla
-//ACTUAL_RFLAGS: Los flags cuando se prdoucen la interrupcion (cuando se inicia el proceo, se deja como estaban en el proceso que los ejecuto)
-//ACTUAL_RSP: El rsp cuando se produce la excepcion (no se usa en el scheduler, es para las excepciones)
-//Implementacion original
-//typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS, ACTUAL_RFLAGS,ACTUAL_RSP} registers; // El orden en el que llegan los registros en el arreglo
-//Imoplementacion alternativa
+
 typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS} registers; // El orden en el que llegan los registros en el arreglo
 
 #define REGISTERS_COUNT (18)                              // Cantidad de registros (NOTA: no incluye a ACTUAL_RSP)
@@ -46,6 +42,9 @@ uint8_t suspend_full();
 uint8_t restart_left();
 uint8_t restart_right();
 uint8_t restart_full();
+uint8_t kill_left();
+uint8_t kill_right();
+uint8_t kill_full();
 
 void change_context();                                              // Cambia de proceso si es que puede
 void add_full_process(program_t process);                         // Agrega un nuevo proceso al arreglo de procesos

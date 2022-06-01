@@ -7,8 +7,7 @@ static const char * Names[] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13:
 
 void exceptionDispatcher(int exception) {
 	exceptions[exception]();
-    //terminate_process();//Matamos al programa que lanzo la excepcion
-    terminate_process();
+    terminate_process();//Matamos al programa que lanzo la excepcion
 	return;
 }
 
@@ -18,26 +17,9 @@ void exceptionDispatcher(int exception) {
 void zero_division() {
 	write_handler("EXCEPCION generada: Division por cero\n", RED);
 	print_registers();
-    write_handler("\n\nPulse ESC para volver a consola", WHITE);
+
 }
 
-/*
-programa a llamar desde el Userland cuando quiero la excepcion
-void zero_division() {
-	zero_division_exc();
-}
-
-Funcion en ASM que genera la excepcion
-zero_division_exc:
-	push rbp
-	mov rbp, rsp
-
-	int 0h
-	
-	mov rsp, rbp
-	pop rbp
-	ret
-*/
 
 
 //-----------------------------------------------------------------------
@@ -46,26 +28,10 @@ zero_division_exc:
 void invalid_opcode() {
 	write_handler("EXCEPCION generada: Invalid opcode\n", RED);
 	print_registers();
-    write_handler("\n\nPulse ESC para volver a consola", WHITE);
+    //write_handler("\n\nPulse ESC para volver a consola", WHITE);
 }
 
-/*
-programa a llamar desde el Userland cuando quiero la exepcion
-void invalid_opcode() {
-	invalid_opcode_exc();
-}
 
-Funcion en ASM que genera la excepcion
-invalid_opcode_exc:
-	push rbp
-	mov rbp, rsp
-
-	int 6h
-	
-	mov rsp, rbp
-	pop rbp
-	ret
-*/
 
 //-----------------------------------------------------------------------
 // print_registers: Imprime el estado de los registros
@@ -80,8 +46,6 @@ void print_registers(){
     char reg_str[20];
     // Al llamar a write_handler, se consulta la posicion del proceso que se encuentra corriendo actualmente
     // y lo imprime en dicha posicion
-    //reg[RSP] = reg[ACTUAL_RSP]; //Los otros se guardan para el scheduler
-    //reg[RFLAGS] = reg[ACTUAL_RFLAGS]; //Los otros se guardan para el scheduler
 	for(int i=0; i<=RFLAGS; i++){
 		write_handler(Names[i], RED);
 		to_hex(reg_str, reg[i]);

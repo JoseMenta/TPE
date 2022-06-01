@@ -11,6 +11,7 @@ static int key_case = -1;               // Estado actual del formato de la letra
 static int key_case_default = -1;       // Estado default del formato de la letra
 
 static int ctrl_pressed = 0;
+static int alt_pressed = 0;
 static int left_state = 1;
 static int right_state = 1;
 static int all_state = 1;
@@ -23,7 +24,7 @@ static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
                                    '\0','a','s','d','f','g','h','j',
                                    'k','l',';','\'','|','\0','\\',
                                    'z','x','c','v','b','n','m',',',
-                                   '.','/','\0', '\0', '\0', ' '};
+                                   '.','/','\0', '\0', ALT, ' '};
 //teclado windows
 /*static int keyboard_reference2[] = {'0', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
                                     '\'', '¡', '0', '0', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',
@@ -79,8 +80,16 @@ void keyboard_handler(){
         ctrl_pressed = 0;
     }
 
+    // Logica para detener procesos
+    else if(key == ALT){
+        alt_pressed = 1;
+    } else if (key == ALT + RELEASED){
+        alt_pressed = 0;
+    }
+
     // Guardamos en el buffer solo aquellas teclas que puedan ser referenciables: letras, digitos y espacios (\n, \t, etc)
     else if(IS_REFERENCEABLE(key)){
+        // Suspension y reanudacion de procesos
         // Primero debemos verificar si en vez de agregar una letra al buffer, se desea suspende o reanudar un proceso
         if(keyboard_reference[key] == 'f' && ctrl_pressed){
             //all_state: 1 si sigue corriendo, 0 si no
@@ -116,6 +125,20 @@ void keyboard_handler(){
                 right_state = restart_right();
             }
         }
+
+
+        // Detenimiento de procesos
+        else if(keyboard_reference[key] == 'f' && alt_pressed){
+            all_state = kill_full();
+        }
+        else if (keyboard_reference[key] == 'l' && alt_pressed){
+            left_state = kill_left();
+        }
+        else if(keyboard_reference[key] == 'r' && alt_pressed){
+            right_state = kill_right();
+        }
+
+
         else if (key_case > 0 && IS_ALPHA(keyboard_reference[key])){
             // Es una mayuscula
             //buffer[write] = keyboard_reference[key] - UPPER_OFFSET;

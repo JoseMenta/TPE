@@ -299,6 +299,12 @@ void throw_error(char * str){
     sys_exit();
 }
 
+//TODO: ver si se puede usar el TT
+void pause_seconds(int seconds){
+    int i = get_secs();
+    while(get_secs() - i <= seconds);
+    return;
+}
 
 
 
