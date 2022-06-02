@@ -277,8 +277,8 @@ uint8_t get_secs(void){
 // Retorno
 //   - El indice de la primera aparicion de sep en buffer o de \0
 //---------------------------------------------------------------------------------
-int str_tok(char * buffer, char sep){
-    int i=0;
+uint64_t str_tok(char * buffer, char sep){
+    uint64_t i=0;
     for(; buffer[i]!=sep && buffer[i]!='\0'; i++);
     return i;
 }
@@ -296,14 +296,36 @@ int str_tok(char * buffer, char sep){
 void throw_error(char * str){
     print_string("\n", WHITE);
     print_string(str, STDERR);
+    print_string("\n\n", WHITE);
     sys_exit();
 }
 
-//TODO: ver si se puede usar el TT
-void pause_seconds(int seconds){
-    int i = get_secs();
-    while(get_secs() - i <= seconds);
+//---------------------------------------------------------------------------------
+// pause_ticks: Pausa el proceso de la computadora por la cantidad de ticks indicados
+//---------------------------------------------------------------------------------
+// Argumentos:
+//   - ticks: Cantidad de ticks que se desea detener
+//---------------------------------------------------------------------------------
+// Retorno
+//   - void
+//---------------------------------------------------------------------------------
+void pause_ticks(uint64_t ticks){
+    uint64_t i = sys_tick();
+    while(sys_tick() - i <= ticks);
     return;
+}
+
+//---------------------------------------------------------------------------------
+// blink: Wrapper de la syscall blink
+//---------------------------------------------------------------------------------
+// Argumentos:
+//   void
+//---------------------------------------------------------------------------------
+// Retorno
+//  0 si resulto exitoso, 1 si no
+//---------------------------------------------------------------------------------
+uint8_t blink(void){
+    return sys_blink();
 }
 
 

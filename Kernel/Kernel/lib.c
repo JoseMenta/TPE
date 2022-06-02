@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+
 // Dada una direccion de memoria d, un entero z y una longitud n, setea el valor z desde [d] hasta [d+n-1] 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -49,4 +51,70 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	}
 
 	return destination;
+}
+
+//-----------------------------------------------------------------------
+// uintToBase: Convierte un entero en la base indica por parametro en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  value: el valor del entero
+//  buffer: el string sobre cual copiar
+//  base: la base a convertir del entero
+//-----------------------------------------------------------------------
+// Retorno:
+//  Cantidad de digitos
+//-----------------------------------------------------------------------
+static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
+{
+    char *p = buffer;
+    char *p1, *p2;
+    uint32_t digits = 0;
+
+    //Calculate characters for each digit
+    do
+    {
+        uint32_t remainder = value % base;
+        *p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+        digits++;
+    }
+    while (value /= base);
+
+    // Terminate string in buffer.	(El \0 del string)
+    *p = 0;
+
+    //Reverse string in buffer. (Notar que al hacer el pasaje de int a char, se tiene el numero al reves pues se analiza de derecha a izquierda)
+    p1 = buffer;
+    p2 = p - 1;
+    while (p1 < p2)
+    {
+        char tmp = *p1;
+        *p1 = *p2;
+        *p2 = tmp;
+        p1++;
+        p2--;
+    }
+
+    return digits;
+}
+
+//-----------------------------------------------------------------------
+// to_hex: Devuelve un entero hexadecimal en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  str: el string sobre cual copiar
+//  val: el valor del entero
+//-----------------------------------------------------------------------
+void to_hex(char * str, uint64_t val){
+    uintToBase(val,str,16);
+}
+
+//-----------------------------------------------------------------------
+// to_dec: Devuelve un entero decimal en un string
+//-----------------------------------------------------------------------
+// Argumentos:
+//  str: el string sobre cual copiar
+//  val: el valor del entero
+//-----------------------------------------------------------------------
+void to_decimal(char * str, uint64_t val){
+    uintToBase(val,str,10);
 }

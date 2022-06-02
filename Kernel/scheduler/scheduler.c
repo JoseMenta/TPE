@@ -103,7 +103,7 @@ uint8_t terminate_process(){ //Cambian los valores de retorno, por eso no lo par
         return -1;//No puedo terminar el proceso raiz
     }
     process_array[currentProcess_index].status = TERMINATED;
-    print("Programa terminado. Pulse ESC para salir",WHITE,process_array[currentProcess_index].position);
+    print("\n\nPrograma terminado. Pulse ESC para salir",WHITE,process_array[currentProcess_index].position);
     runnable--; //OJO: importa que este aca arriba, si no cambia la logica de runnable de change_context
     change_context();                                           // Tengo que ver cual es el proximo que corro
     return 0;

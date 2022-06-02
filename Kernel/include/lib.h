@@ -12,4 +12,7 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 // Devuelve un string del nombre del fabricante del procesador (por ejemplo, si es Intel devuelve el string "Genuine Intel")
 char *cpuVendor(char *result);
 
+void to_hex(char* str, uint64_t val);
+void to_decimal(char* str, uint64_t val);
+
 #endif

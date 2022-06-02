@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <programs.h>
 
-// typedef void (* programs) ();
 
 typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DARK_GREY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED, PINK, YELLOW, WHITE} formatType;
 
@@ -25,9 +24,11 @@ typedef struct{
 uint8_t sys_write(const char * string, formatType format);
 uint8_t sys_read(char * c);
 uint8_t sys_exec(uint8_t process_c, const program_t* process_v);
-uint8_t sys_exit();
+uint8_t sys_exit(void);
 uint8_t sys_time(timeType time_unit);
 uint8_t sys_mem(uint64_t init_dir, uint8_t * arr);
+uint64_t sys_tick(void);
+uint8_t sys_blink(void);
 
 void * get_program(const char * str);
 uint8_t get_char(void);
@@ -46,8 +47,9 @@ uint8_t get_min(void);
 uint8_t get_secs(void);
 
 uint64_t* get_registers(void);
-uint64_t get_memory(uint32_t* pointer);
-int str_tok(char * buffer, char sep);
+uint64_t str_tok(char * buffer, char sep);
 void throw_error(char * str);
-void pause_seconds(int seconds);
+void pause_ticks(uint64_t ticks);
+uint8_t blink(void);
+
 #endif //TPE_LIBC_H

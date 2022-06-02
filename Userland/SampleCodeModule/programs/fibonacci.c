@@ -11,12 +11,12 @@ void fibonacci(uint64_t arg_c, const char ** arg_v){
     print_number(num_2, WHITE);
     print_string("\n", WHITE);
     while(1){
-//        pause_seconds(1);
+        pause_ticks(5);
         uint64_t aux = num_1 + num_2;
         num_1 = num_2;
         num_2 = aux;
         print_number(aux, WHITE);
         print_string("\n", WHITE);
     }
-    sys_exit(0);
+    sys_exit();
 }

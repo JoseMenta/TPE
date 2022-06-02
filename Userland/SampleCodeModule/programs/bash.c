@@ -1,5 +1,4 @@
 #include <bash.h>
-#include <libc.h>
 
 char buffer[MAX_BUFFER_SIZE];
 int buffer_index = 0;
@@ -21,6 +20,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         throw_error("Error: el programa no recibe argumentos");
     }
+    static uint32_t nothing_cycles = NOTHING_CYCLES;
     print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
     char c[2] = {0, 0};
     while(1){
@@ -43,6 +43,12 @@ void bash(uint64_t arg_c, const char ** arg_v){
             buffer[buffer_index++] = c[0];
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);
+        } else {
+            nothing_cycles--;
+            if(nothing_cycles <= 0){
+                blink();
+                nothing_cycles = NOTHING_CYCLES;
+            }
         }
     }
     sys_exit();
@@ -152,8 +158,8 @@ void analyze_buffer(void) {
         new_token = str_tok(buffer+prev_token+1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
         if(new_token == 0) {
-            print_string("\nLa computadora esta lista para apagarse.\nPresione ESC para salir.\n", WHITE);
-            sys_exit(0);
+            print_string("\nLa computadora esta lista para apagarse.\n", WHITE);
+            sys_exit();
         }
         else{
             print_string("\nERROR: expresion invalida\n", RED);

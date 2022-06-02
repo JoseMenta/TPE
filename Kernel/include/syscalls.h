@@ -6,6 +6,7 @@
 #include <keyboard.h>
 #include <scheduler.h>
 #include <queue.h>
+#include <time.h>
 
 typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
 
@@ -19,6 +20,8 @@ uint8_t exec_handler(uint8_t cant, const program_t* programas);                 
 uint8_t exit_handler();                                 // Finaliza un proceso con codigo de error
 uint8_t time_handler(timeType time_unit);               // Devuelve el valor para la unidad indicada en GMT
 uint8_t mem_handler(uint64_t init_dir, uint8_t * arr);  // Complete un arreglo de 32 elementos con la informacion que guarda init_dir y las 31 direcciones siguientes
+uint64_t tick_handler(void);                            // Devuelve la cantidad de ticks transcurridos
+uint8_t blink_handler(void);                            // Realiza un parpadeo en la pantalla en el proximo caracter a escribir
 
 uint8_t get_time(timeType time_unit);                   // Llama al RTC con la unidad indicada
 uint8_t get_data(uint64_t address_dir);                 // Devuelve el dato de 8 bits almacenado en la direccion de memoria indicada por parametros

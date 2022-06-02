@@ -29,6 +29,8 @@ EXTERN exec_handler
 EXTERN exit_handler
 EXTERN time_handler
 EXTERN mem_handler
+EXTERN tick_handler
+EXTERN blink_handler
 
 SECTION .text
 
@@ -263,7 +265,6 @@ _exception6Handler:
 ;   rax: Depende de la syscall, o -2 si no es un parametro valido
 ;------------------------------------------------------------------------------------
 _syscallHandler:
-    ;cli
     saveRegs curr_context                       ; Resguardamos los registros
     cmp rax, 0
     jz sys_read                                 ; Syscall para read (id = 0)
@@ -276,7 +277,11 @@ _syscallHandler:
     cmp rax, 4
     jz sys_time                                 ; Syscall para time (id = 4)
     cmp rax, 5
-    jz sys_mem
+    jz sys_mem                                  ; Syscall para mem (id = 5)
+    cmp rax, 6
+    jz sys_tick                                 ; Syscall para timer ticks (id = 6)
+    cmp rax, 7
+    jz sys_blink                                ; Syscall para video blink (id = 7)
     mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
     jmp fin
 
@@ -368,11 +373,36 @@ sys_mem:
     call mem_handler
     jmp fin
 
+;-------------------------------------------------------------------------------------
+; Tick: Devuelve la cantidad de ticks realizados por el timer tick desde que inicio la computadora
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   null
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: Cantidad de ticks
+;------------------------------------------------------------------------------------
+sys_tick:
+    call tick_handler
+    jmp fin
+
+;-------------------------------------------------------------------------------------
+; Blink: Indica donde se escribira el próximo caracter en pantalla
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   null
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: 0 si resulto exitoso, 1 si no
+;------------------------------------------------------------------------------------
+sys_blink:
+    call blink_handler
+    jmp fin
+
 fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     restoreRegs curr_context                        ; Recuperamos los registros
     mov rax, [aux]                                  ; Recuperamos el valor de retorno en rax
-    ;sti
     iretq
 
 

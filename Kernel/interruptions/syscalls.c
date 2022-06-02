@@ -72,3 +72,12 @@ uint8_t mem_handler(uint64_t init_dir, uint8_t * arr){
     // En i se almacenan la cantidad real de datos que se pudieron almacenar
     return i;
 }
+
+uint64_t tick_handler(void){
+    return ticks_elapsed();
+}
+
+uint8_t blink_handler(void){
+    video_blink(get_current_position());
+    return 0;
+}

@@ -4,10 +4,11 @@ GLOBAL sys_exec
 GLOBAL sys_exit
 GLOBAL sys_time
 GLOBAL sys_mem
+GLOBAL sys_tick
+GLOBAL sys_blink
 GLOBAL zero_division_exc
 GLOBAL invalid_opcode_exc
 GLOBAL get_registers
-GLOBAL get_memory
 GLOBAL get_register
 
 EXTERN print_string
@@ -86,7 +87,7 @@ sys_exec:
 ; sys_exit: Finaliza el proceso ejecutandose en el momento
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   rdi: el codigo de error
+;   null
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   null
@@ -94,7 +95,6 @@ sys_exec:
 sys_exit:
     push rbp
     mov rbp, rsp
-
 
     mov rax, 3
     int 80h
@@ -142,6 +142,46 @@ sys_mem:
     mov rcx, rsi
     mov rbx, rdi
     mov rax, 5
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;-------------------------------------------------------------------------------------
+; sys_tick: Devuelve los ticks transcurridos desde que inicio la computadora
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   void
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   Cantidad de ticks
+;------------------------------------------------------------------------------------
+sys_tick:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 6
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;-------------------------------------------------------------------------------------
+; sys_blink: Realiza un parpadeo en la pantalla
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   void
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   0 si resulto exitoso, 1 si no
+;------------------------------------------------------------------------------------
+sys_blink:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 7
     int 80h
 
     mov rsp, rbp
@@ -306,7 +346,8 @@ get_registers:
     mov [reg+120], rbp                      ; Deberia ir rsp pero por stack frame dejo este
 
     push rax
-    call get_rip
+    call get_rip                            ; Logica para poder obtener el registro RIP
+                                            ; TODO: Colocar el get_rip arriba de todo para tener el rip mas cerca al pedido
 
 get_rip_return:
     mov qword [reg+128], rax                ; Guardo en el arreglo, el valor de RIP

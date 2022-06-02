@@ -5,6 +5,7 @@
 #include <syscalls.h>
 #include <stdint.h>
 #include <scheduler.h>
+#include <lib.h>
 
 void zero_division();
 void invalid_opcode();

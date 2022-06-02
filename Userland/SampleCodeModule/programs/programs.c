@@ -4,8 +4,6 @@ static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12
 
 const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week, get_day, get_month, get_year};
 
-uint64_t analyze_string(const char * str);
-
 void help(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         throw_error("Error: el programa no recibe argumentos");
@@ -40,59 +38,6 @@ void inforeg(uint64_t arg_c, const char ** arg_v){
     sys_exit();
 }
 
-
-//limit = 0xFFFFFFFD9
-void printmem(uint64_t arg_c, const char ** arg_v){
-    if(arg_c!=1){
-        throw_error("ERROR: El programa debe recibir unicamente 1 argumento");
-    }
-    uint64_t init_dir = analyze_string(&(arg_v[0]));
-    uint8_t mem_arr[32] = {0};
-    uint8_t dim = sys_mem(init_dir, mem_arr);
-    char str[21] = {0};                                                             // 2^64 tiene 20 digitos mas el "\0"
-    print_string("Datos almacenados a partir de la direccion 0x", WHITE);
-    print_string(to_hex(str, init_dir), WHITE);
-    print_string(":\n", WHITE);
-    for(int i = 0; i < MAX_MEMORY_SIZE; i++){
-        print_string("0x", WHITE);
-        print_string(to_hex(str, init_dir + i), WHITE);
-        print_string(": ", WHITE);
-        print_string("0x", WHITE);
-        print_string(to_hex(str, mem_arr[i]), WHITE);
-        (i%2==0)? print_string("\t", WHITE): print_string("\n", WHITE);
-    }
-    print_string("\n", WHITE);
-    sys_exit();
-}
-
-/*
-void printmem(char * dir_memoria){                          // deberia ir como parametro de la funcion, cambia bastante la logica de analizebuffer
-    if(dir_memoria[0] != '0' && dir_memoria[1] != 'x')
-        print_string("Formato invalido, coloque la direccion en formato hexadecimal", WHITE);
-
-    int len = 0;
-    while(dir_memoria[len]!='\0')                           // retengo el largo del array
-        len++;
-
-    uint64_t val = 0;                                      // lo paso a entero para poder desreferenciar
-    for(int i=len; i!=1; i--){
-        char num = dir_memoria[i];
-        if (num >= '0' && num <= '9')
-            val += (num - '0') * (16 - len-i);
-        else if (num >= 'A' && num <='F')
-            val += (num - 'A' + 10) * (16 - len-i);
-    }
-
-    uint32_t* pointer = (uint32_t*) val;                  // casteo el valor a un puntero
-    uint64_t result = get_memory(pointer);                 // obtengo un vuelco de 32bits
-
-    char str[12];                                          // 2^32 tiene 10 digitos mas el "\0" y un posible "-"
-    to_hex(str, result);
-    print_string("Vuelco de memoria: ", WHITE);           // imprimo el valor en hexa nuevamente
-    print_string(str, WHITE);
-    return;
-}
-*/
 
 //-----------------------------------------------------------------------
 // tiempo: imprime fecha y hora local en tiempo GMT-3
@@ -146,37 +91,6 @@ void tiempo(uint64_t arg_c, const char ** arg_v) {
     print_number(time_arr[SEC](), WHITE);
     print_string("hs\n", WHITE);
     sys_exit();
-}
-
-
-//-----------------------------------------------------------------------
-// analyze_string: Procesa el String de parametro
-//-----------------------------------------------------------------------
-// Argumentos:
-//  - str: parametro
-//-----------------------------------------------------------------------
-// Retorna:
-//  - el puntero que reprecenta el string
-//-----------------------------------------------------------------------
-uint64_t analyze_string(const char * str){
-    uint64_t val = 0;                               // lo paso a entero para poder desreferenciar
-    uint8_t len=0;
-    for(; str[len] != '\0'; len++);
-    if(len < 2 || str[0] != '0' || str[1] != 'x'){
-        throw_error("ERROR: El string ingresado no es un formato de direccion correcta");
-    }
-    uint64_t mult=1;
-    for(uint8_t i=len-1; i>1; i--, mult*=16){
-        char num = str[i];
-        if (num >= '0' && num <= '9')
-            val += (num - '0') * mult;
-        else if (num >= 'A' && num <='F')
-            val += (num - 'A' + 10) * mult;
-        else{
-            throw_error("ERROR: El string ingresado no es un formato de direccion correcta");
-        }
-    }
-    return val;
 }
 
 
