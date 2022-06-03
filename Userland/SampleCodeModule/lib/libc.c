@@ -1,22 +1,31 @@
 #include <libc.h>
-
-char * programs_names[CANT_PROG] = {"help",
-                          "div0",
-                          "opcode",
-                          "inforeg",
-                          "printmem",
-                          "tiempo",
-                          "primos",
-                          "fibonacci"};
-
-void* programs_list[CANT_PROG] = {help,
-                            zero_division_exc,
-                            invalid_opcode_exc,
-                            inforeg,
-                            printmem,
-                            tiempo,
-                            primos,
-                            fibonacci};
+front_program_t programs[CANT_PROG] = {
+        {"help","\thelp: Despliega los distintos comandos disponibles\n",help},
+        {"div0","\tdiv0: Genera una excepcion por division por cero\n",zero_division_exc},
+        {"opcode","\topcode: Genera una excepcion por division por cero\n",invalid_opcode_exc},
+        {"inforeg","\tinforeg: Imprime los registros del proceso\n",inforeg},
+        {"printmem","\tprintmem: Devuelve el vuelco de memoria de un puntero\n",printmem},
+        {"tiempo","\ttiempo: Fecha y hora actuales\n",tiempo},
+        {"primos","\tprimos: Despliega los numeros primos a partir del 1\n",primos},
+        {"fibonacci","\tfibonacci: Despliega los numeros de la serie de Fibonacci\n",fibonacci}
+};
+//char * programs_names[CANT_PROG] = {"help",
+//                          "div0",
+//                          "opcode",
+//                          "inforeg",
+//                          "printmem",
+//                          "tiempo",
+//                          "primos",
+//                          "fibonacci"};
+//
+//void* programs_list[CANT_PROG] = {help,
+//                            zero_division_exc,
+//                            invalid_opcode_exc,
+//                            inforeg,
+//                            printmem,
+//                            tiempo,
+//                            primos,
+//                            fibonacci};
 
 
 void number_to_string(uint64_t number, char * str);
@@ -167,8 +176,8 @@ uint64_t strcmp(const char* s1, const char* s2){
 //---------------------------------------------------------------------------------
 void* get_program(const char * str){
     for(int i = 0; i<CANT_PROG;i++){
-        if(strcmp(str,programs_names[i])==0){
-                return programs_list[i];
+        if(strcmp(str,programs[i].name)==0){
+                return programs[i].start;
         }
     }
     // Si el string no es el de un programa, se devuelve NULL

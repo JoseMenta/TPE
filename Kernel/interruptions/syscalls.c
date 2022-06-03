@@ -59,11 +59,15 @@ uint8_t mem_handler(uint64_t init_dir, uint8_t * arr){
     // Empiezo a completar el arreglo, siempre y cuando la direccion consultada sea menor a la ultima
     // Asi se evita overflow
     for(; (i < MAX_ARRAY_SIZE) && (init_dir + i < MAX_MEM_ADDRESS); i++){
-        arr[i] = get_data(init_dir + i);
+        //arr[i] = get_data(init_dir + i);
+        arr[i] = *((uint8_t*)init_dir + i);//char* para que +i avance de a 1
     }
+    //TODO: ver de poner esto en el for de arriba (hacerlo hasta <= y listo)
     // Si el for corto por el overflow, se guarda el dato almacenado en la ultima direccion
+    //OJO, esta el caso donde termina justo con el anterior, nos falta chequear que no me haya pasado de el maximo de longitud
     if(init_dir + i == MAX_MEM_ADDRESS){
-        arr[i++] = get_data(MAX_MEM_ADDRESS);
+//        arr[i++] = get_data(MAX_MEM_ADDRESS);
+        arr[i++] = *((uint8_t*)MAX_MEM_ADDRESS);
     }
     // Si aun quedan espacios libres (i < 32), se completa con NULL
     for(int j = i; j < MAX_ARRAY_SIZE; j++){

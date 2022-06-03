@@ -20,8 +20,11 @@ void bash(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         throw_error("Error: el programa no recibe argumentos");
     }
-    static uint32_t nothing_cycles = NOTHING_CYCLES;
-    print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
+    //static uint32_t nothing_cycles = NOTHING_CYCLES;
+    static uint64_t last_ticks = 0;
+    //TODO: cambiar esto
+    //print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
+    print_string("Bienvenido\nQue modulo desea correr?\n",WHITE);
     char c[2] = {0, 0};
     while(1){
         c[0] = get_char();
@@ -44,10 +47,15 @@ void bash(uint64_t arg_c, const char ** arg_v){
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);
         } else {
-            nothing_cycles--;
-            if(nothing_cycles <= 0){
+//            nothing_cycles--;
+//            if(nothing_cycles <= 0){
+//                blink();
+//                nothing_cycles = NOTHING_CYCLES;
+//            }
+            uint64_t ticks = sys_tick();
+            if(ticks - last_ticks>=10){
                 blink();
-                nothing_cycles = NOTHING_CYCLES;
+                last_ticks = ticks;
             }
         }
     }

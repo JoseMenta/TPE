@@ -5,17 +5,24 @@ static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12
 const time_func time_arr[] = {get_secs, 0, get_min, 0, get_hour, 0, get_day_week, get_day, get_month, get_year};
 
 void help(uint64_t arg_c, const char ** arg_v){
+    extern front_program_t programs[CANT_PROG];
     if(arg_c!=0){
         throw_error("Error: el programa no recibe argumentos");
     }
     print_string("Programas disponibles:\n", WHITE);
-    print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
-    print_string("\tdiv0: Genera una excepcion por division por cero\n", WHITE);
-    print_string("\tinvalid opcode: Genera una excepcion por division por cero\n", WHITE);
-    print_string("\tprintmem: Devuelve el vuelco de memoria de un puntero\n", WHITE);
-    print_string("\thora: Fecha y hora actuales\n", WHITE);
-    print_string("\tprimos: Despliega los numeros primos a partir del 1\n", WHITE);
-    print_string("\tfibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
+    for(int i = 0; i<CANT_PROG;i++){
+        print_string(programs[i].name,WHITE);
+        print_string(":",WHITE);
+        print_string(programs[i].desc,WHITE);
+    }
+//    print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
+//    print_string("\tdiv0: Genera una excepcion por division por cero\n", WHITE);
+//    print_string("\topcode: Genera una excepcion por division por cero\n", WHITE);
+//    print_string("\tprintmem: Devuelve el vuelco de memoria de un puntero\n", WHITE);
+//    print_string("\ttiempo: Fecha y hora actuales\n", WHITE);
+//    print_string("\tinforeg: Imprime los registros del proceso\n",WHITE);
+//    print_string("\tprimos: Despliega los numeros primos a partir del 1\n", WHITE);
+//    print_string("\tfibonacci: Despliega los numeros de la serie de Fibonacci\n", WHITE);
     sys_exit();
 }
 

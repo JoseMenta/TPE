@@ -4,8 +4,7 @@ static uint64_t ticks = 0;
 
 void timer_handler() {							    // Es la funcion que se ejecuta cuando ocurra la interrupcion del timer tick (Incrementa la cantidad de ticks)
 	ticks++;
-    //if(ticks%2==0)
-        change_context();
+    change_context();
 }
 
 uint64_t ticks_elapsed() {							// Devuelve la cantidad de veces que se ejecuto la interrupcion del timer tick desde que se inicio el sistema
