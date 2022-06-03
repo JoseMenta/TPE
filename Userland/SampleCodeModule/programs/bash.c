@@ -1,7 +1,8 @@
 #include <bash.h>
 
 char buffer[MAX_BUFFER_SIZE];
-int buffer_index = 0;
+uint8_t buffer_index = 0;
+uint64_t characters_in_line = 0;
 
 void analyze_buffer(void);
 void clean_buffer(void);
@@ -24,7 +25,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
     static uint64_t last_ticks = 0;
     //TODO: cambiar esto
     //print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
-    print_string("Bienvenido\nQue modulo desea correr?\n",WHITE);
+    print_string("Bienvenido!\nQue modulo desea correr?\n$ ",WHITE);
     char c[2] = {0, 0};
     while(1){
         c[0] = get_char();
@@ -35,17 +36,22 @@ void bash(uint64_t arg_c, const char ** arg_v){
             analyze_buffer();
             clean_buffer();
             print_string("$ ", WHITE);
+            characters_in_line = 0;
         }else if(c[0] == ASCII_DELETE){
             if(buffer_index != 0) {
                 //si quiero borrar, al imprimirlo ya lo saque del video driver
                 //ahora lo saco del buffer.
                 buffer[--buffer_index] = '\0';
+            }
+            if(characters_in_line > 0){
                 print_string(c, WHITE);
+                characters_in_line--;
             }
         }else if(c[0] != -1 && buffer_index < MAX_BUFFER_SIZE) {
             buffer[buffer_index++] = c[0];
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);
+            characters_in_line++;
         } else {
 //            nothing_cycles--;
 //            if(nothing_cycles <= 0){

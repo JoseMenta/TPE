@@ -158,7 +158,7 @@ int main()													// Es la primera funcion que se ejecutará una vez se hal
 
     ((EntryPoint)sampleCodeModuleAddress)();
     clear(ALL);
-    print("Programa terminado!",WHITE,ALL);
+    print("Computadora apagada",WHITE,ALL);
 //    ncNewline();
 //    ncNewline();
 //    ncPrint("Volvio a kernel");

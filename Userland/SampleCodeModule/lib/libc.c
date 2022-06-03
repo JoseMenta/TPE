@@ -2,11 +2,11 @@
 front_program_t programs[CANT_PROG] = {
         {"help","\thelp: Despliega los distintos comandos disponibles\n",help},
         {"div0","\tdiv0: Genera una excepcion por division por cero\n",zero_division_exc},
-        {"opcode","\topcode: Genera una excepcion por division por cero\n",invalid_opcode_exc},
-        {"inforeg","\tinforeg: Imprime los registros del proceso\n",inforeg},
-        {"printmem","\tprintmem: Devuelve el vuelco de memoria de un puntero\n",printmem},
-        {"tiempo","\ttiempo: Fecha y hora actuales\n",tiempo},
-        {"primos","\tprimos: Despliega los numeros primos a partir del 1\n",primos},
+        {"opcode","\topcode: Genera una excepcion por instruccion invalida\n",invalid_opcode_exc},
+        {"inforeg","\tinforeg: Imprime el valor los registros en el momento de ejecutarse el programa\n",inforeg},
+        {"printmem","\tprintmem: Dada una direccion de memoria como argumento, devuelve el vuelco de memoria de las 32 direcciones de memoria a partir de la indicada\n",printmem},
+        {"tiempo","\ttiempo: Fecha y hora actuales (GMT -3)\n",tiempo},
+        {"primos","\tprimos: Despliega los numeros primos a partir del 2\n",primos},
         {"fibonacci","\tfibonacci: Despliega los numeros de la serie de Fibonacci\n",fibonacci}
 };
 //char * programs_names[CANT_PROG] = {"help",

@@ -11,8 +11,6 @@ void help(uint64_t arg_c, const char ** arg_v){
     }
     print_string("Programas disponibles:\n", WHITE);
     for(int i = 0; i<CANT_PROG;i++){
-        print_string(programs[i].name,WHITE);
-        print_string(":",WHITE);
         print_string(programs[i].desc,WHITE);
     }
 //    print_string("\thelp: Despliega los distintos comandos disponibles\n", WHITE);
