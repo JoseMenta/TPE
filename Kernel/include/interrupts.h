@@ -7,7 +7,7 @@
 
 #ifndef INTERRUPS_H_
 #define INTERRUPS_H_
-
+#define REGISTERS_COUNT (18)
 #include <idtLoader.h>
 
 void _irq00Handler(void);                   // Las siguientes son funciones que ejecutan la interrupcion cuyo codigo IRQ está indicado en el nombre
@@ -34,5 +34,5 @@ void picSlaveMask(uint8_t mask);            // Permite modificar las interrupcio
 
 //Termina la ejecución de la cpu.
 void haltcpu(void);
-
+uint64_t * getCurrContext(void);
 #endif /* INTERRUPS_H_ */

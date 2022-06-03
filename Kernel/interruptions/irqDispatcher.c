@@ -10,6 +10,7 @@ typedef void (* handler) ();
 handler handlers[2] = {int_20, int_21};              // Arreglo de punteros a funcion de interrupciones
 
 void irqDispatcher(uint64_t irq) {
+    if(irq>1) return;
 	//segun el parametro que tiro el IrqHandler cae en algun case
     //eso te lleva a la funcion posta donde defino que hace la irq
     handlers[irq]();

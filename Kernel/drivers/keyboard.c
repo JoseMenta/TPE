@@ -15,7 +15,9 @@ static int alt_pressed = 0;
 static int left_state = 1;
 static int right_state = 1;
 static int all_state = 1;
+uint8_t regs_saved = 0;
 
+uint64_t* get_inforeg_context();
 //teclado Mac
 static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
                                    '6','7','8','9','0','-','=',
@@ -36,6 +38,7 @@ static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
 
 // Si se presiona una tecla, esta se almacena en la siguiente posicion en el buffer
 //TODO: agregar manejo de combinacion de teclas para suspender/reiniciar procesos
+
 void keyboard_handler(){
     // Obtenemos la tecla ingresada
     uint8_t key = get_keyboard_scan_code();
@@ -137,6 +140,9 @@ void keyboard_handler(){
         else if(keyboard_reference[key] == 'r' && alt_pressed){
             right_state = kill_right();
         }
+        else if(keyboard_reference[key] == 's' && ctrl_pressed){
+            copy_curr_context_to_inforeg_context();
+        }
 
 
         else if (key_case > 0 && IS_ALPHA(keyboard_reference[key])){
@@ -151,6 +157,15 @@ void keyboard_handler(){
     }
 }
 
+void copy_curr_context_to_inforeg_context(){
+    regs_saved = 1;
+    uint64_t* curr_context = getCurrContext(); //Guardo el contexto en la interrupcion
+    uint64_t* inforeg_context = get_inforeg_context();
+    for(int i = 0; i<REGISTERS_COUNT; i++){
+        inforeg_context[i] = curr_context[i];//Copio el contexto para cuando lo llamen
+    }
+    return;
+}
 void clear_keyboard_buffer(){
     clear_queue(&queue);
 }

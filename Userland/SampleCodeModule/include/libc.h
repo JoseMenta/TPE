@@ -15,11 +15,13 @@ typedef struct{
     uint64_t cant_arg;              // Cantidad de argumentos ingresados al programa
     char ** args;                   // Este es un vector que se tiene que definir aparte, antes de inicializar la estructura
 } program_t;
+
 typedef struct {
     char* name;
     char* desc;
     void* start;
 }front_program_t;
+
 #define NULL ((void*)0)
 #define CANT_PROG (8)
 #define STDOUT WHITE
@@ -33,6 +35,7 @@ uint8_t sys_time(timeType time_unit);
 uint8_t sys_mem(uint64_t init_dir, uint8_t * arr);
 uint64_t sys_tick(void);
 uint8_t sys_blink(void);
+uint8_t sys_regs(uint64_t * regs_arr);
 
 void * get_program(const char * str);
 uint8_t get_char(void);

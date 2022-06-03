@@ -85,3 +85,12 @@ uint8_t blink_handler(void){
     video_blink(get_current_position());
     return 0;
 }
+
+uint8_t regs_handler(uint64_t * regs_arr){
+    extern uint8_t regs_saved;
+    uint64_t * inforeg_context = get_inforeg_context();
+    for(uint8_t i = 0; i < REGISTERS_COUNT; i++){
+        regs_arr[i] = inforeg_context[i];
+    }
+    return regs_saved;
+}

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <scheduler.h>
 #include <queue.h>
-
+#include <interrupts.h>
 //Constantes para los scan_code
 #define BUFF_LENGTH 100
 #define BLOCK_MAYUSC 58
@@ -20,8 +20,8 @@
 #define KEYBOARD_REFERENCE_LENGTH 60
 
 void keyboard_handler();
-uint8_t get_keyboard_scan_code();           // Funcion hecha en assembler para interactuar con el teclado
-void restart_state();                       // Limpia el estado de los flags que verifican el estado de un proceso activo (suspendido o corriendo)
-void clear_keyboard_buffer();               // Limpia las teclas pulsadas (el buffer del teclado)
-
+uint8_t get_keyboard_scan_code();               // Funcion hecha en assembler para interactuar con el teclado
+void restart_state();                           // Limpia el estado de los flags que verifican el estado de un proceso activo (suspendido o corriendo)
+void clear_keyboard_buffer();                   // Limpia las teclas pulsadas (el buffer del teclado)
+void copy_curr_context_to_inforeg_context();    //
 #endif

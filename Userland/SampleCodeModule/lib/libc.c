@@ -37,14 +37,14 @@ void number_to_string(uint64_t number, char * str);
 //      int getChar();
 //---------------------------------------------------------------------------------
 // Retorno:
-//      caracter leido o -1 si hubo error en la lectura
+//      caracter leido o 0 si no se leyo un caracter
 //---------------------------------------------------------------------------------
 uint8_t get_char(void){
-    char c;
-    int ret = sys_read(&c);
+    char c[2];
+    int ret = sys_read(c);
     if(ret == 0) //Si no leyo caracteres
-        return -1;
-    return c;
+        return 0;
+    return c[0];
 }
 
 //---------------------------------------------------------------------------------

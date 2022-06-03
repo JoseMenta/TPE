@@ -32,11 +32,12 @@ void inforeg(uint64_t arg_c, const char ** arg_v){
     }
     print_string("Registros: \n", WHITE);
     // Pongo en reg los valores de los registros
-    uint64_t * reg = get_registers();
+    uint64_t aux[COUNT_REGS];
+    uint64_t * reg = sys_regs(aux);
     char reg_str[20];
     for(int i=0; i<COUNT_REGS; i++){
         print_string(Names[i], WHITE);
-        to_hex(reg_str, reg[i]);
+        to_hex(reg_str, aux[i]);
         print_string(reg_str,WHITE);
         print_string("\n", WHITE);
     }

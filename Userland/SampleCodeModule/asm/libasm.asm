@@ -6,6 +6,7 @@ GLOBAL sys_time
 GLOBAL sys_mem
 GLOBAL sys_tick
 GLOBAL sys_blink
+GLOBAL sys_regs
 GLOBAL zero_division_exc
 GLOBAL invalid_opcode_exc
 GLOBAL get_registers
@@ -182,6 +183,28 @@ sys_blink:
     mov rbp, rsp
 
     mov rax, 7
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+
+;-------------------------------------------------------------------------------------
+; sys_regs: Devuelve el estado de los registros de la ultima vez que se realizo CTRL+S
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   Un arreglo de 18 enteros de 64 bits
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   0 si nunca se hizo CTRL+S, 1 si se hizo al menos una vez
+;------------------------------------------------------------------------------------
+sys_regs:
+    push rbp
+    mov rbp, rsp
+
+    mov rbx, rdi
+    mov rax, 8
     int 80h
 
     mov rsp, rbp

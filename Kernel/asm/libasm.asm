@@ -2,6 +2,7 @@ GLOBAL cpuVendor
 GLOBAL default_process
 GLOBAL get_time
 GLOBAL get_data
+GLOBAL get_inforeg_context
 
 section .text
 	
@@ -76,6 +77,17 @@ get_time:
 	mov rsp, rbp
 	pop rbp					; Desarmado de stack frame
 	ret
+
+get_inforeg_context:
+    push rbp
+    mov rbp, rsp
+    mov rax, inforeg_context
+    mov rsp, rbp
+    pop rbp
+    ret
+
+section .bss
+    inforeg_context resb 144    ; Contexto que se devuelve para el programa inforeg (lleno de 0's si no se guardo anteriormente con la combinacion de teclas)
 
 
 ;-------------------------------------------------------------------------------------

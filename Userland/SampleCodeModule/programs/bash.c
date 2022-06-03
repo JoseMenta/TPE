@@ -38,7 +38,9 @@ void bash(uint64_t arg_c, const char ** arg_v){
             print_string("$ ", WHITE);
             characters_in_line = 0;
         }else if(c[0] == ASCII_DELETE){
+
             if(buffer_index != 0) {
+
                 //si quiero borrar, al imprimirlo ya lo saque del video driver
                 //ahora lo saco del buffer.
                 buffer[--buffer_index] = '\0';
@@ -47,7 +49,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
                 print_string(c, WHITE);
                 characters_in_line--;
             }
-        }else if(c[0] != -1 && buffer_index < MAX_BUFFER_SIZE) {
+        }else if(c[0] != 0 && buffer_index < MAX_BUFFER_SIZE-1) {
             buffer[buffer_index++] = c[0];
             buffer[buffer_index] = '\0';
             print_string(c, WHITE);

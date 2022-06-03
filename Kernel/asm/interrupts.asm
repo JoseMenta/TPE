@@ -31,6 +31,7 @@ EXTERN time_handler
 EXTERN mem_handler
 EXTERN tick_handler
 EXTERN blink_handler
+EXTERN regs_handler
 
 SECTION .text
 
@@ -282,6 +283,8 @@ _syscallHandler:
     jz sys_tick                                 ; Syscall para timer ticks (id = 6)
     cmp rax, 7
     jz sys_blink                                ; Syscall para video blink (id = 7)
+    cmp rax, 8
+    jz sys_regs                                 ; Syscall para devolver un screenshot de los registros (id = 8)
     mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
     jmp fin
 
@@ -399,6 +402,20 @@ sys_blink:
     call blink_handler
     jmp fin
 
+;-------------------------------------------------------------------------------------
+; Regs: Devuelve el estado de los registros de la ultima vez que se realizo CTRL+S
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   rbx: Un arreglo con 18 espacios para enteros de 64 bits
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   rax: 0 si todos los registros estan en 0, 1 si ya se realizo CTRL+S
+;------------------------------------------------------------------------------------
+sys_regs:
+    mov rdi, rbx
+    call regs_handler
+    jmp fin
+
 fin:
     mov [aux], rax                                  ; Resguardamos el valor de retorno (ojo que aux es una direccion, y queremos guardar adentro)
     restoreRegs curr_context                        ; Recuperamos los registros
@@ -446,7 +463,7 @@ haltcpu:
 
 ; TODO: Usar un unico arreglo para los registros
 SECTION .bss
-	curr_context resb 160       ; Contexto del programa (para almacenar procesos)
+	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
 	aux resq 1                  ; Variable auxiliar para resguardar el valor de retorno de las syscalls
 
 ;TODO: ver si lo podemos hacer
