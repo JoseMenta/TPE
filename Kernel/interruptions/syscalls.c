@@ -1,9 +1,11 @@
 #include <syscalls.h>
+#include <video_driver.h>
+#include <keyboard.h>
+#include <scheduler.h>
+#include <queue.h>
+#include <time.h>
 
 uint8_t read_handler(char* str){
-//    extern char buffer[];           // Obtenemos el buffer y los punteros de keyboard.c
-//    extern int read;
-//    extern int write;
     extern queue_t queue;
     if (is_empty(&queue)){
         *str = '\0'; //no hay caracteres para imprimir
@@ -11,8 +13,6 @@ uint8_t read_handler(char* str){
     }          // No hay para leer (el puntero de escritura y lectura estan en la misma posicion), por lo que se devuelve 0
     *str = dequeue(&queue);           // Si hay para leer, guardamos el siguiente caracter en la primera posicion del string
     str[1] = '\0';
-//    buffer[read] = '\0';
-//    read = (read == BUFF_LENGTH-1) ? 0 : read+1;    // Movemos el puntero de lectura a la siguiente posicion
     return 1;                       // Devolvemos la cantidad de caracteres leidos
 }
 

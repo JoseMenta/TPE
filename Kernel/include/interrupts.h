@@ -9,7 +9,7 @@
 #define INTERRUPS_H_
 #define REGISTERS_COUNT (18)
 #include <idtLoader.h>
-
+#include <stdint.h>
 void _irq00Handler(void);                   // Las siguientes son funciones que ejecutan la interrupcion cuyo codigo IRQ está indicado en el nombre
 void _irq01Handler(void);
 void _irq02Handler(void);

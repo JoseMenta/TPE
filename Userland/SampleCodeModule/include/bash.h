@@ -3,7 +3,7 @@
 
 
 #include <libc.h>
-#include <programs.h>
+
 
 #define LOGOUT ("logout")             // El string con el cual se debe finalizar bash
 #define ASCII_DELETE (127)            // El valor ASCII de la tecla borrar

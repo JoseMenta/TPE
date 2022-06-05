@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 #include <scheduler.h>
-#include <keyboard.h>
-#include <time.h>
+
 
 typedef enum {BLACK=0x00, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHT_GRAY, DARK_GREY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED, PINK, YELLOW, WHITE, BACKGROUND_BLACK = BLACK << 4, BACKGROUND_WHITE = WHITE << 4} formatType;
 

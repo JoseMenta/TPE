@@ -1,13 +1,14 @@
 #include <scheduler.h>
+#include <interrupts.h>
 #include <stdint.h>
-#include <stdarg.h>
 #include <keyboard.h>
 #include <video_driver.h>
+
 #define ORIGINAL_PROCESS_INDEX 0
 #define DEFAULT_PROCESS_INDEX 4
 static process_t process_array[5] = {{{0}}};
 uint8_t process_array_len = 0;
-uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
+static uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
 
 
 //TODO: Agregar un flag para ver si el usuario queria salir del programa, y recien ahi restaurar a los waiting
@@ -40,7 +41,6 @@ positionType get_current_position(){
     return process_array[currentProcess_index].position;
 }
 
-uint64_t * getCurrContext(void); //funcion auxiliar, devuelve un vector que fue declarado en interrupts.asm
 
 void change_context(){
     //change_context cambia el contexto cuando llega un TT

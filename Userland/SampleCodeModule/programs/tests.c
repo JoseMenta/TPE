@@ -1,4 +1,5 @@
 #include <tests.h>
+#include <libc.h>
 /*
 void write_test(){
 //    sys_write("Imprimiendo en blanco\n", WHITE);

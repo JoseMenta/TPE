@@ -1,7 +1,7 @@
 #ifndef _TIME_H_
 #define _TIME_H_
 
-#include <scheduler.h>
+
 #include <stdint.h>
 
 void timer_handler();                       // Es la funcion que se ejecuta cuando ocurra la interrupcion del timer tick (Incrementa la cantidad de ticks)

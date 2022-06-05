@@ -1,4 +1,5 @@
 #include <printmem.h>
+#include <libc.h>
 
 uint64_t analyze_string(const char * str);
 
@@ -7,7 +8,8 @@ void printmem(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=1){
         throw_error("ERROR: El programa debe recibir exactamente 1 argumento");
     }
-    uint64_t init_dir = analyze_string(&(arg_v[0]));
+    //TODO: ojo, aca estabamos pasando &arv[0], es char** eso
+    uint64_t init_dir = analyze_string(arg_v[0]);
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);
     char str[21] = {0};                                                             // 2^64 tiene 20 digitos mas el "\0"

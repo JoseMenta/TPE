@@ -62,6 +62,7 @@ SECTION .text
     ;guardo el rsp donde ocurrio la interrupcion/excepcion por si lo necesita el handler (en las excepciones se usa)
     mov qword rax, [rsp + 32]
     mov qword [%1 + 120], rax ;lo guardo para que lo imprima la excepcion
+
     ;FLAGS: lo guardo para cada proceso
     mov qword rax, [rsp+24] ;guardo los RFLAGS
     mov qword [%1+ 136], rax ;lo guarda en el contexto actual

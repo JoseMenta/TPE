@@ -1,4 +1,6 @@
 #include <libc.h>
+#include <programs.h>
+
 front_program_t programs[CANT_PROG] = {
         {"help","\thelp: Despliega los distintos comandos disponibles\n",help},
         {"div0","\tdiv0: Genera una excepcion por division por cero\n",zero_division_exc},

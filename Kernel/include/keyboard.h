@@ -3,9 +3,6 @@
 #define KEYBOARD_H
 
 #include <stdint.h>
-#include <scheduler.h>
-#include <queue.h>
-#include <interrupts.h>
 //Constantes para los scan_code
 #define BUFF_LENGTH 100
 #define BLOCK_MAYUSC 58

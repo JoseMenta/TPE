@@ -2,7 +2,7 @@
 
 #ifndef TPE_SCHEDULER_H
 #define TPE_SCHEDULER_H
-
+#include <interrupts.h>
 #include <stdint.h>
 
 // Estado en el que se puede encontrar un programa/proceso
@@ -16,15 +16,16 @@ typedef enum {ALL = 0, LEFT, RIGHT} positionType;       // Posicion del programa
 
 typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RIP, RFLAGS} registers; // El orden en el que llegan los registros en el arreglo
 
-#define REGISTERS_COUNT (18)                              // Cantidad de registros (NOTA: no incluye a ACTUAL_RSP)
 
-#define OFFSET (1000)                                     // Espacio que se le va a dejar de stack a cada proceso
+
+#define OFFSET (1024)                                     // Espacio que se le va a dejar de stack a cada proceso
 
 typedef struct {                                        // Estructura de un proceso
     uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa
     statusType status;                                  // Estado del proceso
     positionType position;                              // Posicion en pantalla del proceso
 } process_t;
+
 //Estructura de programa que pasan desde el front
 typedef struct{
     void* start;        // Direccion de la funcion que ejecuta el programa

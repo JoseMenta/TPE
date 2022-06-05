@@ -1,4 +1,5 @@
 #include <bash.h>
+#include <programs.h>
 
 char buffer[MAX_BUFFER_SIZE];
 uint8_t buffer_index = 0;

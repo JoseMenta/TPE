@@ -1,11 +1,7 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
-#include <video_driver.h>
-#include <syscalls.h>
 #include <stdint.h>
-#include <scheduler.h>
-#include <lib.h>
 
 void zero_division();
 void invalid_opcode();

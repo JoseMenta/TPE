@@ -1,4 +1,5 @@
 #include <time.h>
+#include <scheduler.h>
 
 static uint64_t ticks = 0;
 

@@ -3,8 +3,7 @@
 #define TPE_PROGRAMS_H
 
 #include <stdint.h>
-#include <libc.h>
-//#include <math.h>
+
 
 #define COUNT_REGS (18)
 

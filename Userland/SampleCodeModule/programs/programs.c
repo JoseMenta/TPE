@@ -1,3 +1,4 @@
+#include <programs.h>
 #include <libc.h>
 
 static const char * Names[COUNT_REGS] = { "R8: ", "R9: ", "R10: ", "R11: ", "R12: ", "R13: ", "R14: ", "R15: ", "RAX: ", "RBX: ", "RCX: ", "RDX: ", "RSI: ", "RDI: ", "RBP: ", "RSP: ", "RIP: ", "FLAGS: "};
@@ -33,7 +34,7 @@ void inforeg(uint64_t arg_c, const char ** arg_v){
     print_string("Registros: \n", WHITE);
     // Pongo en reg los valores de los registros
     uint64_t aux[COUNT_REGS];
-    uint64_t * reg = sys_regs(aux);
+    sys_regs(aux);
     char reg_str[20];
     for(int i=0; i<COUNT_REGS; i++){
         print_string(Names[i], WHITE);

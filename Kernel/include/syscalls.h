@@ -1,12 +1,8 @@
 #ifndef TPE_SYSCALLS_H
 #define TPE_SYSCALLS_H
 
-#include <video_driver.h>
 #include <stdint.h>
-#include <keyboard.h>
-#include <scheduler.h>
-#include <queue.h>
-#include <time.h>
+#include <video_driver.h>
 
 typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
 

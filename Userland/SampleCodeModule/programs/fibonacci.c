@@ -1,4 +1,5 @@
 #include <fibonacci.h>
+#include <libc.h>
 
 void fibonacci(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){

@@ -2,7 +2,7 @@
 #define PRINTMEM_H
 
 #include <stdint.h>
-#include <libc.h>
+
 #define MAX_MEMORY_SIZE (32)
 
 void printmem(uint64_t arg_c, const char ** arg_v);

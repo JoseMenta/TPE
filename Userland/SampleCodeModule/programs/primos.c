@@ -1,4 +1,5 @@
 #include <primos.h>
+#include <libc.h>
 
 static uint8_t is_prime(uint64_t number){
     for(int i=FIRST_PRIME; i*i <= number; i++){
