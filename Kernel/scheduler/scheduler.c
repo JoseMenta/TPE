@@ -19,9 +19,8 @@ static uint8_t currentProcess_index = 0; //Arranca en 0, el proceso default
 //Si es 2 => se esta corriendo solo la terminal
 //Si es 1 => Esta en userland
 //Dejamos main_userland para poder terminar con el kernel sin tener que forzar la salida
-void setup_context(uint64_t* context,program_t program, uint64_t new_rsp, uint64_t prev_actual_rflags);
-void change_context();
-void copy_context(uint64_t* source, uint64_t* dest);
+static void setup_context(uint64_t* context,program_t program, uint64_t new_rsp);
+static void copy_context(uint64_t* source, uint64_t* dest);
 void default_process();
 
 uint8_t want_to_return = 0; //Flag para ver si el usuario desea volver al proceso anterior al que se esta corriendo (independientemente de si el ultimo termino o no)
@@ -252,7 +251,7 @@ static void add_original_process(){
 //Devuelve el index del proceso que se agrego
 static int add_process_to_array(program_t process, positionType position){
     //Inicializo en contexto del nuevo proceso
-    setup_context(process_array[process_array_len].registers,process,process_array[0].registers[RSP]-(process_array_len)*OFFSET,process_array[0].registers[RFLAGS]);
+    setup_context(process_array[process_array_len].registers,process,process_array[0].registers[RSP]-(process_array_len)*OFFSET);
     process_array[process_array_len].position = position;
     process_array[process_array_len++].status = RUNNING;
     runnable++; //aumento el contador de procesos que pueden correr
@@ -260,7 +259,7 @@ static int add_process_to_array(program_t process, positionType position){
 }
 
 //Funciones auxiliares de la implementacion
-void setup_context(uint64_t * context, program_t program, uint64_t new_rsp, uint64_t prev_actual_rflags){
+static void setup_context(uint64_t * context, program_t program, uint64_t new_rsp){
     // Inicializa los registros en 0 para el nuevo programa
     for(int  i = 0; i<REGISTERS_COUNT; i++){
         context[i] = 0;
@@ -268,13 +267,14 @@ void setup_context(uint64_t * context, program_t program, uint64_t new_rsp, uint
     // Se indica la direccion de memoria donde comienza el proceso (programa)
     context[RIP] = (uint64_t) program.start;
     context[RDI] = program.cant_arg; //Paso la cantidad de argumentos
-    context[RSI] = (uint64_t) program.args; //Paso el vector de char*
+    context[RSI] = (uint64_t) program.args; //Paso el vector de char**
     // Se indica la direccion de memoria donde comienza el stack local al proceso
     context[RSP] = new_rsp;
     //TODO: cambiar a un valor default con el flag de excepcion prendido
-    context[RFLAGS] = prev_actual_rflags; //Esto es importante, si no no vuelve bien
+//    context[RFLAGS] = prev_actual_rflags; //Empezamos con los flags del que lo llama
+    context[RFLAGS] = 0x200; //Dejo prendido el flag de Interrupt enable flag, necesario para poder volver de la interrupcion
 }
-void copy_context(uint64_t* source, uint64_t* dest){
+static void copy_context(uint64_t* source, uint64_t* dest){
     for(int i = 0; i<REGISTERS_COUNT;i++){
         dest[i] = source[i];
     }

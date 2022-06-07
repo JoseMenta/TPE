@@ -1,10 +1,10 @@
 #include <bash.h>
 #include <programs.h>
+#include <libc.h>
 
 char buffer[MAX_BUFFER_SIZE];
 uint8_t buffer_index = 0;
 uint64_t characters_in_line = 0;
-
 void analyze_buffer(void);
 void clean_buffer(void);
 void copy_token(char * token, int * start_token, int end_token);
@@ -72,92 +72,6 @@ void bash(uint64_t arg_c, const char ** arg_v){
 }
 
 
-//
-////---------------------------------------------------------------------------------
-//// analyze_buffer: Analiza los caracteres ingresados desde el ultimo ENTER
-////---------------------------------------------------------------------------------
-//// Argumentos:
-////   void
-////---------------------------------------------------------------------------------
-//// Retorno
-////   void
-////---------------------------------------------------------------------------------
-//// Ejecuta uno o dos procesos nuevos si el string en el buffer es valido
-////---------------------------------------------------------------------------------
-//void analyze_buffer(void) {
-//    // Obtenemos los strings sin espacios de los ingresado en la terminal
-//    char * tokens = strtok(buffer, " ");
-//    // Si no se ingreso texto, solo ENTER, no se hace nada
-//    if(tokens == NULL){
-//        return;
-//    }
-//    // Si se escribe "logout", bash se cierra y se apaga la compu
-//    if(strcmp(tokens, LOGOUT) == 0){
-//        tokens = strtok(NULL, tokens);
-//        // Verificamos que solo se halla ingresado "logout" y nada mas
-//        if(tokens == NULL){
-//            sys_exit(0);
-//        }
-//        else {
-//            print_string("error: expresion invalida", RED);
-//            return;
-//        }
-//    }
-//
-//    // El primer string debe ser un programa valido
-//    void* program_a =  get_program(tokens);
-//    // Si no se encontro programa, entonces no es un string valido
-//    if(program_a == NULL){
-//        // Lanzar error: print rojo
-//        print_string("error: programa invalido", RED);
-//        return;
-//    }
-//    // Para iterar sobre los tokens, se debe hacer strtok(NULL, tokens), donde NULL es una constante igual a 0
-//    tokens = strtok(0, tokens);
-//    // Si solo habia un string (y valido) entonces se ejecuta un programa en toda la pantalla
-//    if (tokens == NULL) {
-//        uint64_t program[1] = {(uint64_t)program_a};
-//        sys_exec(1, (void *)program);
-//        return;
-//    }
-//    // En cambio, si hay mas de un string, el proximo debe ser un pipe
-//    // Si no lo es, entonces es una expresion invalida
-//    if(strcmp(tokens, "|") != 0) {
-//        // Lanzar error: print rojo
-//        print_string("error: no usa | como separador de programas", RED);
-//        return;
-//    }
-//    tokens = strtok(0, tokens);
-//    // Si no hay un tercer string tambien es invalido pues debe ser 'pgm1 | pgm2'
-//    if(tokens == NULL){
-//        // Lanzar error: print rojo
-//        print_string("error: programa de consola derecha ausente", RED);
-//        return;
-//    }
-//    // Luego, el tercer string debe ser un programa valido
-//    void* program_b = get_program(tokens);
-//    // Si no lo es lanza error
-//    if (program_b == NULL) {
-//        // Lanzar error: print rojo
-//        print_string("error: programa para consola derecha invalido", RED);
-//        return;
-//    }
-//    // Y no debe haber mas strings, para asi ejecutar dos programas
-//    tokens = strtok(0, tokens);
-//    if (tokens == NULL) {
-//        void* program[2] = {program_a, program_b};
-//        sys_exec(2, (void *)program);
-//        return;
-//    }
-//    // Si los hay lanza error
-//    else{
-//        // Lanzar error: print rojo
-//        print_string("error: cantidad de programas invalida", RED);
-//        return;
-//    }
-//}
-//
-
 void analyze_buffer(void) {
     // Obtenemos los strings sin espacios de los ingresados en la terminal
     int prev_token = 0;
@@ -171,87 +85,52 @@ void analyze_buffer(void) {
     copy_token(tokens, &prev_token, new_token);                // Copiamos el primer string a aux
 
     // Si se escribe "logout", bash se cierra y se apaga la compu
-    if(strcmp(tokens, LOGOUT) == 0){
-        new_token = str_tok(buffer+prev_token+1, ' ');
+    if (strcmp(tokens, LOGOUT) == 0) {
+        new_token = str_tok(buffer + prev_token + 1, ' ');
         // Verificamos que solo se halla ingresado "logout" y nada mas
-        if(new_token == 0) {
+        if (new_token == 0) {
             print_string("\nLa computadora esta lista para apagarse.\n", WHITE);
             sys_exit();
-        }
-        else{
+        } else {
             print_string("\nERROR: expresion invalida\n", RED);
             return;
         }
     }
 
     // Consultamos si el primer string es un programa valido
-    void * program_a = get_program(tokens);
+    void *program_a = get_program(tokens);
     // Si no se encontro programa, entonces no es un string valido
-    if(program_a == NULL){
+    if (program_a == NULL) {
         // Lanzar error: El primer string es un programa valido
         print_string("\nERROR: programa invalido\n", RED);
         return;
     }
 
-    //logica exclusiva para printmem, si no es entonces no entra
-//    if(program_a == get_program("printmem")){
-//      tokens = str_tok(0, tokens);
-//      if(tokens == NULL){
-//          print_string("error: Ausencia de parametros en llamada a printmem", RED);
-//          return 0;
-//      }else{
-//          //todo subirlo a la estruc del programa o pasarlo como parametro en sys_exec()
-//          char * param = tokens;
-//          uint64_t program[1] = {(uint64_t)program_a};
-//          sys_exec(1, (void *) program_a, );
-//          return 1;
-//      }
-//    }
-
     char arg_a[MAX_ARGS_SIZE][MAX_BUFFER_SIZE] = {{0}};         // Argumentos del programa A
     int pipe_or_end_reached = 0;                                // Flag que indica si se llego a un pipe o al final del string
-    int i=0;                                                    // Itera sobre el arreglo de argumentos
-    for(; i < MAX_ARGS_SIZE && !pipe_or_end_reached; i++){      // Recorrera siempre y cuando quede espacio para los argumentos o hasta llegar a un pipe o \0
+    int i = 0;                                                  // Itera sobre el arreglo de argumentos
+    for(; !pipe_or_end_reached; i++){                           // Recorrera siempre y cuando quede espacio para los argumentos o hasta llegar a un pipe o \0
         new_token = str_tok(buffer+prev_token+1, ' ');          // Obtenemos el proximo token, el cual puede ser un nuevo argumento, | o \0
         prev_token++;
-        copy_token(arg_a[i], &prev_token, new_token);           // Subo el argumento al arreglo de argumentos
-
+        copy_token(tokens, &prev_token, new_token);
+        if(i < MAX_ARGS_SIZE){
+            copy_str(arg_a[i], tokens);           // Subo el argumento al arreglo de argumentos
+        }
         // Si es un '|' o es el ultimo token, quiero que no lea mas argumentos
-        if(strcmp(arg_a[i], "|") == 0 || strcmp(arg_a[i], "\0") == 0) {
+        if(strcmp(tokens, "|") == 0 || strcmp(tokens, "\0") == 0) {
             arg_a[i][0] = '\0';                                 // Si se leyo un | o \0 debemos borrar el ultimo argumento pues se copio eso
             i--;                                                // Contabilizamos como argumento al pipe o \0, por lo que debemos decrementar
             pipe_or_end_reached = 1;                            // Actualizamos el flag
         }
     }
-    program_t struct_a = {program_a, i, arg_a};
+    char* aux_a[] = {arg_a[0],arg_a[1]};                        // Este vector es necesario, si no se pierde informacion con el casteo directo a char**
+    program_t struct_a = {program_a, i, aux_a};
     // Si se leyo un \0, entonces se ejecuta un solo programa
     if (new_token == 0) {
         program_t structs[] = {struct_a};
         sys_exec(1, structs);
         return;
     }
-    /*
-    // En cambio, si hay mas de un string, el proximo debe ser un pipe
-    // Copiamos el segundo token
-    prev_token++;
-    copy_token(tokens, &(prev_token), new_token);
-    // Si no lo es, entonces es una expresion invalida
-    if(strcmp(tokens, "|") != 0) {
-        // Lanzar error: print rojo
-        print_string("\nERROR: no usa | como separador de programas\n", RED);
-        return ;
-    }
-
-    // Si llega aca es porque hubo un programa valido seguido de un |
-
-    // Si no hay un tercer string tambien es invalido pues debe ser 'pgm1 | pgm2'
-    if(new_token == 0){
-        // Lanzar error: print rojo
-        print_string("\nERROR: programa de consola derecha ausente\n", RED);
-        return ;
-    }
-    prev_token++;
-    */
 
     // Si llegamos aca es porque leimos un |
     new_token = str_tok(buffer+prev_token+1, ' ');
@@ -271,20 +150,6 @@ void analyze_buffer(void) {
         print_string("\nERROR: programa para consola derecha invalido\n", RED);
         return;
     }
-//    if(program_a == get_program("printmem")){
-//      si es printmem entonces debo consumir un tokens mas para guardar el parametro
-//      tokens = str_tok(0, tokens);
-//      if(tokens == NULL){
-//          print_string("error: Ausencia de parametros en llamada a printmem", RED);
-//          return 0;
-//      }else{
-//          //todo subirlo a la estruc del programa o pasarlo como parametro en sys_exec()
-//          char * param = tokens;
-//          uint64_t program[2] = {(uint64_t)program_a};
-//          sys_exec(2, (void *) program_a);
-//          return 1;
-//      }
-//    }
 
     // Si llegamos aca es porque leimos dos programas validos, falta leer los arguementos del segundo programa
 
@@ -304,26 +169,13 @@ void analyze_buffer(void) {
             pipe_or_end_reached = 1;                            // Actualizamos el flag
         }
     }
-    program_t struct_b = {program_b, i, arg_b};
+    char* aux_b[] = {arg_b[0],arg_b[1]};
+    program_t struct_b = {program_b, i, aux_b};
     // Y se ejecutan los dos ultimos programas
     program_t structs[] = {struct_a, struct_b};
     sys_exec(2, structs);
     return;
 
-    /*
-    // Y no debe haber mas strings, para asi ejecutar dos programas
-    new_token = str_tok(buffer+prev_token+1, ' ');
-    if (new_token == 0) {
-        void * program[2] = {program_a, program_b};
-        sys_exec(2, program);
-        return;
-    }
-    // Si los hay lanza error, mala sintaxis
-    else{
-        // Lanzar error: print rojo
-        print_string("\nERROR: cantidad de programas invalida\n", RED);
-        return ;
-    }*/
 }
 
 

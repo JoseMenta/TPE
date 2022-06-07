@@ -86,10 +86,6 @@ get_inforeg_context:
     pop rbp
     ret
 
-section .bss
-    inforeg_context resb 144    ; Contexto que se devuelve para el programa inforeg (lleno de 0's si no se guardo anteriormente con la combinacion de teclas)
-
-
 ;-------------------------------------------------------------------------------------
 ; get_data: Devuelve el dato almacenado en la direccion ingresada
 ;-------------------------------------------------------------------------------------
@@ -109,4 +105,10 @@ section .bss
 ;    mov rbp, rsp
 ;    pop rbp
 ;    ret
+
+section .bss
+    inforeg_context resb 144    ; Contexto que se devuelve para el programa inforeg (lleno de 0's si no se guardo anteriormente con la combinacion de teclas)
+
+
+
 

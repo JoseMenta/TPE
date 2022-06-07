@@ -4,11 +4,10 @@
 uint64_t analyze_string(const char * str);
 
 //limit = 0xFFFFFFFD9
-void printmem(uint64_t arg_c, const char ** arg_v){
+void printmem(uint64_t arg_c, const char** arg_v){
     if(arg_c!=1){
         throw_error("ERROR: El programa debe recibir exactamente 1 argumento");
     }
-    //TODO: ojo, aca estabamos pasando &arv[0], es char** eso
     uint64_t init_dir = analyze_string(arg_v[0]);
     uint8_t mem_arr[32] = {0};
     uint8_t dim = sys_mem(init_dir, mem_arr);

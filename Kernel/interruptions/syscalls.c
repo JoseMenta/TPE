@@ -59,7 +59,7 @@ uint8_t mem_handler(uint64_t init_dir, uint8_t * arr){
     // Empiezo a completar el arreglo, siempre y cuando la direccion consultada sea menor a la ultima
     // Asi se evita overflow
     for(; (i < MAX_ARRAY_SIZE) && (init_dir + i < MAX_MEM_ADDRESS); i++){
-        //arr[i] = get_data(init_dir + i);
+//        arr[i] = get_data(init_dir + i);
         arr[i] = *((uint8_t*)init_dir + i);//char* para que +i avance de a 1
     }
     //TODO: ver de poner esto en el for de arriba (hacerlo hasta <= y listo)

@@ -44,6 +44,7 @@ uint8_t print_number(uint64_t number, formatType format);
 uint64_t strcmp(const char * s1, const char * s2);
 char * to_hex(char * str, uint64_t val);
 uint64_t uintToBase(uint64_t value, char * buffer, uint64_t base);
+void copy_str(char * dest, char * source);
 
 uint8_t get_year(void);
 uint8_t get_month(void);
