@@ -140,6 +140,7 @@ void analyze_buffer(void) {
             pipe_or_end_reached = 1;                            // Actualizamos el flag
         }
     }
+    i = (i > MAX_ARGS_SIZE) ? MAX_ARGS_SIZE : i;
     char* aux_a[] = {arg_a[0],arg_a[1]};                        // Este vector es necesario, si no se pierde informacion con el casteo directo a char**
     program_t struct_a = {program_a, i, aux_a};
     // Si se leyo un \0, entonces se ejecuta un solo programa

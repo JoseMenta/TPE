@@ -14,7 +14,7 @@ uint8_t read_handler(char * str);                               // Lee por panta
 uint8_t write_handler(const char* str, formatType format);      // Escribe el string str por pantalla con el formato format
 uint8_t exec_handler(uint8_t cant, const program_t* programas);                    // Agrega un nuevo proceso al arreglo de procesos
 uint8_t exit_handler();                                         // Finaliza un proceso con codigo de error
-uint8_t time_handler(timeType time_unit);                       // Devuelve el valor para la unidad indicada en GMT
+int8_t time_handler(timeType time_unit);                        // Devuelve el valor para la unidad indicada en GMT
 uint8_t mem_handler(uint64_t init_dir, uint8_t * arr);          // Complete un arreglo de 32 elementos con la informacion que guarda init_dir y las 31 direcciones siguientes
 uint64_t tick_handler(void);                                    // Devuelve la cantidad de ticks transcurridos
 uint8_t blink_handler(void);                                    // Realiza un parpadeo en la pantalla en el proximo caracter a escribir

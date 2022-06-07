@@ -91,9 +91,13 @@ uint8_t exit_handler(){
 //  time_unit: la unidad que se desea buscar (sec, min,....)
 //----------------------------------------------------------------------
 // Retorno:
-//  El valor pedido
+//  El valor pedido o -1 si no es un parametro correcto
 //----------------------------------------------------------------------
-uint8_t time_handler(timeType time_unit){
+int8_t time_handler(timeType time_unit){
+    if(time_unit != SEC && time_unit != MIN && time_unit != HOUR && time_unit != DAY_WEEK &&
+        time_unit != DAY_MONTH && time_unit != MONTH && time_unit != YEAR){
+        return -1;
+    }
     return get_time(time_unit);
 }
 //----------------------------------------------------------------------
