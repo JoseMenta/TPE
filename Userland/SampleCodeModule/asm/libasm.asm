@@ -194,7 +194,7 @@ sys_blink:
 ; sys_regs: Devuelve el estado de los registros de la ultima vez que se realizo CTRL+S
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   Un arreglo de 18 enteros de 64 bits
+;   rbx: Puntero a un arreglo de 18 enteros de 64 bits
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   0 si nunca se hizo CTRL+S, 1 si se hizo al menos una vez
@@ -215,7 +215,7 @@ sys_regs:
 ; zero_division_exc: Programa para generar un excepcion de division por cero
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   void zero_division_exc();
+;   void
 ;-------------------------------------------------------------------------------------
 zero_division_exc:
 	push rbp
@@ -235,7 +235,7 @@ zero_division_exc:
 ; invalid_opcode_exc: Programa para generar un excepcion de operador invalido
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   null
+;   void
 ;-------------------------------------------------------------------------------------
 invalid_opcode_exc:
 	push rbp
@@ -251,90 +251,6 @@ invalid_opcode_exc:
 	pop rbp
 	ret
 
-;-------------------------------------------------------------------------------------
-; FUNCIONES PARA MANEJO DE FECHA Y HORA
-;-------------------------------------------------------------------------------------
-; Parametros:
-;   rbx: categoria horaria que quiero segun : typedef enum {SEC = 0, MIN = 2, HOUR = 4, DAY_WEEK = 6, DAY_MONTH = 7, MONTH = 8, YEAR = 9} timeType;
-;   rax: la sys_call
-;-------------------------------------------------------------------------------------
-; Retorno:
-;   rax: entero con la categoria que quiero
-;-------------------------------------------------------------------------------------
-;get_week:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 6
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-
-;get_day:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 7
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-
-;get_month:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 8
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-
-;get_year:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 9
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-
-;get_hour:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 4
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-
-;get_min:
-;    push rbp
-;    mov rbp, rsp
-
-;    mov rbx, 2
-;    mov rax, 4
-;    int 80h
-
-;	mov rsp, rbp
-;	pop rbp
-;	ret
-;-------------------------------------------------------------------------------------
-; FIN FUNCIONES PARA MANEJO DE FECHA Y HORA
-;-------------------------------------------------------------------------------------
 
 
 ;-------------------------------------------------------------------------------------
@@ -387,13 +303,6 @@ get_rip:
     pop rax
     jmp get_rip_return
 
-get_register:
-    push rbp
-    mov rbp, rsp
-    mov rax, rsp
-    mov rbp, rsp
-    pop rbp
-    ret
 
 SECTION .bss
 	reg resb 144		    ; Guarda 8*18 lugares de memoria (para los 18 registros)

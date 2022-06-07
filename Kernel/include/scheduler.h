@@ -19,25 +19,24 @@ typedef enum {R8 = 0, R9, R10, R11, R12, R13, R14, R15, RAX, RBX, RCX, RDX, RSI,
 
 
 #define OFFSET (1024)                                     // Espacio que se le va a dejar de stack a cada proceso
-
-typedef struct {                                        // Estructura de un proceso
+//Estructura de un proceso que utiliza el scheduler para manejar el cambio de contexto
+typedef struct {
     uint64_t registers[REGISTERS_COUNT];                // Estado de los registros cuando se interrumpe el programa
     statusType status;                                  // Estado del proceso
     positionType position;                              // Posicion en pantalla del proceso
 } process_t;
 
-//Estructura de programa que pasan desde el front
+//Estructura de programa que pasan desde Userland
 typedef struct{
-    void* start;        // Direccion de la funcion que ejecuta el programa
-    uint64_t cant_arg;       // Cantidad de argumentos ingresados al programa
-    char** args;  // Este es un vector que se tiene que definir aparte, antes de inicializar la estructura
+    void* start;            // Direccion de la funcion que ejecuta el programa
+    uint64_t cant_arg;      // Cantidad de argumentos ingresados al programa
+    char** args;            // Vector de strings con los argumentos del programa
 } program_t;
 
-//void add_process(program_t program, positionType position);      // Agrega un proceso al arreglo de procesos
 uint8_t terminate_process(void);                                    // Finaliza un proceso (luego sera borrado)
 positionType get_current_position(void);                            // Devuelve la posicion del programa corriendo en el momento
-
-uint8_t suspend_left();                                                 // Funciones para la logica de pausar y reanudar un proceso
+int process_array_is_empty();                                       // Devuelve 1 si no hay procesos cargados, 0 si no
+uint8_t suspend_left();                                             // Funciones para la logica de pausar, reanudar o terminar un proceso
 uint8_t suspend_right();
 uint8_t suspend_full();
 uint8_t restart_left();
@@ -47,7 +46,7 @@ uint8_t kill_left();
 uint8_t kill_right();
 uint8_t kill_full();
 
-void change_context();                                              // Cambia de proceso si es que puede
-void add_full_process(program_t process);                         // Agrega un nuevo proceso al arreglo de procesos
+void change_context();                                          // Cambia de contexto si es posible, si no mantiene el actual
+void add_full_process(program_t process);                       // Agrega un nuevo proceso al arreglo de procesos
 void add_two_processes(program_t left, program_t right);        // Agrega dos nuevos procesos (left y right) al arreglo de procesos
 #endif

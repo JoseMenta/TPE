@@ -1,5 +1,17 @@
 global get_keyboard_scan_code
 section .data
+;----------------------------------------------------------------------
+; get_keyboard_scan_code: obtiene el codigo de la tecla presionada del teclado
+;----------------------------------------------------------------------
+; Argumentos:
+;  void
+;----------------------------------------------------------------------
+; La funcion busca en el mapa de entrada y salida, en la poscicion donde el teclado
+; deja al codigo de la tecla presionada, y lo devuelve en rax
+;----------------------------------------------------------------------
+; Retorno
+;  El codigo de la tecla presionada en el teclado
+;----------------------------------------------------------------------
 get_keyboard_scan_code:
     push rbp
 	mov rbp, rsp

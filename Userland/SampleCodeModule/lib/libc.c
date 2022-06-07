@@ -5,29 +5,13 @@ front_program_t programs[CANT_PROG] = {
         {"help","\thelp: Despliega los distintos comandos disponibles\n",help},
         {"div0","\tdiv0: Genera una excepcion por division por cero\n",zero_division_exc},
         {"opcode","\topcode: Genera una excepcion por instruccion invalida\n",invalid_opcode_exc},
-        {"inforeg","\tinforeg: Imprime el valor los registros en el momento de ejecutarse el programa\n",inforeg},
+        {"inforeg","\tinforeg: Imprime el valor los registros guardados en un momento con la combinacion Control+s\n",inforeg},
         {"printmem","\tprintmem: Dada una direccion de memoria como argumento, devuelve el vuelco de memoria de las 32 direcciones de memoria a partir de la indicada\n",printmem},
         {"tiempo","\ttiempo: Fecha y hora actuales (GMT -3)\n",tiempo},
         {"primos","\tprimos: Despliega los numeros primos a partir del 2\n",primos},
         {"fibonacci","\tfibonacci: Despliega los numeros de la serie de Fibonacci\n",fibonacci}
 };
-//char * programs_names[CANT_PROG] = {"help",
-//                          "div0",
-//                          "opcode",
-//                          "inforeg",
-//                          "printmem",
-//                          "tiempo",
-//                          "primos",
-//                          "fibonacci"};
-//
-//void* programs_list[CANT_PROG] = {help,
-//                            zero_division_exc,
-//                            invalid_opcode_exc,
-//                            inforeg,
-//                            printmem,
-//                            tiempo,
-//                            primos,
-//                            fibonacci};
+
 
 
 void number_to_string(uint64_t number, char * str);
@@ -36,7 +20,7 @@ void number_to_string(uint64_t number, char * str);
 // getChar: lectura de un caracter con sys_call de lectura
 //---------------------------------------------------------------------------------
 // Argumentos:
-//      int getChar();
+//      void
 //---------------------------------------------------------------------------------
 // Retorno:
 //      caracter leido o 0 si no se leyo un caracter
@@ -49,23 +33,7 @@ uint8_t get_char(void){
     return c[0];
 }
 
-//---------------------------------------------------------------------------------
-// scanf: lectura de entrada en un buffer
-//---------------------------------------------------------------------------------
-// Argumentos:
-//      void scanf()
-//---------------------------------------------------------------------------------
-// Retorno:
-//---------------------------------------------------------------------------------
-//void scanf(){
-//    int c=getChar();
-//    if(c=='\n')
-//        analyze_buffer();
-//    if(c!=-1){
-//        buffer[buffer_index++]=c;
-//        buffer[buffer_index+1]='\0';
-//    }
-//}
+
 
 //---------------------------------------------------------------------------------
 // printString: imprime un String
@@ -244,7 +212,7 @@ char * to_hex(char * str, uint64_t val){
 // FUNCIONES PARA MANEJO DE FECHA Y HORA
 //-------------------------------------------------------------------------------------
 // Parametros:
-//   null
+//   void
 //-------------------------------------------------------------------------------------
 // Retorno:
 //   Entero con el tipo de unidad temporal deseada del momento en que se consulto

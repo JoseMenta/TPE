@@ -6,12 +6,15 @@
 #define IS_ALPHA(x) ((x) >= 'a' && (x) <= 'z') ? 1 : 0
 #define IS_REFERENCEABLE(x) ((x) <= KEYBOARD_REFERENCE_LENGTH && keyboard_reference[(x)]!='\0')
 
+static void copy_curr_context_to_inforeg_context();    // Funcion auxiliar para guardar el contexto que utiliza inforeg
 
-//El buffer guarda el ASCII del valor presionado en el teclado
+//El buffer guarda el ASCII del valor presionado en el teclado. Utiliza la estructura queue definida en queue.c
 queue_t queue = {{0}};
 static int key_case = -1;               // Estado actual del formato de la letra (mayuscula: 1, o minuscula: -1)
 static int key_case_default = -1;       // Estado default del formato de la letra
 
+//Flags de control para ver si se presionaron algunas tecas o para guardar el estado de los procesos y llamar a
+//otras funciones, como las del scheduler
 static int ctrl_pressed = 0;
 static int alt_pressed = 0;
 static int left_state = 1;
@@ -37,10 +40,16 @@ static int keyboard_reference[] = {'\0','\0','1','2','3','4','5',
                                     'b', 'n', 'm', ',', '.', '-', '^', '0', '0', '\t'}
 */
 
-
-// Si se presiona una tecla, esta se almacena en la siguiente posicion en el buffer
-//TODO: agregar manejo de combinacion de teclas para suspender/reiniciar procesos
-
+//----------------------------------------------------------------------
+// keyboard_handler: handler para la interrupcion del teclado
+//----------------------------------------------------------------------
+// Argumentos
+//  void
+//----------------------------------------------------------------------
+// El handler se encarga de agregar la tecla al buffer si se puede representar en pantalla,
+// o se encarga de llamar a las funciones correctas para pausar, reanudar o terminar procesos,
+// o copiar el contexto del programa en un arreglo auxiliar definido en libasm.asm para inforeg
+//----------------------------------------------------------------------
 void keyboard_handler(){
     // Obtenemos la tecla ingresada
     uint8_t key = get_keyboard_scan_code();
@@ -64,18 +73,6 @@ void keyboard_handler(){
     else if (key == SHIFT1+RELEASED || key == SHIFT2+RELEASED){
         key_case = key_case_default;        // Vuelve al estado default
     }
-
-    //Tira muchas teclas, es raro como funciona
-    //Si arranco con la tecla activada, me aparece como que estoy en minusculas igual
-    //Ademas, dependiendo de como lo toque, hace como 1 o 3 interrupciones
-    //Es raro, shift ya funciona
-//    else if (key == BLOCK_MAYUSC){
-//
-//        ncPrint("BLOCK");
-//        // Cambia el default
-//        key_case_default *= -1;
-//        key_case = key_case_default;
-//    }
 
     // Logica para el pausado y reanudado de procesos
     else if(key == CTRL){
@@ -158,8 +155,16 @@ void keyboard_handler(){
         }
     }
 }
-
-void copy_curr_context_to_inforeg_context(){
+//----------------------------------------------------------------------
+// copy_curr_context_to_inforeg_context: funcion para guardar el contexto actual
+//----------------------------------------------------------------------
+// Argumentos
+//  void
+//----------------------------------------------------------------------
+// La funcion guarda al contexto actual en el arreglo definido en libasm.asm, que
+// se utiliza luego por el comando inforeg
+//----------------------------------------------------------------------
+static void copy_curr_context_to_inforeg_context(){
     regs_saved = 1;
     uint64_t* curr_context = getCurrContext(); //Guardo el contexto en la interrupcion
     uint64_t* inforeg_context = get_inforeg_context();
@@ -168,6 +173,16 @@ void copy_curr_context_to_inforeg_context(){
     }
     return;
 }
+//----------------------------------------------------------------------
+// clear_keyboard_handler: funcion que elimina el contenido del buffer
+//----------------------------------------------------------------------
+// Argumentos
+//  void
+//----------------------------------------------------------------------
+// Es una funcion que se llama en otros momentos (como cuando se reanuda un
+// proceso en el scheduler) para limpiar el buffer e ignorar a los caracteres
+// ingresados en una pausa
+//----------------------------------------------------------------------
 void clear_keyboard_buffer(){
     clear_queue(&queue);
 }

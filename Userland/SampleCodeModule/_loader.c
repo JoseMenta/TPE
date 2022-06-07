@@ -17,9 +17,6 @@ int _start() {
 	//Clean BSS: Al setear en 0, desde el inicio hasta el final del segmento BSS, este se limpia
 	memset(&bss, 0, &endOfBinary - &bss);
 
-	// Vimos que el SO ejecuta un programa llamando a la función _start()
-	// Luego vimos que gcc toma el control de dicha _start() donde, entre otras cosas, prepara el stack,
-	// y luego llama a la primera funcion del programador, main()
 	return main();
 
 }

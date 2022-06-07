@@ -1,7 +1,9 @@
 GLOBAL TesterWrite
 GLOBAL TesterRead
 GLOBAL zero_division_exc
-
+;----------------------------------------------------------------------
+; Funciones auxiliares utilizadas en el desarrollo del TP
+;----------------------------------------------------------------------
 TesterWrite:
     mov rbx, string
     mov rdx, 0x0f

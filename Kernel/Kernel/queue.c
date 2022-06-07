@@ -1,10 +1,10 @@
 #include <queue.h>
 
 //-----------------------------------------------------------------------
-// enqueue: Agrega el nuevo caracter presionada al buffer si queda espacio
+// enqueue: Agrega el nuevo caracter presionada a la cola si queda espacio
 //-----------------------------------------------------------------------
 // Argumentos:
-// - queue: Puntero al buffer
+// - queue: Puntero a la cola
 // - elem: El nuevo caracter a agregar
 //-----------------------------------------------------------------------
 // Retorno:
@@ -22,10 +22,10 @@ void enqueue(queue_t* queue, int elem){
 }
 
 //-----------------------------------------------------------------------
-// is_empty: Indica si hay caracteres o no en el buffer
+// is_empty: Indica si hay caracteres o no en la cola
 //-----------------------------------------------------------------------
 // Argumentos:
-// - queue: Puntero al buffer
+// - queue: Puntero a la cola
 //-----------------------------------------------------------------------
 // Retorno:
 //  1 si no hay elementos, 0 si hay
@@ -35,10 +35,10 @@ uint8_t is_empty(queue_t * queue){
 }
 
 //-----------------------------------------------------------------------
-// dequeue: Toma el proximo caracter del buffer
+// dequeue: Toma el proximo caracter de la cola
 //-----------------------------------------------------------------------
 // Argumentos:
-// - queue: Puntero al buffer
+// - queue: Puntero a la cola
 //-----------------------------------------------------------------------
 // Retorno:
 //  El valor ASCII del proximo caracter, o \0 si no hay caracteres disponibles
@@ -51,7 +51,15 @@ uint8_t dequeue(queue_t* queue){
     queue->first = (queue->first + 1) % MAX;
     return ans;
 }
-
+//----------------------------------------------------------------------
+// clear_queue: Elimina todos los elementos de la cola
+//----------------------------------------------------------------------
+// Argumentos:
+//  -queue: Puntero a la cola
+//----------------------------------------------------------------------
+// Retorno
+//  void
+//----------------------------------------------------------------------
 void clear_queue(queue_t* queue){
     queue->len = 0;
     queue->first = 0;

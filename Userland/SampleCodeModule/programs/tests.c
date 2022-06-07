@@ -1,5 +1,6 @@
 #include <tests.h>
 #include <libc.h>
+//Teseos utlizados en el desarrollo del TP
 /*
 void write_test(){
 //    sys_write("Imprimiendo en blanco\n", WHITE);

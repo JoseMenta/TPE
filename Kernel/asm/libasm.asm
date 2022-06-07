@@ -29,7 +29,15 @@ cpuVendor:							; Devuelve un string del nombre del fabricante del procesador (
 	mov rsp, rbp
 	pop rbp
 	ret
-
+;----------------------------------------------------------------------
+; default_process: proceso que se corre cuando no hay otros para ejecutar
+;----------------------------------------------------------------------
+; Argumentos:
+;  void
+;----------------------------------------------------------------------
+; Es una funcion cuyo objetivo es utilizar los recursos del procesador cuando
+; no hay otros procesos que se quieren correr
+;----------------------------------------------------------------------
 default_process:
     nop
     jmp default_process ;usa al procesador y no cambia las cosas
@@ -77,7 +85,16 @@ get_time:
 	mov rsp, rbp
 	pop rbp					; Desarmado de stack frame
 	ret
-
+;----------------------------------------------------------------------
+; get_inforeg_context: funcion para obtener el arreglo que guarda el contexto utilizado por inforeg
+;----------------------------------------------------------------------
+; Argumentos:
+;  void
+;----------------------------------------------------------------------
+; Es una funcion utilizada para guardar u obtener el contexto que debe devolver inforeg
+;----------------------------------------------------------------------
+; Retorno: devuelve en rax el puntero al vector
+;----------------------------------------------------------------------
 get_inforeg_context:
     push rbp
     mov rbp, rsp
@@ -86,25 +103,7 @@ get_inforeg_context:
     pop rbp
     ret
 
-;-------------------------------------------------------------------------------------
-; get_data: Devuelve el dato almacenado en la direccion ingresada
-;-------------------------------------------------------------------------------------
-; Parametros:
-;   rdi: direccion de memoria sobre el cual consultar
-;-------------------------------------------------------------------------------------
-; Retorno:
-;   El dato almacenado
-;------------------------------------------------------------------------------------
-;get_data:
-;    push rbp
-;    mov rbp, rsp
-;
-;    mov rax, 0
-;    mov byte rax, [rdi]
-;
-;    mov rbp, rsp
-;    pop rbp
-;    ret
+
 
 section .bss
     inforeg_context resb 144    ; Contexto que se devuelve para el programa inforeg (lleno de 0's si no se guardo anteriormente con la combinacion de teclas)

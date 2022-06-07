@@ -129,12 +129,6 @@ void print_tab(positionType position, formatType letterFormat){
 // Si no hay mas lugar en la pantalla, llama a video_scroll_up
 //-----------------------------------------------------------------------
 void print(const char * str, formatType letterFormat, positionType position){
-//    if(position!=LEFT && position!=RIGHT && position!=ALL) {
-//        char aux[] = "error con position";
-//        for(int i = 0; aux[i]!='\0';i++){
-//            print_char(aux[i],RED,LEFT);
-//        }
-//    }
     for(;*str!='\0';str++){
         print_char(*str,letterFormat,position);
     }
@@ -217,14 +211,6 @@ void prev(coordinatesType * position){
 // - position: la posicion de la pantalla donde se desea imprimir
 //-----------------------------------------------------------------------
 void scroll_up(positionType position){
-    // Copiamos los caracteres de la fila n en n-1, n > 1
-//    for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
-//        c.row_current != coordinates[position].row_current-1 || c.col_current != coordinates[position].col_current;
-//        next(&c)){
-//        *(video_start + c.row_current * WIDTH + c.col_current) = *(video_start + (c.row_current+1) * WIDTH + c.col_current);
-//        *(video_start + c.row_current * WIDTH + c.col_current + 1) = *(video_start + (c.row_current+1) * WIDTH + c.col_current + 1);
-//    }
-//TODO: revisar esto, si no cuando hacemos (c.row_current+1) podemos caer en cualquier lado si coordinates[position].row_current==coordinates[position].row_end
     for(coordinatesType c = {coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_start, coordinates[position].col_start, coordinates[position].row_end, coordinates[position].col_end};
         c.row_current < coordinates[position].row_end;
         next(&c)){
@@ -254,10 +240,10 @@ void scroll_up(positionType position){
 // print_lines: Imprime las lineas de separacion para cuando el usuario haga la función |
 // ----------------------------------------------------------------------------
 // Argumentos:
-//  null
+//  void
 // ----------------------------------------------------------------------------
 // Retorno:
-//  null
+//  void
 // ----------------------------------------------------------------------------
 void print_lines(){
     uint32_t col1 = 80;                         // La posicion 78 y 80 son la mitad de la pantalla en el arreglo del driver
@@ -329,8 +315,14 @@ void delete_last_char(positionType position){
         }
     }
 }
-
-
+//----------------------------------------------------------------------
+// video_blink: cambia el fondo del cursor en la posicion
+//----------------------------------------------------------------------
+// Argumentos:
+//  position: posicion donde se quiere cambiar el fondo
+//----------------------------------------------------------------------
+// El color va cambiando entre blanco y negro cuando se llama
+//----------------------------------------------------------------------
 void video_blink(positionType position){
     static uint16_t toggle_background = BACKGROUND_BLACK;
     if(toggle_background == BACKGROUND_BLACK){

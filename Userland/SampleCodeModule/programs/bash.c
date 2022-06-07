@@ -15,6 +15,9 @@ void copy_token(char * token, int * start_token, int end_token);
 // Argumentos:
 //   void
 //---------------------------------------------------------------------------------
+// Es el programa encargado de interpretar lo que entra el usuario con el teclado
+// y ejecutar los otros programas si corresponde
+//---------------------------------------------------------------------------------
 // Retorno
 //   void
 //---------------------------------------------------------------------------------
@@ -22,10 +25,7 @@ void bash(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         throw_error("Error: el programa no recibe argumentos");
     }
-    //static uint32_t nothing_cycles = NOTHING_CYCLES;
     static uint64_t last_ticks = 0;
-    //TODO: cambiar esto
-    //print_string("BIENVENIDO A jOSe 1.0!\n$ Que modulo desea correr? \n$ ", WHITE);
     print_string("Bienvenido!\nQue modulo desea correr?\n$ ",WHITE);
     char c[2] = {0, 0};
     while(1){
@@ -56,11 +56,6 @@ void bash(uint64_t arg_c, const char ** arg_v){
             print_string(c, WHITE);
             characters_in_line++;
         } else {
-//            nothing_cycles--;
-//            if(nothing_cycles <= 0){
-//                blink();
-//                nothing_cycles = NOTHING_CYCLES;
-//            }
             uint64_t ticks = sys_tick();
             if(ticks - last_ticks>=10){
                 blink();
@@ -71,7 +66,15 @@ void bash(uint64_t arg_c, const char ** arg_v){
     sys_exit();
 }
 
-
+//---------------------------------------------------------------------------------
+// analyze_buffer: analiza el contenido de lo que ingreso el usuario
+//---------------------------------------------------------------------------------
+// Argumentos:
+//  void
+//---------------------------------------------------------------------------------
+// Se encarga de analizar lo que ingresa el usuario con el teclado, y ejecutar
+// los porgramas que corresponden o lanzar los errores
+//---------------------------------------------------------------------------------
 void analyze_buffer(void) {
     // Obtenemos los strings sin espacios de los ingresados en la terminal
     int prev_token = 0;

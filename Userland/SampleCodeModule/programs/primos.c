@@ -1,6 +1,12 @@
 #include <primos.h>
 #include <libc.h>
-
+//---------------------------------------------------------------------------------
+// primos: imprime a los numeros primos
+//---------------------------------------------------------------------------------
+// Argumentos:
+//  arg_c: cantidad de argumentos del programa (0)
+//  arg_v: arreglo con los strings de los argumentos
+//---------------------------------------------------------------------------------
 static uint8_t is_prime(uint64_t number){
     for(int i=FIRST_PRIME; i*i <= number; i++){
         if(number%i == 0)

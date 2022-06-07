@@ -17,8 +17,8 @@ GLOBAL _syscallHandler                      ; Ejecuta las interrupciones de soft
 
 GLOBAL _exception0Handler					; Es una funcion que ejecuta la excepcion de id 0 (division por cero)
 GLOBAL _exception6Handler					; Es una funcion que ejecuta la excepcion de id 6 (invalid opcode)
-GLOBAL get_registers							; Funcion para obtener el valor de los registros
-GLOBAL getCurrContext
+;GLOBAL get_registers						; Funcion para obtener el valor de los registros (utilizada en las excepciones)
+GLOBAL getCurrContext                       ; Funcion para obtener el valor de los registros (utilizada en el scheduler)
 
 EXTERN irqDispatcher						; Cuando se lance una interrupcion, se llamara a esta funcion para que ejecute la rutina de atencion correspondiente
 EXTERN exceptionDispatcher					; Similar a la funcion anterior, pero dedicada a excepciones
@@ -51,24 +51,16 @@ SECTION .text
     mov [%1+96], rsi
     mov [%1+104], rdi
     mov [%1+112], rbp
-
     push rax
-
     ;RIP
-    mov qword rax, [rsp+8]                  ; Guardo en rax el valor de RIP (La siguiente instruccion luego de lanzar la excepcion)
+    mov qword rax, [rsp+8]                  ; Guardo en rax el valor de RIP (direccion de la siguiente instruccion si es una interrupcion, o de donde ocurrio la excepcion)
     mov qword [%1+ 128], rax                 ; Guardo en el arreglo, el valor de RIP
-
-
-    ;guardo el rsp donde ocurrio la interrupcion/excepcion por si lo necesita el handler (en las excepciones se usa)
+    ;guardo el rsp donde ocurrio la interrupcion/excepcion
     mov qword rax, [rsp + 32]
     mov qword [%1 + 120], rax ;lo guardo para que lo imprima la excepcion
-
     ;FLAGS: lo guardo para cada proceso
     mov qword rax, [rsp+24] ;guardo los RFLAGS
     mov qword [%1+ 136], rax ;lo guarda en el contexto actual
-
-
-
     pop rax
 %endmacro
 
@@ -88,76 +80,26 @@ SECTION .text
     	mov rsi, qword[%1+96]
     	mov rdi, qword[%1+104]
     	mov rbp, qword[%1+112]
-
-
         push rax
-
-
+        ;RSP
         mov qword rax, [%1 + 120]
         mov qword [rsp+32], rax ;guardo RSP 24+8
-
-
-
         ;RIP
         mov qword rax, [%1+ 128]                     ; Guardo en RAX el valor de RIP obtenido en saveRegs
         mov qword [rsp+8], rax                      ; tengo que hacer rsp+8 por el push de rax
-
-
-
-        ;FLAGS TODO: ver si este tiene que ser un valor especial para poder volver (Alejo dice que hay un flag que tiene que tener si esta en una interrupcion)
+        ;FLAGS
         ;Ahora estoy dejando el valor del que crea el proceso en el caso de que este agregando
         mov qword rax, [%1+ 136] ;guardo los flags antes de la execpcion
-
         mov qword [rsp+24],rax
-
-
-
         pop rax
 %endmacro
 
-; Es una macro que recibe 0 argumentos y pushea al stack todos los registros para resguardarlos
-;%macro pushState 0
-;	push rax
-;	push rbx
-;	push rcx
-;	push rdx
-;	push rbp
-;	push rdi
-;	push rsi
-;	push r8
-;	push r9
-;	push r10
-;	push r11
-;	push r12
-;	push r13
-;	push r14
-;	push r15
-;%endmacro
-
-;; Es una macro que recibe 0 argumentos y popea del stack todos los registros para recuperarlos
-;%macro popState 0
-;	pop r15
-;	pop r14
-;	pop r13
-;	pop r12
-;	pop r11
-;	pop r10
-;	pop r9
-;	pop r8
-;	pop rsi
-;	pop rdi
-;	pop rbp
-;	pop rdx
-;	pop rcx
-;	pop rbx
-;	pop rax
-;%endmacro
 
 ; Macro para todas las irq, segun el parametro que paso es como entra en el case de irq
 ; Es una macro que recibe por argumento el codigo de la interrupcion lanzada y, asi ejecutar la rutina de atencion correspondiente
 %macro irqHandlerMaster 1
 
-	;pushState
+
     saveRegs curr_context
 	mov rdi, %1 ; pasaje de parametro (%1 representa el valor del primer, y unico, argumento)
 	call irqDispatcher
@@ -166,7 +108,7 @@ SECTION .text
 	mov al, 20h
 	out 20h, al
 
-	;popState
+
 	restoreRegs curr_context
 	iretq
 %endmacro
@@ -219,7 +161,7 @@ picSlaveMask:
 ; Interrupciones
 ;--------------------------------------------------------------------------------------
 
-; poner buenos nombres mas descriptivos
+
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	irqHandlerMaster 0
@@ -339,6 +281,7 @@ sys_exec:
 ; Exit: Termina la ejecucion del proceso que la llama
 ;-------------------------------------------------------------------------------------
 ; Parametros:
+;   void
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   rax: 0 si pudo terminarlo, -1 si no
@@ -381,7 +324,7 @@ sys_mem:
 ; Tick: Devuelve la cantidad de ticks realizados por el timer tick desde que inicio la computadora
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   null
+;   void
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   rax: Cantidad de ticks
@@ -394,7 +337,7 @@ sys_tick:
 ; Blink: Indica donde se escribira el próximo caracter en pantalla
 ;-------------------------------------------------------------------------------------
 ; Parametros:
-;   null
+;   void
 ;-------------------------------------------------------------------------------------
 ; Retorno:
 ;   rax: 0 si resulto exitoso, 1 si no
@@ -430,7 +373,7 @@ fin:
 ; getCurrContext: obtener los valores de los registros
 ;-------------------------------------------------------------------------------------
 ; parametros:
-;   null
+;   void
 ;-----------------------------------;----------------------------------------------------------------------------------------------------------------------------------
 ; retorno:
 ; 	vector con el valor de los registros ordenados segun:
@@ -446,15 +389,15 @@ getCurrContext:
     pop rbp
     ret
 
-get_registers:
-	push rbp
-	mov rbp, rsp
-
-	mov rax, curr_context                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
-
-	mov rsp, rbp
-	pop rbp
-	ret
+;get_registers:
+;	push rbp
+;	mov rbp, rsp
+;
+;	mov rax, curr_context                                ; Devolvemos el arreglo con los registros en el momento de la excepcion
+;
+;	mov rsp, rbp
+;	pop rbp
+;	ret
 
 haltcpu:
 	cli
@@ -462,29 +405,12 @@ haltcpu:
 	ret
 
 
-; TODO: Usar un unico arreglo para los registros
+
 SECTION .bss
+;----------------------------------------------------------------------
+;   curr_context: vector que antes de los handlers tiene el contexto del proceso en el que ocurrio la interrupcio
+;   o excepcion, y luego de los handlers debe tener el contexto del proceso que se quiere ejecutar
+;----------------------------------------------------------------------
 	curr_context resb 144       ; Contexto del programa (para almacenar procesos)
 	aux resq 1                  ; Variable auxiliar para resguardar el valor de retorno de las syscalls
 
-;TODO: ver si lo podemos hacer
-SECTION .data
-	r8_o equ 0
-	r9_o equ 8
-	r10_o equ 16
-	r11_o equ 24
-	r12_o equ 32
-	r13_o equ 40
-	r14_o equ 48
-	r15_o equ 56
-	rax_o equ 64
-	rbx_o equ 72
-	rcx_o equ 80
-	rdx_o equ 88
-	rsi_o equ 96
-	rdi_o equ 104
-	rbp_o equ 112
-	rsp_o equ 120
-	rip_o equ 128
-	rflags_o equ 136
-	a_rflags_o equ 144

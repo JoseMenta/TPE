@@ -1,6 +1,12 @@
 #include <fibonacci.h>
 #include <libc.h>
-
+//---------------------------------------------------------------------------------
+// fibonacci: Imprime la sucesion de numeros de fibonacci
+//---------------------------------------------------------------------------------
+// Argumentos:
+//  arg_c: cantidad de argumentos del programa (0)
+//  arg_v: arreglo con los strings de los argumentos
+//---------------------------------------------------------------------------------
 void fibonacci(uint64_t arg_c, const char ** arg_v){
     if(arg_c!=0){
         throw_error("Error: El programa no recibe argumentos");

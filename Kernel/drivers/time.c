@@ -2,7 +2,15 @@
 #include <scheduler.h>
 
 static uint64_t ticks = 0;
-
+//----------------------------------------------------------------------
+// timer_handler: handler para timer tick
+//----------------------------------------------------------------------
+// Argumentos
+//  void
+//----------------------------------------------------------------------
+// La funcion incrementa un contador de ticks (que se utiliza para pausar
+// algunos procesos) y llama al scheduler para cambiar el contexto
+//----------------------------------------------------------------------
 void timer_handler() {							    // Es la funcion que se ejecuta cuando ocurra la interrupcion del timer tick (Incrementa la cantidad de ticks)
 	ticks++;
     change_context();

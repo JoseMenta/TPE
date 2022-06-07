@@ -34,5 +34,5 @@ void picSlaveMask(uint8_t mask);            // Permite modificar las interrupcio
 
 //Termina la ejecución de la cpu.
 void haltcpu(void);
-uint64_t * getCurrContext(void);
+uint64_t * getCurrContext(void);            // Funcion para obtener el arreglo curr_context declarado en interrupts.asm
 #endif /* INTERRUPS_H_ */

@@ -2,7 +2,13 @@
 #include <libc.h>
 
 uint64_t analyze_string(const char * str);
-
+//---------------------------------------------------------------------------------
+// printmem: imprime 32 bytes de memoria a partir de una direccion que se pasa como argumento
+//---------------------------------------------------------------------------------
+// Argumentos:
+//  arg_c: cantidad de argumentos del programa (debe ser 1)
+//  arg_v: arreglo con los strings de los argumentos (debe incluir por lo menos a la direccion inicial)
+//---------------------------------------------------------------------------------
 //limit = 0xFFFFFFFD9
 void printmem(uint64_t arg_c, const char** arg_v){
     if(arg_c!=1){
@@ -10,7 +16,7 @@ void printmem(uint64_t arg_c, const char** arg_v){
     }
     uint64_t init_dir = analyze_string(arg_v[0]);
     uint8_t mem_arr[32] = {0};
-    uint8_t dim = sys_mem(init_dir, mem_arr);
+    sys_mem(init_dir, mem_arr);
     char str[21] = {0};                                                             // 2^64 tiene 20 digitos mas el "\0"
     print_string("Datos almacenados a partir de la direccion 0x", WHITE);
     print_string(to_hex(str, init_dir), WHITE);
