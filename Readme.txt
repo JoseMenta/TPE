@@ -1,31 +1,44 @@
-x64BareBones is a basic setup to develop operating systems for the Intel 64 bits architecture.
+Para ejecutar el kernel:
+LINUX:
+    Requerimientos:
+        Contar con una versión de Docker en el dispositivo.
+        Contar con permisos de super user.
 
-The final goal of the project is to provide an entry point for a kernel and the possibility to load extra binary modules separated from the main kernel.
+    Instrucciones:
+        Desempaquetar el .zip
+        Abrir una terminal de Comandos dentro de la carpeta y correr:
+            $ ./dockerScript.sh*
+            $ ./run.sh
 
-Environment setup:
-1- Install the following packages before building the Toolchain and Kernel:
+MAC:
+    Requerimientos:
+        Contar con una versión de Docker en el dispositivo.
+        Contar con multipass, un sistema similar a WSL para mac (ver más en https://multipass.run). El mismo debe configurarse para poder conectarse con ssh y transmitir un entorno gráfico mediante XQuartz (https://www.xquartz.org)
+        Contar con permisos de superuser en la instancia de multipass.
 
-nasm qemu gcc make
-
-2- Build the Toolchain
-
-Execute the following commands on the x64BareBones project directory:
-
-  user@linux:$ cd Toolchain
-  user@linux:$ make all
-
-3- Build the Kernel
-
-From the x64BareBones project directory run:
-
-  user@linux:$ make all
-
-4- Run the kernel
-
-From the x64BareBones project directory run:
-
-  user@linux:$ ./run.sh
+    Instrucciones:
+        Desempaquetar el .zip
+        Abrir una terminal de Comandos dentro de la instancia de multipass, en la carpeta con el proyecto y correr:
+            $ ./dockerScript.sh*
+            $ ./run.sh
 
 
-Author: Rodrigo Rearden (RowDaBoat)
-Collaborator: Augusto Nizzo McIntosh
+	WINDOWS:
+        Requerimientos:
+            Tener configurado WSL 2 e instalado una distribución de Linux
+            Contar con una versión de Docker de Windows.
+
+        Instrucciones:
+            Desempaquetar el .zip
+            Abrir la distribución de Linux
+            Moverse al directorio donde se ubica el archivo desempaquetado
+            Compilar el proyecto y correrlo con acceso de superusuario:
+            $ sudo ./dockerScript.sh*
+            En caso de fallo, intentar con chmod, o copiar las líneas del archivo, pegarlas en un archivo .sh nuevo y ejecutar ese nuevo archivo
+            $ sudo ./run.sh
+
+*: En todos los casos, para que dockerScript.sh funcione correctamente, se deberan seguir los siguientes pasos (utilizando una consola de Linux o UNIX):
+    Moverse al directorio donde se encuentra el proyecto (la carpeta con los archivos fuente)
+    Escribir en consola los siguientes comandos:
+    $ docker pull agodio/itba-so:1.0
+    $ docker run -d -v ${PWD}:/root --security-opt seccomp:unconfined -ti --name tpe_arqui agodio/itba-so:1.0
