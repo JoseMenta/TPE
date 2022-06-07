@@ -23,22 +23,34 @@ MAC:
             $ ./run.sh
 
 
-	WINDOWS:
-        Requerimientos:
-            Tener configurado WSL 2 e instalado una distribución de Linux
-            Contar con una versión de Docker de Windows.
+WINDOWS:
+    Requerimientos:
+        Tener configurado WSL 2 e instalado una distribución de Linux
+        Contar con una versión de Docker de Windows.
 
-        Instrucciones:
-            Desempaquetar el .zip
-            Abrir la distribución de Linux
-            Moverse al directorio donde se ubica el archivo desempaquetado
-            Compilar el proyecto y correrlo con acceso de superusuario:
-            $ sudo ./dockerScript.sh*
-            En caso de fallo, intentar con chmod, o copiar las líneas del archivo, pegarlas en un archivo .sh nuevo y ejecutar ese nuevo archivo
-            $ sudo ./run.sh
+    Instrucciones:
+        Desempaquetar el .zip
+        Abrir la distribución de Linux
+        Moverse al directorio donde se ubica el archivo desempaquetado
+        Compilar el proyecto y correrlo con acceso de superusuario:
+        $ sudo ./dockerScript.sh*
+        En caso de fallo, intentar con chmod, o copiar las líneas del archivo, pegarlas en un archivo .sh nuevo y ejecutar ese nuevo archivo
+        $ sudo ./run.sh
 
 *: En todos los casos, para que dockerScript.sh funcione correctamente, se deberan seguir los siguientes pasos (utilizando una consola de Linux o UNIX):
     Moverse al directorio donde se encuentra el proyecto (la carpeta con los archivos fuente)
     Escribir en consola los siguientes comandos:
     $ docker pull agodio/itba-so:1.0
     $ docker run -d -v ${PWD}:/root --security-opt seccomp:unconfined -ti --name tpe_arqui agodio/itba-so:1.0
+Soporte:
+
+	En caso de necesitar información adicional o querer conocer detalles de la implementación se sugiere acceder al repositorio de GitHub público del proyecto O contactarse con cualquiera de los desarrolladores
+
+    Link al repositorio público:
+        https://github.com/JoseMenta/TPE
+
+    Contacto de desarrolladores:
+
+        Axel Facundo Preiti Tasat: https://github.com/AxelPreitiT
+        Gaston Ariel Francois: https://github.com/francoisgaston
+        Jose Rodolfo Mentasti: https://github.com/JoseMenta
