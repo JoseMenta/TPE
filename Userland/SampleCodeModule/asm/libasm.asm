@@ -11,6 +11,7 @@ GLOBAL zero_division_exc
 GLOBAL invalid_opcode_exc
 GLOBAL get_registers
 GLOBAL get_register
+GLOBAL sys_clear
 
 EXTERN print_string
 
@@ -189,6 +190,25 @@ sys_blink:
     pop rbp
     ret
 
+;-------------------------------------------------------------------------------------
+; sys_clear: Limpia la terminal
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   void
+;-------------------------------------------------------------------------------------
+; Retorno:
+;   void
+;------------------------------------------------------------------------------------
+sys_clear:
+    push rbp
+    mov rbp, rsp
+
+    mov rax, 9
+    int 80h
+
+    mov rsp, rbp
+    pop rbp
+    ret
 
 ;-------------------------------------------------------------------------------------
 ; sys_regs: Devuelve el estado de los registros de la ultima vez que se realizo CTRL+S

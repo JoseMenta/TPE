@@ -35,6 +35,7 @@ uint8_t sys_time(timeType time_unit);
 uint8_t sys_mem(uint64_t init_dir, uint8_t * arr);
 uint64_t sys_tick(void);
 uint8_t sys_blink(void);
+uint8_t sys_clear(void);
 uint8_t sys_regs(uint64_t * regs_arr);
 
 void * get_program(const char * str);
@@ -59,5 +60,6 @@ uint64_t str_tok(char * buffer, char sep);
 void throw_error(char * str);
 void pause_ticks(uint64_t ticks);
 uint8_t blink(void);
+uint8_t clear(void);
 
 #endif //TPE_LIBC_H

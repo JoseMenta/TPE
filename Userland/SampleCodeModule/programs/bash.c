@@ -76,9 +76,9 @@ void bash(uint64_t arg_c, const char ** arg_v){
 // los porgramas que corresponden o lanzar los errores
 //---------------------------------------------------------------------------------
 void analyze_buffer(void) {
-    // Obtenemos los strings sin espacios de los ingresados en la terminal
     int prev_token = 0;
-    int new_token = str_tok(buffer, ' ');
+    for(; buffer[prev_token] == ' ' || buffer[prev_token] == '\t'; prev_token++);
+    int new_token = str_tok(buffer + prev_token, ' ');
     // Si no se ingreso texto, solo ENTER, no se hace nada
     if(new_token == 0){
         print_string("\n", WHITE);
@@ -94,6 +94,20 @@ void analyze_buffer(void) {
         if (new_token == 0) {
             print_string("\nLa computadora esta lista para apagarse.\n", WHITE);
             sys_exit();
+        } else {
+            print_string("\nERROR: expresion invalida\n", RED);
+            return;
+        }
+    }
+
+    // Si se escribe "clear", se borran todas las lineas de comandos previas
+    if (strcmp(tokens, "clear") == 0) {
+        new_token = str_tok(buffer + prev_token + 1, ' ');
+        // Verificamos que solo se halla ingresado "clear" y nada mas
+        if (new_token == 0) {
+            clean_buffer();
+            clear();
+            return;
         } else {
             print_string("\nERROR: expresion invalida\n", RED);
             return;

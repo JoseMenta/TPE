@@ -32,6 +32,7 @@ EXTERN mem_handler
 EXTERN tick_handler
 EXTERN blink_handler
 EXTERN regs_handler
+EXTERN clear_handler
 
 SECTION .text
 
@@ -228,6 +229,8 @@ _syscallHandler:
     jz sys_blink                                ; Syscall para video blink (id = 7)
     cmp rax, 8
     jz sys_regs                                 ; Syscall para devolver un screenshot de los registros (id = 8)
+    cmp rax, 9
+    jz sys_clear                                ; Syscall para limpiar el driver de video
     mov rax, -2                                 ; Si no es una funcion conocida, se devuelve -2 en rax
     jmp fin
 
@@ -358,6 +361,18 @@ sys_blink:
 sys_regs:
     mov rdi, rbx
     call regs_handler
+    jmp fin
+
+;-------------------------------------------------------------------------------------
+; sys_clear: Limpiar la terminal de comandos
+;-------------------------------------------------------------------------------------
+; Parametros:
+;   void
+;-------------------------------------------------------------------------------------
+; Retorno:
+;------------------------------------------------------------------------------------
+sys_clear:
+    call clear_handler
     jmp fin
 
 fin:

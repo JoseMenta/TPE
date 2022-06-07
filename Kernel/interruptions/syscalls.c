@@ -164,3 +164,13 @@ uint8_t regs_handler(uint64_t * regs_arr){
     }
     return regs_saved;
 }
+//----------------------------------------------------------------------
+// clear_handler: Limpiar la terminal de comandos
+//----------------------------------------------------------------------
+// Argumentos:
+//  void
+//----------------------------------------------------------------------
+uint8_t clear_handler(void){
+    clear(ALL);
+    return 0;
+}

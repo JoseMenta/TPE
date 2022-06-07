@@ -90,7 +90,7 @@ void keyboard_handler(){
     }
 
     // Guardamos en el buffer solo aquellas teclas que puedan ser referenciables: letras, digitos y espacios (\n, \t, etc)
-    else if(IS_REFERENCEABLE(key)){
+    else if(IS_REFERENCEABLE(key) && key != BLOCK_MAYUSC){
         // Suspension y reanudacion de procesos
         // Primero debemos verificar si en vez de agregar una letra al buffer, se desea suspende o reanudar un proceso
         if(keyboard_reference[key] == 'f' && ctrl_pressed){
